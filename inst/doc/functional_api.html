@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Building Functional Models with kerasnip</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Building Functional Models with
+kerasnip</h1>
+
+
+
+<p>This vignette demonstrates how to use the
+<code>create_keras_functional_spec()</code> function to build complex,
+non-linear Keras models that integrate seamlessly with the
+<code>tidymodels</code> ecosystem.</p>
+<div id="when-to-use-the-functional-api" class="section level2">
+<h2>When to Use the Functional API</h2>
+<p>While <code>create_keras_sequential_spec()</code> is perfect for
+models that are a simple, linear stack of layers, many advanced
+architectures are not linear. The Keras Functional API is designed for
+these cases. You should use <code>create_keras_functional_spec()</code>
+when your model has:</p>
+<ul>
+<li>Multiple input or multiple output layers.</li>
+<li>Shared layers between different branches.</li>
+<li>Residual connections (e.g., ResNets), where a layer’s input is added
+to its output.</li>
+<li>Any other non-linear topology.</li>
+</ul>
+<p><code>kerasnip</code> makes it easy to define these architectures by
+automatically connecting a graph of layer blocks.</p>
+</div>
+<div id="the-core-concept-building-a-graph" class="section level2">
+<h2>The Core Concept: Building a Graph</h2>
+<p><code>kerasnip</code> builds the model’s graph by inspecting the
+<code>layer_blocks</code> you provide. The connection logic is simple
+but powerful:</p>
+<ol style="list-style-type: decimal">
+<li>The <strong>names of the list elements</strong> in
+<code>layer_blocks</code> define the names of the nodes in your graph
+(e.g., <code>main_input</code>, <code>dense_path</code>,
+<code>output</code>).</li>
+<li>The <strong>names of the arguments</strong> in each block function
+specify its inputs. A block function like
+<code>my_block &lt;- function(input_a, input_b, ...)</code> declares
+that it needs input from the nodes named <code>input_a</code> and
+<code>input_b</code>.</li>
+</ol>
+<p>There are two special requirements:</p>
+<ul>
+<li><strong>Input Block</strong>: The first block in the list is treated
+as the main input node. Its function should not take other blocks as
+input.</li>
+<li><strong>Output Block</strong>: Exactly one block must be named
+<code>&quot;output&quot;</code>. The tensor returned by this block is used as the
+final output of the Keras model.</li>
+</ul>
+<p>Let’s see this in action.</p>
+</div>
+<div id="example-1-a-two-input-regression-model" class="section level2">
+<h2>Example 1: A Two-Input Regression Model</h2>
+<p>This model will take two distinct inputs, process them separately,
+and then concatenate their outputs before a final regression layer. This
+clearly demonstrates the functional API’s ability to handle multiple
+inputs, which is not possible with the sequential API.</p>
+<div id="step-1-load-libraries" class="section level3">
+<h3>Step 1: Load Libraries</h3>
+<p>First, we load the necessary packages.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(kerasnip)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; ── Attaching packages ────────────────────────────────────── tidymodels 1.3.0 ──</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; ✔ broom        1.0.8     ✔ recipes      1.3.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; ✔ dials        1.4.0     ✔ rsample      1.3.0</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt; ✔ dplyr        1.1.4     ✔ tibble       3.2.1</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; ✔ ggplot2      3.5.2     ✔ tidyr        1.3.1</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; ✔ infer        1.0.8     ✔ tune         1.3.0</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; ✔ modeldata    1.4.0     ✔ workflows    1.2.0</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; ✔ parsnip      1.3.1     ✔ workflowsets 1.1.0</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; ✔ purrr        1.0.4     ✔ yardstick    1.3.2</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; ── Conflicts ───────────────────────────────────────── tidymodels_conflicts() ──</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; ✖ purrr::discard() masks scales::discard()</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; ✖ dplyr::filter()  masks stats::filter()</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; ✖ dplyr::lag()     masks stats::lag()</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; ✖ recipes::step()  masks stats::step()</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="fu">library</span>(keras3)</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;keras3&#39;</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; The following object is masked from &#39;package:yardstick&#39;:</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt;     get_weights</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="co"># Silence the startup messages from remove_keras_spec</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="fu">options</span>(<span class="at">kerasnip.show_removal_messages =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+</div>
+<div id="step-2-define-layer-blocks" class="section level3">
+<h3>Step 2: Define Layer Blocks</h3>
+<p>These are the building blocks of our model. Each function represents
+a node in the graph.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Input blocks for two distinct inputs</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>input_block_1 <span class="ot">&lt;-</span> <span class="cf">function</span>(input_shape) {</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="fu">layer_input</span>(<span class="at">shape =</span> input_shape, <span class="at">name =</span> <span class="st">&quot;input_1&quot;</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>}</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>input_block_2 <span class="ot">&lt;-</span> <span class="cf">function</span>(input_shape) {</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="fu">layer_input</span>(<span class="at">shape =</span> input_shape, <span class="at">name =</span> <span class="st">&quot;input_2&quot;</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>}</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co"># Dense paths for each input</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>dense_path_1 <span class="ot">&lt;-</span> <span class="cf">function</span>(tensor, <span class="at">units =</span> <span class="dv">16</span>) {</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  tensor <span class="sc">|&gt;</span> <span class="fu">layer_dense</span>(<span class="at">units =</span> units, <span class="at">activation =</span> <span class="st">&quot;relu&quot;</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>}</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>dense_path_2 <span class="ot">&lt;-</span> <span class="cf">function</span>(tensor, <span class="at">units =</span> <span class="dv">16</span>) {</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>  tensor <span class="sc">|&gt;</span> <span class="fu">layer_dense</span>(<span class="at">units =</span> units, <span class="at">activation =</span> <span class="st">&quot;relu&quot;</span>)</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>}</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co"># A block to join two tensors</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>concat_block <span class="ot">&lt;-</span> <span class="cf">function</span>(input_a, input_b) {</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>  <span class="fu">layer_concatenate</span>(<span class="fu">list</span>(input_a, input_b))</span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>}</span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="co"># The final output block for regression</span></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>output_block_1 <span class="ot">&lt;-</span> <span class="cf">function</span>(tensor) {</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>  <span class="fu">layer_dense</span>(tensor, <span class="at">units =</span> <span class="dv">1</span>, <span class="at">name =</span> <span class="st">&quot;output_1&quot;</span>)</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>}</span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>output_block_2 <span class="ot">&lt;-</span> <span class="cf">function</span>(tensor) {</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>  <span class="fu">layer_dense</span>(tensor, <span class="at">units =</span> <span class="dv">1</span>, <span class="at">name =</span> <span class="st">&quot;output_2&quot;</span>)</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="step-3-create-the-model-specification" class="section level3">
+<h3>Step 3: Create the Model Specification</h3>
+<p>Now we assemble the blocks into a graph. The <code>inp_spec()</code>
+helper simplifies connecting these blocks, eliminating the need for
+verbose anonymous functions. <code>inp_spec()</code> automatically
+creates a wrapper that renames the arguments of our blocks to match the
+node names defined in the <code>layer_blocks</code> list.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>model_name <span class="ot">&lt;-</span> <span class="st">&quot;two_output_reg_spec&quot;</span> <span class="co"># Changed model name</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co"># Clean up the spec when the vignette is done knitting</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">on.exit</span>(<span class="fu">remove_keras_spec</span>(model_name), <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">create_keras_functional_spec</span>(</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">model_name =</span> model_name,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="at">layer_blocks =</span> <span class="fu">list</span>(</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    <span class="at">input_1 =</span> input_block_1,</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>    <span class="at">input_2 =</span> input_block_2,</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>    <span class="at">processed_1 =</span> <span class="fu">inp_spec</span>(dense_path_1, <span class="st">&quot;input_1&quot;</span>),</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>    <span class="at">processed_2 =</span> <span class="fu">inp_spec</span>(dense_path_2, <span class="st">&quot;input_2&quot;</span>),</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>    <span class="at">concatenated =</span> <span class="fu">inp_spec</span>(</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>      concat_block,</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>      <span class="fu">c</span>(<span class="at">processed_1 =</span> <span class="st">&quot;input_a&quot;</span>, <span class="at">processed_2 =</span> <span class="st">&quot;input_b&quot;</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>    ),</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>    <span class="at">output_1 =</span> <span class="fu">inp_spec</span>(output_block_1, <span class="st">&quot;concatenated&quot;</span>), <span class="co"># New output block 1</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>    <span class="at">output_2 =</span> <span class="fu">inp_spec</span>(output_block_2, <span class="st">&quot;concatenated&quot;</span>)  <span class="co"># New output block 2</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  ),</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">&quot;regression&quot;</span> <span class="co"># Still regression, but will have two columns in y</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="step-4-use-and-fit-the-model" class="section level3">
+<h3>Step 4: Use and Fit the Model</h3>
+<p>The new function <code>two_input_reg_spec()</code> is now available.
+Its arguments (<code>processed_1_units</code>,
+<code>processed_2_units</code>) were discovered automatically from our
+block definitions.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># We can override the default `units` for each path.</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>spec <span class="ot">&lt;-</span> <span class="fu">two_output_reg_spec</span>( <span class="co"># Changed spec name</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">processed_1_units =</span> <span class="dv">16</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">processed_2_units =</span> <span class="dv">8</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">fit_epochs =</span> <span class="dv">10</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">fit_verbose =</span> <span class="dv">0</span> <span class="co"># Suppress fitting output in vignette</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">&quot;keras&quot;</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="fu">print</span>(spec)</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; two output reg spec Model Specification (regression)</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; Main Arguments:</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt;   num_input_1 = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt;   num_input_2 = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt;   num_processed_1 = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt;   num_processed_2 = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt;   num_concatenated = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt;   num_output_1 = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt;   num_output_2 = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt;   processed_1_units = 16</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt;   processed_2_units = 8</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt;   learn_rate = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt;   fit_batch_size = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co">#&gt;   fit_epochs = 10</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt;   fit_callbacks = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt;   fit_validation_split = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt;   fit_validation_data = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt;   fit_shuffle = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt;   fit_class_weight = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt;   fit_sample_weight = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt;   fit_initial_epoch = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt;   fit_steps_per_epoch = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt;   fit_validation_steps = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co">#&gt;   fit_validation_batch_size = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co">#&gt;   fit_validation_freq = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a><span class="co">#&gt;   fit_verbose = 0</span></span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a><span class="co">#&gt;   fit_view_metrics = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a><span class="co">#&gt;   compile_optimizer = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a><span class="co">#&gt;   compile_loss = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a><span class="co">#&gt;   compile_metrics = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a><span class="co">#&gt;   compile_loss_weights = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a><span class="co">#&gt;   compile_weighted_metrics = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a><span class="co">#&gt;   compile_run_eagerly = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a><span class="co">#&gt;   compile_steps_per_execution = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-46"><a href="#cb4-46" tabindex="-1"></a><span class="co">#&gt;   compile_jit_compile = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-47"><a href="#cb4-47" tabindex="-1"></a><span class="co">#&gt;   compile_auto_scale_loss = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb4-48"><a href="#cb4-48" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-49"><a href="#cb4-49" tabindex="-1"></a><span class="co">#&gt; Computational engine: keras</span></span>
+<span id="cb4-50"><a href="#cb4-50" tabindex="-1"></a></span>
+<span id="cb4-51"><a href="#cb4-51" tabindex="-1"></a><span class="co"># Prepare dummy data with two inputs and two outputs</span></span>
+<span id="cb4-52"><a href="#cb4-52" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb4-53"><a href="#cb4-53" tabindex="-1"></a>x_data_1 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="dv">5</span>), <span class="at">ncol =</span> <span class="dv">5</span>)</span>
+<span id="cb4-54"><a href="#cb4-54" tabindex="-1"></a>x_data_2 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="dv">3</span>), <span class="at">ncol =</span> <span class="dv">3</span>)</span>
+<span id="cb4-55"><a href="#cb4-55" tabindex="-1"></a>y_data_1 <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">100</span>)</span>
+<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a>y_data_2 <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">100</span>) <span class="co"># New second output</span></span>
+<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a></span>
+<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a><span class="co"># For tidymodels, inputs and outputs need to be in a data frame,</span></span>
+<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a><span class="co"># potentially as lists of matrices</span></span>
+<span id="cb4-60"><a href="#cb4-60" tabindex="-1"></a>train_df <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb4-61"><a href="#cb4-61" tabindex="-1"></a>  <span class="at">input_1 =</span> <span class="fu">lapply</span>(</span>
+<span id="cb4-62"><a href="#cb4-62" tabindex="-1"></a>    <span class="fu">seq_len</span>(<span class="fu">nrow</span>(x_data_1)),</span>
+<span id="cb4-63"><a href="#cb4-63" tabindex="-1"></a>    <span class="cf">function</span>(i) x_data_1[i, , <span class="at">drop =</span> <span class="cn">FALSE</span>]</span>
+<span id="cb4-64"><a href="#cb4-64" tabindex="-1"></a>  ),</span>
+<span id="cb4-65"><a href="#cb4-65" tabindex="-1"></a>  <span class="at">input_2 =</span> <span class="fu">lapply</span>(</span>
+<span id="cb4-66"><a href="#cb4-66" tabindex="-1"></a>    <span class="fu">seq_len</span>(<span class="fu">nrow</span>(x_data_2)),</span>
+<span id="cb4-67"><a href="#cb4-67" tabindex="-1"></a>    <span class="cf">function</span>(i) x_data_2[i, , <span class="at">drop =</span> <span class="cn">FALSE</span>]</span>
+<span id="cb4-68"><a href="#cb4-68" tabindex="-1"></a>  ),</span>
+<span id="cb4-69"><a href="#cb4-69" tabindex="-1"></a>  <span class="at">output_1 =</span> y_data_1, <span class="co"># Named output 1</span></span>
+<span id="cb4-70"><a href="#cb4-70" tabindex="-1"></a>  <span class="at">output_2 =</span> y_data_2  <span class="co"># Named output 2</span></span>
+<span id="cb4-71"><a href="#cb4-71" tabindex="-1"></a>)</span>
+<span id="cb4-72"><a href="#cb4-72" tabindex="-1"></a></span>
+<span id="cb4-73"><a href="#cb4-73" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(output_1 <span class="sc">+</span> output_2 <span class="sc">~</span> input_1 <span class="sc">+</span> input_2, <span class="at">data =</span> train_df)</span>
+<span id="cb4-74"><a href="#cb4-74" tabindex="-1"></a>wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span></span>
+<span id="cb4-75"><a href="#cb4-75" tabindex="-1"></a>  <span class="fu">add_recipe</span>(rec) <span class="sc">|&gt;</span></span>
+<span id="cb4-76"><a href="#cb4-76" tabindex="-1"></a>  <span class="fu">add_model</span>(spec)</span>
+<span id="cb4-77"><a href="#cb4-77" tabindex="-1"></a></span>
+<span id="cb4-78"><a href="#cb4-78" tabindex="-1"></a>fit_obj <span class="ot">&lt;-</span> <span class="fu">fit</span>(wf, <span class="at">data =</span> train_df)</span>
+<span id="cb4-79"><a href="#cb4-79" tabindex="-1"></a></span>
+<span id="cb4-80"><a href="#cb4-80" tabindex="-1"></a><span class="co"># Predict on new data</span></span>
+<span id="cb4-81"><a href="#cb4-81" tabindex="-1"></a>new_data_df <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb4-82"><a href="#cb4-82" tabindex="-1"></a>  <span class="at">input_1 =</span> <span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="dv">5</span>), <span class="cf">function</span>(i) <span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">5</span>), <span class="at">ncol =</span> <span class="dv">5</span>)),</span>
+<span id="cb4-83"><a href="#cb4-83" tabindex="-1"></a>  <span class="at">input_2 =</span> <span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="dv">5</span>), <span class="cf">function</span>(i) <span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">3</span>), <span class="at">ncol =</span> <span class="dv">3</span>))</span>
+<span id="cb4-84"><a href="#cb4-84" tabindex="-1"></a>)</span>
+<span id="cb4-85"><a href="#cb4-85" tabindex="-1"></a><span class="fu">predict</span>(fit_obj, <span class="at">new_data =</span> new_data_df)</span>
+<span id="cb4-86"><a href="#cb4-86" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 123ms/step</span></span>
+<span id="cb4-87"><a href="#cb4-87" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 2</span></span>
+<span id="cb4-88"><a href="#cb4-88" tabindex="-1"></a><span class="co">#&gt;   .pred_output_1 .pred_output_2</span></span>
+<span id="cb4-89"><a href="#cb4-89" tabindex="-1"></a><span class="co">#&gt;      &lt;dbl[,1,1]&gt;    &lt;dbl[,1,1]&gt;</span></span>
+<span id="cb4-90"><a href="#cb4-90" tabindex="-1"></a><span class="co">#&gt; 1        0.411 …        0.459 …</span></span>
+<span id="cb4-91"><a href="#cb4-91" tabindex="-1"></a><span class="co">#&gt; 2        0.317 …        0.469 …</span></span>
+<span id="cb4-92"><a href="#cb4-92" tabindex="-1"></a><span class="co">#&gt; 3        0.334 …        0.448 …</span></span>
+<span id="cb4-93"><a href="#cb4-93" tabindex="-1"></a><span class="co">#&gt; 4        0.439 …        0.541 …</span></span>
+<span id="cb4-94"><a href="#cb4-94" tabindex="-1"></a><span class="co">#&gt; 5        0.328 …        0.509 …</span></span></code></pre></div>
+</div>
+</div>
+<div id="a-common-debugging-workflow-compile_keras_grid" class="section level2">
+<h2>A common debugging workflow: <code>compile_keras_grid()</code></h2>
+<p>In the original Keras guide, a common workflow is to incrementally
+add layers and call <code>summary()</code> to inspect the architecture.
+With <code>kerasnip</code>, the model is defined declaratively, so we
+can’t inspect it layer-by-layer in the same way.</p>
+<p>However, <code>kerasnip</code> provides a powerful equivalent:
+<code>compile_keras_grid()</code>. This function checks if your
+<code>layer_blocks</code> define a valid Keras model and returns the
+compiled model structure, all without running a full training cycle.
+This is perfect for debugging your architecture.</p>
+<p>Let’s see this in action with the <code>two_input_reg_spec</code>
+model:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Create a spec instance</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>spec <span class="ot">&lt;-</span> <span class="fu">two_output_reg_spec</span>( <span class="co"># Changed spec name</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">processed_1_units =</span> <span class="dv">16</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">processed_2_units =</span> <span class="dv">8</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co"># Prepare dummy data with two inputs and two outputs</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>x_dummy_1 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">10</span> <span class="sc">*</span> <span class="dv">5</span>), <span class="at">ncol =</span> <span class="dv">5</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>x_dummy_2 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">10</span> <span class="sc">*</span> <span class="dv">3</span>), <span class="at">ncol =</span> <span class="dv">3</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>y_dummy_1 <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">10</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>y_dummy_2 <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">10</span>) <span class="co"># New second output</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co"># For tidymodels, inputs and outputs need to be in a data frame,</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co"># potentially as lists of matrices</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>x_dummy_df <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>  <span class="at">input_1 =</span> <span class="fu">lapply</span>(</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>    <span class="fu">seq_len</span>(<span class="fu">nrow</span>(x_dummy_1)),</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>    <span class="cf">function</span>(i) x_dummy_1[i, , <span class="at">drop =</span> <span class="cn">FALSE</span>]</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>  ),</span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>  <span class="at">input_2 =</span> <span class="fu">lapply</span>(</span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>    <span class="fu">seq_len</span>(<span class="fu">nrow</span>(x_dummy_2)),</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>    <span class="cf">function</span>(i) x_dummy_2[i, , <span class="at">drop =</span> <span class="cn">FALSE</span>]</span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>  )</span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>)</span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a>y_dummy_df <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">output_1 =</span> y_dummy_1, <span class="at">output_2 =</span> y_dummy_2)</span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="co"># Use compile_keras_grid to get the model</span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a>compilation_results <span class="ot">&lt;-</span> <span class="fu">compile_keras_grid</span>(</span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a>  <span class="at">spec =</span> spec,</span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a>  <span class="at">grid =</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(),</span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a>  <span class="at">x =</span> x_dummy_df,</span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a>  <span class="at">y =</span> y_dummy_df</span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a>)</span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a></span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a><span class="co"># Print the summary</span></span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a>compilation_results <span class="sc">|&gt;</span></span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a>  <span class="fu">select</span>(compiled_model) <span class="sc">|&gt;</span></span>
+<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a>  <span class="fu">pull</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a>  <span class="fu">pluck</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a>  <span class="fu">summary</span>()</span>
+<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a><span class="co">#&gt; Model: &quot;functional_1&quot;</span></span>
+<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a><span class="co">#&gt; ┌───────────────────────┬───────────────────┬─────────────┬────────────────────</span></span>
+<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a><span class="co">#&gt; │ Layer (type)          │ Output Shape      │     Param # │ Connected to       </span></span>
+<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a><span class="co">#&gt; │ input_1 (InputLayer)  │ (None, 1, 5)      │           0 │ -                  </span></span>
+<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a><span class="co">#&gt; │ input_2 (InputLayer)  │ (None, 1, 3)      │           0 │ -                  </span></span>
+<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a><span class="co">#&gt; │ dense_2 (Dense)       │ (None, 1, 16)     │          96 │ input_1[0][0]      </span></span>
+<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a><span class="co">#&gt; │ dense_3 (Dense)       │ (None, 1, 8)      │          32 │ input_2[0][0]      </span></span>
+<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a><span class="co">#&gt; │ concatenate_1         │ (None, 1, 24)     │           0 │ dense_2[0][0],     </span></span>
+<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a><span class="co">#&gt; │ (Concatenate)         │                   │             │ dense_3[0][0]      </span></span>
+<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a><span class="co">#&gt; │ output_1 (Dense)      │ (None, 1, 1)      │          25 │ concatenate_1[0][… </span></span>
+<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a><span class="co">#&gt; │ output_2 (Dense)      │ (None, 1, 1)      │          25 │ concatenate_1[0][… </span></span>
+<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a><span class="co">#&gt; └───────────────────────┴───────────────────┴─────────────┴────────────────────</span></span>
+<span id="cb5-60"><a href="#cb5-60" tabindex="-1"></a><span class="co">#&gt;  Total params: 178 (712.00 B)</span></span>
+<span id="cb5-61"><a href="#cb5-61" tabindex="-1"></a><span class="co">#&gt;  Trainable params: 178 (712.00 B)</span></span>
+<span id="cb5-62"><a href="#cb5-62" tabindex="-1"></a><span class="co">#&gt;  Non-trainable params: 0 (0.00 B)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>compilation_results <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">select</span>(compiled_model) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">pull</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="fu">pluck</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">show_shapes =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="float">
+<img role="img" aria-label="model" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAuMAAAI4CAIAAABP5nAfAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsSAAALEgHS3X78AAAgAElEQVR4nOzdd3wUVfs28Ht2U0lCEgihN5UiRRCVFkILHWMBhIjCIyIWihRpAiIiIkVBlEdFio1HqtKkQ5AmGIq0AKEEBCQhgZAEUnaT7Hn/uH8577C72WzK7k7C9f2Dz+yZM2fOtN1rz8wGRQhBAAAAAJqkc3UHAAAAAPKEpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANrl5uoOQP4URXF1F8DhjEaju7u7q3sBzpCZment7e3qXoBjhYSEHDhwwNW9KCUwpgIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIAAADahaQCAAAA2oWkAgAAANqFpAIA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gHYhqQAAAIB2IakAAACAdiGpAAAAgHYhqQAAAIB2IakAAACAdiGpAAAAgHYhqQAAAIB2IamUHoMHD/bz80tISMjKynruuecqVapko3JB/467PfWd8Lfh5SoURVGvTlGUbt26OWilly9fVhSlYsWKNupUqlRJUeEuXb582UFdgofBvXv3FEXZunVrVlbW7t27FUVJTk62Ud/Dw8P+xi9cuDBixIh8qzn6om7Tps3kyZOJaPny5Yqi6HT//yPJoavW6XS222/atKm8nFu0aEFEt2/fxn9/4SpIKqXEP//8k5WVde/eveDgYHd3940bNy5ZskS+E0VGRsqakZGRJ06c4Inr16//9ddfRHT9+vUjR44IIazW55eRkZEmk0m90lu3bkVGRpq9e546dUr9CW00Gvfu3Xvw4EGj0SgbNJlM+/bti4+Pl9VMJtPRo0f/+ecf9XrNtnHcuHHql+3atatfv77lrjAYDJGRkWfPnjVrKjk5OTIyMj09XZanpqZGRkYmJCRYNiINGDDgscces1GB3bp166effhK5iKhv3772LAiQl7Jly+bk5HTv3t3d3T0sLEwIERgYyLPMrlD+Vwghp4no+PHjV65c4TpXrlxJSUnh6ZiYmMzMzMOHD9+4ccPsKuNr59KlS+pCo9EYGRl59+5dWcKX0tWrV/mlyWQ6depUSkpKZGRkWlqarHb9+vXDhw/n5ORY9pnl5OQcPHhw7NixskSv19+4ccNyVyQmJkZGRt66dctsq69evXr8+HH5xsUr3b9/v43/Im3dunWKonh5eeVVgX3xxRcxMTFCiEWLFkVFRRFRUFAQEe3evdv2guAISCqlxJAhQ7777jt1ybPPPrtw4UKeDgsLk+VhYWHnz58noqioqFu3br3++utTpkyZOnXqli1bdDod5wmz+nyhRkVFqZNKixYtPvzww6ioqIiIiKFDh3KhTqfbsmXLlClT+FvIiRMnGjZseOjQoW3btnl6et6/f58b1Ov1Bw4cGD16dOvWrXlBf3//rVu3fvnll/J7Ia9UbenSpe+88458+ccff8TExGRnZ6vrjBo1ysvLKywsrGHDhoqi3L59m9fYq1evwMDAsLAwHx8fjiaDBw/29/cPCwurWLHiE088kdeOLVOmTGZmZl5zmcFgIKIdO3YoijJ79mwuHD58uO2lAGz4999/x44dqx5jIKKZM2de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Pz9/9uzZWmuPx7No0SIzo5morq7WWss1q/stM52Tk/P444+7l5mUlFRVVSXTbdq00Vo//fTTI0eOlJLU1NSioqJz587de++9UlJRUREeHi4LHDZsmBSuXbt24cKF5eXlDz30kJSUlZXdeuut9X4K+Y43rVq/fv3p06dbtWrlbmdCQoJSqqKiora29oUXXpBCudbZu3dvbW2tjD3ourPP5cuX5cL9nnvu8bMBJan4qSAqKyuVUlOmTNFaSzCXEjPvm2++6X85ZiDUT52lS5dmZ2d7FS5fvjwzM1PX13da6yFDhpiSf//732Zavjm86q9bt27VqlXuhcfExMgeoq/cbWQiLy9vyZIl9a56+/btSqmamhqtdWFhYdu2bUtLS80eePHixbvuuqvezygXrzItiUp2TmmGvLVq1Sql1PHjx7XWZ8+eVUq9++678m5CQkJtba181Wmte/fuLX0t3SHX6w2RpOKngvmA7mpyXein/qBBg5RSQUFBjS7ZaxXx8fGNVtNaP/HEE6NGjZKS0aNHFxcXy1snTpzQWtfW1ppt6DWj1rp169buBXo8HukyU6ekpKRr165S8sYbb3z88cf6yu52HEdrnZaWZgoPHDgQGxt76dIlc7BXV1dHRETU+xFiY2O7dOli1j58+PALFy547WkzZ85USn311Vda688++0wpderUKbmyWrZsmdb6oYcekpr33XefHHqXL19WSvXq1cv/1gvw/K+U6tGjh5k+c+bMvffea+Y9ePCg/+V8/vnnsq7y8vKG6pw/f95356ysrJw8ebLWul+/fqawffv2piVmQjaO9LVu4FTQv39/98IXLVq0c+dOmR4/fnxJSYlUvnz5sta6sLBQvuPj4uLMLCEhIVrr5OTksLAwKdm9e/f3v//9qqqqMWPGSElVVVVkZGS9n/HDDz90tzk9Pb2oqMirrydNmqSUunDhgqlfVVW1bds2pdSbb76ptTZbPjU1Vd6Vvk5MTGxo2+q6pOKngpCkYl4qpdLS0vzUN1dQjS752n2Lkop7Rq8JrXVwcLCubxf3TSqStePi4v71r39JZHn66ae3bdsm7/7sZz87fPiwTF+8eDE/P/+3v/2tOX4uXrwob9XU1PTp0+c3v/mNupKfT2qm169fLxOffvqpaadSaseOHe5Z/vCHP0hSkRJzMlVKvf766/n5+fn5+T/96U/972eBJJXS0lKllNnCpiXuZsvZys9CAkkqS5YsMScXI/CkYt7Ny8uT++5e9X2TypEjR+SMv3XrVt/Iout2G611RUXFyZMn165dq+qSymOPPeZe/ty5c6+2ryWpaK0feeSR1NRUs+rOnTubnCqFchZWSsmdOO3aK7Zs2SJ93WikaFpSGT9+vP+5WiCpmL0iPT395MmT+so+evjhh2WI0WtG7ZNUJOLffvvt//vf/+Qbq6SkZNKkSfLu/v37H374YZkuKys7duzYa6+9JotKS0vbu3evWY7jOLt27Qqwu7/zne/ItCQVrXXv3r0XL16sXZ04Y8YM9yxTpkyRpCL7ZE5OjqmZkpIi3b1161b//RLId0x1dbW7WocOHV5++WXt+r40i/KzkECSSkFBwX333edVGHhSMe+OHTtWLsB82+aVVAoLC5VSrVu3/uCDDyoqKnwXZaZLS0uPHj0qlwda6+Tk5MLCQlOtbdu2//jHP6720FZKpaena63btGnz4osvaldfP/PMM+5ZZs2aJUlFdsh169aZmg888ID09Zo1a/x3QZOTiv+5WjKphChcpS5dutTW1m7atOmPf/zjiBEj8vPzfevU1tYGBwdPmDChU6dOv/71r3/5y19KuXukt6ioaO/eveXl5eHh4U1oxrFjx2655RazPymlvO4979u3r3379vXOm5GRIRf9Ho/nGp84PnfuXMeOHUeMGPHPf/7TFCYlJZlpp7En4wI3e/bsJ5980j0WrZTKzMyUa8rABQcHy1BEo7p3715TU7Nx48bf/e53GzZsOH78uPsml5GUlBQZGel1s0yeijVycnIqKircO0Dgfv/73zuOYx4HuXDhgtfYsvk4vmP+q1atkvtlffv27du3bxPWfqNzHMf93I8fc+fOffDBB997770FCxZs3LjR/dy6W3Bw8JgxY7p27froo4+awoiICDOttS4qKlq+fLk58K/KwYMHHcdx3y312pfkdrBSqlWrVl7zHjlyxNy3usZDu7q6OjQ0tHfv3jJqopQqLCycPXu22cmv46EdFRXlezt72bJl5rMEKPAm3XTTTVrr7OzsFStWjBs3btu2bUOHDq13gePGjevcufNjjz1mCt1n2kuXLp0+fTojI2PixIlX1VRx8eJFx3HmzJljSrxOETt37pSLTN+ndnJzc69XX98AWiANNRNp//UaU5FdvEePHpWVle53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" fig-alt="A picture showing the model shape" alt="model" />
+<div class="figcaption">model</div>
+</div>
+</div>
+<div id="when-to-use-the-functional-api-1" class="section level2">
+<h2>When to use the functional API</h2>
+<p>In general, the functional API is higher-level, easier and safer, and
+has a number of features that subclassed models do not support.</p>
+<p>However, model subclassing provides greater flexibility when building
+models that are not easily expressible as directed acyclic graphs of
+layers. For example, you could not implement a Tree-RNN with the
+functional API and would have to subclass <code>Model</code>
+directly.</p>
+<div id="functional-api-strengths" class="section level3">
+<h3>Functional API strengths</h3>
+<ul>
+<li><strong>Less verbose</strong>: There is no
+<code>super$initialize()</code>, no <code>call = function(...)</code>,
+no <code>self$...</code>, etc.</li>
+<li><strong>Model validation during graph definition</strong>: In the
+functional API, the input specification (shape and dtype) is created in
+advance using <code>layer_input()</code>. Each time a layer is called,
+it validates that the input specification matches its assumptions,
+raising a helpful error message if not.</li>
+<li><strong>A functional model is plottable and inspectable</strong>:
+You can plot the model as a graph, and you can easily access
+intermediate nodes in this graph.</li>
+<li><strong>A functional model can be serialized or cloned</strong>: As
+a data structure rather than code, a functional model is safely
+serializable. It can be saved as a single file, allowing you to recreate
+the exact same model without needing the original code.</li>
+</ul>
+</div>
+<div id="functional-api-weakness" class="section level3">
+<h3>Functional API weakness</h3>
+<ul>
+<li><strong>It does not support dynamic architectures</strong>: The
+functional API treats models as DAGs of layers. This is true for most
+deep learning architectures, but not all – for example, recursive
+networks or Tree RNNs do not follow this assumption and cannot be
+implemented in the functional API.</li>
+</ul>
+</div>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>The <code>create_keras_functional_spec()</code> function provides a
+powerful and intuitive way to define, fit, and tune complex Keras models
+within the <code>tidymodels</code> framework. By defining the model as a
+graph of connected blocks, you can represent nearly any architecture
+while <code>kerasnip</code> handles the boilerplate of integrating it
+with <code>parsnip</code>, <code>dials</code>, and
+<code>tune</code>.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

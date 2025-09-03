@@ -1,0 +1,13 @@
+utils::globalVariables(
+  c(
+    "compiled_model",
+    "engine",
+    "error",
+    "fresh",
+    "keras_compile_arg_names",
+    "keras_fit_arg_names",
+    "new_data",
+    "object",
+    "parameters"
+  )
+)

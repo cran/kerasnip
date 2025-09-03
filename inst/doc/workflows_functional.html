@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Tidymodels Workflow with Functional Keras Models (Multi-Input)</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Tidymodels Workflow with Functional Keras
+Models (Multi-Input)</h1>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This vignette demonstrates a complete <code>tidymodels</code>
+workflow for a regression task using a Keras functional model defined
+with <code>kerasnip</code>. We will use the Ames Housing dataset to
+predict house prices. A key feature of this example is the use of a
+multi-input Keras model, where numerical and categorical features are
+processed through separate input branches.</p>
+<p><code>kerasnip</code> allows you to define complex Keras
+architectures, including those with multiple inputs, and integrate them
+seamlessly into the <code>tidymodels</code> ecosystem for robust
+modeling and tuning.</p>
+</div>
+<div id="setup" class="section level2">
+<h2>Setup</h2>
+<p>First, we load the necessary packages.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(kerasnip)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(keras3)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)       <span class="co"># For data manipulation</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(ggplot2)     <span class="co"># For plotting</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(future)      <span class="co"># For parallel processing</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;future&#39;</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; The following object is masked from &#39;package:keras3&#39;:</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt;     %&lt;-%</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="fu">library</span>(finetune)    <span class="co"># For racing</span></span></code></pre></div>
+</div>
+<div id="data-preparation" class="section level2">
+<h2>Data Preparation</h2>
+<p>We’ll use the Ames Housing dataset, which is available in the
+<code>modeldata</code> package. We will then split the data into
+training and testing sets.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Select relevant columns and remove rows with missing values</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>ames_df <span class="ot">&lt;-</span> ames <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    Sale_Price,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    Gr_Liv_Area,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    Year_Built,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    Neighborhood,</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>    Bldg_Type,</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>    Overall_Cond,</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>    Total_Bsmt_SF,</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>    <span class="fu">contains</span>(<span class="st">&quot;SF&quot;</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  <span class="fu">na.omit</span>()</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co"># Split data into training and testing sets</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>ames_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(ames_df, <span class="at">prop =</span> <span class="fl">0.8</span>, <span class="at">strata =</span> Sale_Price)</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>ames_train <span class="ot">&lt;-</span> <span class="fu">training</span>(ames_split)</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>ames_test <span class="ot">&lt;-</span> <span class="fu">testing</span>(ames_split)</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co"># Create cross-validation folds for tuning</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>ames_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(ames_train, <span class="at">v =</span> <span class="dv">5</span>, <span class="at">strata =</span> Sale_Price)</span></code></pre></div>
+</div>
+<div id="recipe-for-preprocessing" class="section level2">
+<h2>Recipe for Preprocessing</h2>
+<p>We will create a <code>recipes</code> object to preprocess our data.
+This recipe will: * Predict <code>Sale_Price</code> using all other
+variables. * Normalize all numerical predictors. * Create dummy
+variables for categorical predictors. * Collapse each group of
+predictors into a single matrix column using
+<code>step_collapse()</code>.</p>
+<p>This final step is crucial for the multi-input Keras model, as the
+<code>kerasnip</code> functional API expects a list of matrices for
+multiple inputs, where each matrix corresponds to a distinct input
+layer.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>ames_recipe <span class="ot">&lt;-</span> <span class="fu">recipe</span>(Sale_Price <span class="sc">~</span> ., <span class="at">data =</span> ames_train) <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">step_collapse</span>(<span class="fu">all_numeric_predictors</span>(), <span class="at">new_col =</span> <span class="st">&quot;numerical_input&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="fu">step_dummy</span>(Neighborhood) <span class="sc">|&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">step_collapse</span>(<span class="fu">starts_with</span>(<span class="st">&quot;Neighborhood&quot;</span>), <span class="at">new_col =</span> <span class="st">&quot;neighborhood_input&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="fu">step_dummy</span>(Bldg_Type) <span class="sc">|&gt;</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="fu">step_collapse</span>(<span class="fu">starts_with</span>(<span class="st">&quot;Bldg_Type&quot;</span>), <span class="at">new_col =</span> <span class="st">&quot;bldg_input&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="fu">step_dummy</span>(Overall_Cond) <span class="sc">|&gt;</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  <span class="fu">step_collapse</span>(<span class="fu">starts_with</span>(<span class="st">&quot;Overall_Cond&quot;</span>), <span class="at">new_col =</span> <span class="st">&quot;condition_input&quot;</span>)</span></code></pre></div>
+</div>
+<div id="define-keras-functional-model-with-kerasnip" class="section level2">
+<h2>Define Keras Functional Model with <code>kerasnip</code></h2>
+<p>Now, we define our Keras functional model using
+<code>kerasnip</code>’s layer blocks. This model will have four distinct
+input layers: one for numerical features and three for categorical
+features. These branches will be processed separately and then
+concatenated before the final output layer.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Define layer blocks for multi-input functional model</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># Input blocks for numerical and categorical features</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>input_numerical <span class="ot">&lt;-</span> <span class="cf">function</span>(input_shape) {</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">layer_input</span>(<span class="at">shape =</span> input_shape, <span class="at">name =</span> <span class="st">&quot;numerical_input&quot;</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>}</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>input_neighborhood <span class="ot">&lt;-</span> <span class="cf">function</span>(input_shape) {</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="fu">layer_input</span>(<span class="at">shape =</span> input_shape, <span class="at">name =</span> <span class="st">&quot;neighborhood_input&quot;</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>}</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>input_bldg <span class="ot">&lt;-</span> <span class="cf">function</span>(input_shape) {</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="fu">layer_input</span>(<span class="at">shape =</span> input_shape, <span class="at">name =</span> <span class="st">&quot;bldg_input&quot;</span>)</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>}</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>input_condition <span class="ot">&lt;-</span> <span class="cf">function</span>(input_shape) {</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="fu">layer_input</span>(<span class="at">shape =</span> input_shape, <span class="at">name =</span> <span class="st">&quot;condition_input&quot;</span>)</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>}</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co"># Processing blocks for each input type</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>dense_numerical <span class="ot">&lt;-</span> <span class="cf">function</span>(tensor, <span class="at">units =</span> <span class="dv">32</span>, <span class="at">activation =</span> <span class="st">&quot;relu&quot;</span>) {</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>  tensor <span class="sc">|&gt;</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>    <span class="fu">layer_dense</span>(<span class="at">units =</span> units, <span class="at">activation =</span> activation)</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>}</span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>dense_categorical <span class="ot">&lt;-</span> <span class="cf">function</span>(tensor, <span class="at">units =</span> <span class="dv">16</span>, <span class="at">activation =</span> <span class="st">&quot;relu&quot;</span>) {</span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>  tensor <span class="sc">|&gt;</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>    <span class="fu">layer_dense</span>(<span class="at">units =</span> units, <span class="at">activation =</span> activation)</span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>}</span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co"># Concatenation block</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a>concatenate_features <span class="ot">&lt;-</span> <span class="cf">function</span>(numeric, neighborhood, bldg, condition) {</span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a>  <span class="fu">layer_concatenate</span>(<span class="fu">list</span>(numeric, neighborhood, bldg, condition))</span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a>}</span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co"># Output block for regression</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a>output_regression <span class="ot">&lt;-</span> <span class="cf">function</span>(tensor) {</span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a>  <span class="fu">layer_dense</span>(tensor, <span class="at">units =</span> <span class="dv">1</span>, <span class="at">name =</span> <span class="st">&quot;output&quot;</span>)</span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a>}</span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a></span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a><span class="co"># Create the kerasnip model specification function</span></span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a><span class="fu">create_keras_functional_spec</span>(</span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a>  <span class="at">model_name =</span> <span class="st">&quot;ames_functional_mlp&quot;</span>,</span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a>  <span class="at">layer_blocks =</span> <span class="fu">list</span>(</span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a>    <span class="at">numerical_input =</span> input_numerical,</span>
+<span id="cb4-46"><a href="#cb4-46" tabindex="-1"></a>    <span class="at">neighborhood_input =</span> input_neighborhood,</span>
+<span id="cb4-47"><a href="#cb4-47" tabindex="-1"></a>    <span class="at">bldg_input =</span> input_bldg,</span>
+<span id="cb4-48"><a href="#cb4-48" tabindex="-1"></a>    <span class="at">condition_input =</span> input_condition,</span>
+<span id="cb4-49"><a href="#cb4-49" tabindex="-1"></a>    <span class="at">processed_numerical =</span> <span class="fu">inp_spec</span>(dense_numerical, <span class="st">&quot;numerical_input&quot;</span>),</span>
+<span id="cb4-50"><a href="#cb4-50" tabindex="-1"></a>    <span class="at">processed_neighborhood =</span> <span class="fu">inp_spec</span>(dense_categorical, <span class="st">&quot;neighborhood_input&quot;</span>),</span>
+<span id="cb4-51"><a href="#cb4-51" tabindex="-1"></a>    <span class="at">processed_bldg =</span> <span class="fu">inp_spec</span>(dense_categorical, <span class="st">&quot;bldg_input&quot;</span>),</span>
+<span id="cb4-52"><a href="#cb4-52" tabindex="-1"></a>    <span class="at">processed_condition =</span> <span class="fu">inp_spec</span>(dense_categorical, <span class="st">&quot;condition_input&quot;</span>),</span>
+<span id="cb4-53"><a href="#cb4-53" tabindex="-1"></a>    <span class="at">combined_features =</span> <span class="fu">inp_spec</span>(</span>
+<span id="cb4-54"><a href="#cb4-54" tabindex="-1"></a>      concatenate_features,</span>
+<span id="cb4-55"><a href="#cb4-55" tabindex="-1"></a>      <span class="fu">c</span>(</span>
+<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a>        <span class="at">processed_numerical =</span> <span class="st">&quot;numeric&quot;</span>,</span>
+<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a>        <span class="at">processed_neighborhood =</span> <span class="st">&quot;neighborhood&quot;</span>,</span>
+<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a>        <span class="at">processed_bldg =</span> <span class="st">&quot;bldg&quot;</span>,</span>
+<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a>        <span class="at">processed_condition =</span> <span class="st">&quot;condition&quot;</span></span>
+<span id="cb4-60"><a href="#cb4-60" tabindex="-1"></a>      )</span>
+<span id="cb4-61"><a href="#cb4-61" tabindex="-1"></a>    ),</span>
+<span id="cb4-62"><a href="#cb4-62" tabindex="-1"></a>    <span class="at">output =</span> <span class="fu">inp_spec</span>(output_regression, <span class="st">&quot;combined_features&quot;</span>)</span>
+<span id="cb4-63"><a href="#cb4-63" tabindex="-1"></a>  ),</span>
+<span id="cb4-64"><a href="#cb4-64" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">&quot;regression&quot;</span></span>
+<span id="cb4-65"><a href="#cb4-65" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="model-specification" class="section level2">
+<h2>Model Specification</h2>
+<p>We’ll define our <code>ames_functional_mlp</code> model specification
+and set some hyperparameters to <code>tune()</code>. Note how the
+arguments are prefixed with their corresponding block names (e.g.,
+<code>processed_numerical_units</code>).</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Define the tunable model specification</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>functional_mlp_spec <span class="ot">&lt;-</span> <span class="fu">ames_functional_mlp</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="co"># Tunable parameters for numerical branch</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">processed_numerical_units =</span> <span class="fu">tune</span>(),</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="co"># Tunable parameters for categorical branch</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="at">processed_neighborhood_units =</span> <span class="fu">tune</span>(),</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="at">processed_bldg_units =</span> <span class="fu">tune</span>(),</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="at">processed_condition_units =</span> <span class="fu">tune</span>(),</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="co"># Fixed compilation and fitting parameters</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="at">compile_loss =</span> <span class="st">&quot;mean_squared_error&quot;</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="at">compile_optimizer =</span> <span class="st">&quot;adam&quot;</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>  <span class="at">compile_metrics =</span> <span class="fu">c</span>(<span class="st">&quot;mean_absolute_error&quot;</span>),</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>  <span class="at">fit_epochs =</span> <span class="dv">50</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>  <span class="at">fit_batch_size =</span> <span class="dv">32</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>  <span class="at">fit_validation_split =</span> <span class="fl">0.2</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>  <span class="at">fit_callbacks =</span> <span class="fu">list</span>(</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>    <span class="fu">callback_early_stopping</span>(<span class="at">monitor =</span> <span class="st">&quot;val_loss&quot;</span>, <span class="at">patience =</span> <span class="dv">5</span>)</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>  )</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">&quot;keras&quot;</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="fu">print</span>(functional_mlp_spec)</span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a><span class="co">#&gt; ames functional mlp Model Specification (regression)</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="co">#&gt; Main Arguments:</span></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="co">#&gt;   num_numerical_input = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="co">#&gt;   num_neighborhood_input = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a><span class="co">#&gt;   num_bldg_input = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a><span class="co">#&gt;   num_condition_input = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a><span class="co">#&gt;   num_processed_numerical = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a><span class="co">#&gt;   num_processed_neighborhood = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a><span class="co">#&gt;   num_processed_bldg = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a><span class="co">#&gt;   num_processed_condition = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a><span class="co">#&gt;   num_combined_features = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a><span class="co">#&gt;   num_output = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a><span class="co">#&gt;   processed_numerical_units = tune()</span></span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a><span class="co">#&gt;   processed_numerical_activation = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a><span class="co">#&gt;   processed_neighborhood_units = tune()</span></span>
+<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a><span class="co">#&gt;   processed_neighborhood_activation = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a><span class="co">#&gt;   processed_bldg_units = tune()</span></span>
+<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a><span class="co">#&gt;   processed_bldg_activation = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a><span class="co">#&gt;   processed_condition_units = tune()</span></span>
+<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a><span class="co">#&gt;   processed_condition_activation = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a><span class="co">#&gt;   learn_rate = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a><span class="co">#&gt;   fit_batch_size = 32</span></span>
+<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a><span class="co">#&gt;   fit_epochs = 50</span></span>
+<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a><span class="co">#&gt;   fit_callbacks = list(callback_early_stopping(monitor = &quot;val_loss&quot;, patience = 5))</span></span>
+<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a><span class="co">#&gt;   fit_validation_split = 0.2</span></span>
+<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a><span class="co">#&gt;   fit_validation_data = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a><span class="co">#&gt;   fit_shuffle = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a><span class="co">#&gt;   fit_class_weight = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a><span class="co">#&gt;   fit_sample_weight = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a><span class="co">#&gt;   fit_initial_epoch = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a><span class="co">#&gt;   fit_steps_per_epoch = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a><span class="co">#&gt;   fit_validation_steps = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a><span class="co">#&gt;   fit_validation_batch_size = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a><span class="co">#&gt;   fit_validation_freq = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a><span class="co">#&gt;   fit_verbose = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a><span class="co">#&gt;   fit_view_metrics = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-60"><a href="#cb5-60" tabindex="-1"></a><span class="co">#&gt;   compile_optimizer = adam</span></span>
+<span id="cb5-61"><a href="#cb5-61" tabindex="-1"></a><span class="co">#&gt;   compile_loss = mean_squared_error</span></span>
+<span id="cb5-62"><a href="#cb5-62" tabindex="-1"></a><span class="co">#&gt;   compile_metrics = c(&quot;mean_absolute_error&quot;)</span></span>
+<span id="cb5-63"><a href="#cb5-63" tabindex="-1"></a><span class="co">#&gt;   compile_loss_weights = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-64"><a href="#cb5-64" tabindex="-1"></a><span class="co">#&gt;   compile_weighted_metrics = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-65"><a href="#cb5-65" tabindex="-1"></a><span class="co">#&gt;   compile_run_eagerly = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-66"><a href="#cb5-66" tabindex="-1"></a><span class="co">#&gt;   compile_steps_per_execution = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-67"><a href="#cb5-67" tabindex="-1"></a><span class="co">#&gt;   compile_jit_compile = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-68"><a href="#cb5-68" tabindex="-1"></a><span class="co">#&gt;   compile_auto_scale_loss = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb5-69"><a href="#cb5-69" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-70"><a href="#cb5-70" tabindex="-1"></a><span class="co">#&gt; Computational engine: keras</span></span></code></pre></div>
+</div>
+<div id="create-workflow" class="section level2">
+<h2>Create Workflow</h2>
+<p>A <code>workflow</code> combines the recipe and the model
+specification.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>ames_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">add_recipe</span>(ames_recipe) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">add_model</span>(functional_mlp_spec)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="fu">print</span>(ames_wf)</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; ══ Workflow ════════════════════════════════════════════════════════════════════</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; Preprocessor: Recipe</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; Model: ames_functional_mlp()</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt; ── Preprocessor ────────────────────────────────────────────────────────────────</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; 8 Recipe Steps</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt; • step_normalize()</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt; • step_collapse()</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt; • step_dummy()</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt; • step_collapse()</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt; • step_dummy()</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt; • step_collapse()</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt; • step_dummy()</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt; • step_collapse()</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt; ── Model ───────────────────────────────────────────────────────────────────────</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt; ames functional mlp Model Specification (regression)</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a><span class="co">#&gt; Main Arguments:</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co">#&gt;   num_numerical_input = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a><span class="co">#&gt;   num_neighborhood_input = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co">#&gt;   num_bldg_input = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a><span class="co">#&gt;   num_condition_input = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a><span class="co">#&gt;   num_processed_numerical = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a><span class="co">#&gt;   num_processed_neighborhood = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a><span class="co">#&gt;   num_processed_bldg = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a><span class="co">#&gt;   num_processed_condition = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a><span class="co">#&gt;   num_combined_features = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a><span class="co">#&gt;   num_output = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a><span class="co">#&gt;   processed_numerical_units = tune()</span></span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a><span class="co">#&gt;   processed_numerical_activation = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a><span class="co">#&gt;   processed_neighborhood_units = tune()</span></span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a><span class="co">#&gt;   processed_neighborhood_activation = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a><span class="co">#&gt;   processed_bldg_units = tune()</span></span>
+<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a><span class="co">#&gt;   processed_bldg_activation = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a><span class="co">#&gt;   processed_condition_units = tune()</span></span>
+<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a><span class="co">#&gt;   processed_condition_activation = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-44"><a href="#cb6-44" tabindex="-1"></a><span class="co">#&gt;   learn_rate = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-45"><a href="#cb6-45" tabindex="-1"></a><span class="co">#&gt;   fit_batch_size = 32</span></span>
+<span id="cb6-46"><a href="#cb6-46" tabindex="-1"></a><span class="co">#&gt;   fit_epochs = 50</span></span>
+<span id="cb6-47"><a href="#cb6-47" tabindex="-1"></a><span class="co">#&gt;   fit_callbacks = list(callback_early_stopping(monitor = &quot;val_loss&quot;, patience = 5))</span></span>
+<span id="cb6-48"><a href="#cb6-48" tabindex="-1"></a><span class="co">#&gt;   fit_validation_split = 0.2</span></span>
+<span id="cb6-49"><a href="#cb6-49" tabindex="-1"></a><span class="co">#&gt;   fit_validation_data = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-50"><a href="#cb6-50" tabindex="-1"></a><span class="co">#&gt;   fit_shuffle = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-51"><a href="#cb6-51" tabindex="-1"></a><span class="co">#&gt;   fit_class_weight = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-52"><a href="#cb6-52" tabindex="-1"></a><span class="co">#&gt;   fit_sample_weight = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-53"><a href="#cb6-53" tabindex="-1"></a><span class="co">#&gt;   fit_initial_epoch = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-54"><a href="#cb6-54" tabindex="-1"></a><span class="co">#&gt;   fit_steps_per_epoch = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-55"><a href="#cb6-55" tabindex="-1"></a><span class="co">#&gt;   fit_validation_steps = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-56"><a href="#cb6-56" tabindex="-1"></a><span class="co">#&gt;   fit_validation_batch_size = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-57"><a href="#cb6-57" tabindex="-1"></a><span class="co">#&gt;   fit_validation_freq = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-58"><a href="#cb6-58" tabindex="-1"></a><span class="co">#&gt;   fit_verbose = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-59"><a href="#cb6-59" tabindex="-1"></a><span class="co">#&gt;   fit_view_metrics = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-60"><a href="#cb6-60" tabindex="-1"></a><span class="co">#&gt;   compile_optimizer = adam</span></span>
+<span id="cb6-61"><a href="#cb6-61" tabindex="-1"></a><span class="co">#&gt;   compile_loss = mean_squared_error</span></span>
+<span id="cb6-62"><a href="#cb6-62" tabindex="-1"></a><span class="co">#&gt;   compile_metrics = c(&quot;mean_absolute_error&quot;)</span></span>
+<span id="cb6-63"><a href="#cb6-63" tabindex="-1"></a><span class="co">#&gt;   compile_loss_weights = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-64"><a href="#cb6-64" tabindex="-1"></a><span class="co">#&gt;   compile_weighted_metrics = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-65"><a href="#cb6-65" tabindex="-1"></a><span class="co">#&gt;   compile_run_eagerly = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-66"><a href="#cb6-66" tabindex="-1"></a><span class="co">#&gt;   compile_steps_per_execution = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-67"><a href="#cb6-67" tabindex="-1"></a><span class="co">#&gt;   compile_jit_compile = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-68"><a href="#cb6-68" tabindex="-1"></a><span class="co">#&gt;   compile_auto_scale_loss = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb6-69"><a href="#cb6-69" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-70"><a href="#cb6-70" tabindex="-1"></a><span class="co">#&gt; Computational engine: keras</span></span></code></pre></div>
+</div>
+<div id="define-tuning-grid" class="section level2">
+<h2>Define Tuning Grid</h2>
+<p>We will create a regular grid for our hyperparameters.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Define the tuning grid</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">extract_parameter_set_dials</span>(ames_wf) <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">update</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    <span class="at">processed_numerical_units =</span> <span class="fu">hidden_units</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">32</span>, <span class="dv">128</span>)),</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    <span class="at">processed_neighborhood_units =</span> <span class="fu">hidden_units</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">16</span>, <span class="dv">64</span>)),</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="at">processed_bldg_units =</span> <span class="fu">hidden_units</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">16</span>, <span class="dv">64</span>)),</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>    <span class="at">processed_condition_units =</span> <span class="fu">hidden_units</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">16</span>, <span class="dv">64</span>))</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  )</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>functional_mlp_grid <span class="ot">&lt;-</span> <span class="fu">grid_regular</span>(params, <span class="at">levels =</span> <span class="dv">3</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="fu">print</span>(functional_mlp_grid)</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; # A tibble: 81 × 4</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt;    processed_numerical_units processed_neighborhood_units processed_bldg_units</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt;                        &lt;int&gt;                        &lt;int&gt;                &lt;int&gt;</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt;  1                        32                           16                   16</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt;  2                        80                           16                   16</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt;  3                       128                           16                   16</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt;  4                        32                           40                   16</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co">#&gt;  5                        80                           40                   16</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="co">#&gt;  6                       128                           40                   16</span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co">#&gt;  7                        32                           64                   16</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="co">#&gt;  8                        80                           64                   16</span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a><span class="co">#&gt;  9                       128                           64                   16</span></span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a><span class="co">#&gt; 10                        32                           16                   40</span></span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a><span class="co">#&gt; # ℹ 71 more rows</span></span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a><span class="co">#&gt; # ℹ 1 more variable: processed_condition_units &lt;int&gt;</span></span></code></pre></div>
+</div>
+<div id="tune-model" class="section level2">
+<h2>Tune Model</h2>
+<p>Now, we’ll use <code>tune_race_anova()</code> to perform
+cross-validation and find the best hyperparameters.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Note: Parallel processing with `plan(multisession)` is currently not working</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co"># with Keras models due to backend conflicts</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>ames_tune_results <span class="ot">&lt;-</span> <span class="fu">tune_race_anova</span>(</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  ames_wf,</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  <span class="at">resamples =</span> ames_folds,</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  <span class="at">grid =</span> functional_mlp_grid,</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="fu">metric_set</span>(rmse, mae, rsq),</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">control_race</span>(<span class="at">save_pred =</span> <span class="cn">TRUE</span>, <span class="at">save_workflow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>)</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 17ms/step</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-42"><a href="#cb8-42" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-43"><a href="#cb8-43" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-44"><a href="#cb8-44" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-45"><a href="#cb8-45" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-46"><a href="#cb8-46" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-47"><a href="#cb8-47" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-48"><a href="#cb8-48" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-49"><a href="#cb8-49" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-50"><a href="#cb8-50" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-51"><a href="#cb8-51" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-52"><a href="#cb8-52" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-53"><a href="#cb8-53" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-54"><a href="#cb8-54" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-55"><a href="#cb8-55" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-56"><a href="#cb8-56" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-57"><a href="#cb8-57" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-58"><a href="#cb8-58" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-59"><a href="#cb8-59" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-60"><a href="#cb8-60" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-61"><a href="#cb8-61" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-62"><a href="#cb8-62" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-63"><a href="#cb8-63" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-64"><a href="#cb8-64" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-65"><a href="#cb8-65" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-66"><a href="#cb8-66" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-67"><a href="#cb8-67" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-68"><a href="#cb8-68" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-69"><a href="#cb8-69" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-70"><a href="#cb8-70" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-71"><a href="#cb8-71" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-72"><a href="#cb8-72" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-73"><a href="#cb8-73" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-74"><a href="#cb8-74" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-75"><a href="#cb8-75" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-76"><a href="#cb8-76" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-77"><a href="#cb8-77" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-78"><a href="#cb8-78" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-79"><a href="#cb8-79" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-80"><a href="#cb8-80" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-81"><a href="#cb8-81" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-82"><a href="#cb8-82" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-83"><a href="#cb8-83" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-84"><a href="#cb8-84" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-85"><a href="#cb8-85" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-86"><a href="#cb8-86" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-87"><a href="#cb8-87" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-88"><a href="#cb8-88" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-89"><a href="#cb8-89" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-90"><a href="#cb8-90" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-91"><a href="#cb8-91" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-92"><a href="#cb8-92" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-93"><a href="#cb8-93" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-94"><a href="#cb8-94" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-95"><a href="#cb8-95" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-96"><a href="#cb8-96" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-97"><a href="#cb8-97" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-98"><a href="#cb8-98" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-99"><a href="#cb8-99" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-100"><a href="#cb8-100" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-101"><a href="#cb8-101" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-102"><a href="#cb8-102" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-103"><a href="#cb8-103" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-104"><a href="#cb8-104" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-105"><a href="#cb8-105" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-106"><a href="#cb8-106" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-107"><a href="#cb8-107" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-108"><a href="#cb8-108" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-109"><a href="#cb8-109" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-110"><a href="#cb8-110" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-111"><a href="#cb8-111" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-112"><a href="#cb8-112" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 9ms/step</span></span>
+<span id="cb8-113"><a href="#cb8-113" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-114"><a href="#cb8-114" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-115"><a href="#cb8-115" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-116"><a href="#cb8-116" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-117"><a href="#cb8-117" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-118"><a href="#cb8-118" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-119"><a href="#cb8-119" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-120"><a href="#cb8-120" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-121"><a href="#cb8-121" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-122"><a href="#cb8-122" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-123"><a href="#cb8-123" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-124"><a href="#cb8-124" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-125"><a href="#cb8-125" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-126"><a href="#cb8-126" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-127"><a href="#cb8-127" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-128"><a href="#cb8-128" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-129"><a href="#cb8-129" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-130"><a href="#cb8-130" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-131"><a href="#cb8-131" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-132"><a href="#cb8-132" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-133"><a href="#cb8-133" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-134"><a href="#cb8-134" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-135"><a href="#cb8-135" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-136"><a href="#cb8-136" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-137"><a href="#cb8-137" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-138"><a href="#cb8-138" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-139"><a href="#cb8-139" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-140"><a href="#cb8-140" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-141"><a href="#cb8-141" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 9ms/step</span></span>
+<span id="cb8-142"><a href="#cb8-142" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-143"><a href="#cb8-143" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-144"><a href="#cb8-144" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-145"><a href="#cb8-145" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-146"><a href="#cb8-146" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-147"><a href="#cb8-147" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-148"><a href="#cb8-148" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-149"><a href="#cb8-149" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-150"><a href="#cb8-150" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-151"><a href="#cb8-151" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 19ms/step</span></span>
+<span id="cb8-152"><a href="#cb8-152" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-153"><a href="#cb8-153" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-154"><a href="#cb8-154" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-155"><a href="#cb8-155" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-156"><a href="#cb8-156" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-157"><a href="#cb8-157" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-158"><a href="#cb8-158" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-159"><a href="#cb8-159" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-160"><a href="#cb8-160" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-161"><a href="#cb8-161" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-162"><a href="#cb8-162" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-163"><a href="#cb8-163" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-164"><a href="#cb8-164" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-165"><a href="#cb8-165" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-166"><a href="#cb8-166" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-167"><a href="#cb8-167" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-168"><a href="#cb8-168" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-169"><a href="#cb8-169" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-170"><a href="#cb8-170" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-171"><a href="#cb8-171" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-172"><a href="#cb8-172" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-173"><a href="#cb8-173" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-174"><a href="#cb8-174" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-175"><a href="#cb8-175" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-176"><a href="#cb8-176" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-177"><a href="#cb8-177" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-178"><a href="#cb8-178" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-179"><a href="#cb8-179" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-180"><a href="#cb8-180" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-181"><a href="#cb8-181" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-182"><a href="#cb8-182" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-183"><a href="#cb8-183" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-184"><a href="#cb8-184" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-185"><a href="#cb8-185" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-186"><a href="#cb8-186" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-187"><a href="#cb8-187" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-188"><a href="#cb8-188" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-189"><a href="#cb8-189" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-190"><a href="#cb8-190" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-191"><a href="#cb8-191" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-192"><a href="#cb8-192" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-193"><a href="#cb8-193" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-194"><a href="#cb8-194" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-195"><a href="#cb8-195" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-196"><a href="#cb8-196" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-197"><a href="#cb8-197" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-198"><a href="#cb8-198" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-199"><a href="#cb8-199" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-200"><a href="#cb8-200" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-201"><a href="#cb8-201" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-202"><a href="#cb8-202" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-203"><a href="#cb8-203" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-204"><a href="#cb8-204" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-205"><a href="#cb8-205" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-206"><a href="#cb8-206" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-207"><a href="#cb8-207" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-208"><a href="#cb8-208" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-209"><a href="#cb8-209" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-210"><a href="#cb8-210" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-211"><a href="#cb8-211" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-212"><a href="#cb8-212" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-213"><a href="#cb8-213" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-214"><a href="#cb8-214" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-215"><a href="#cb8-215" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-216"><a href="#cb8-216" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-217"><a href="#cb8-217" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-218"><a href="#cb8-218" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-219"><a href="#cb8-219" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-220"><a href="#cb8-220" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-221"><a href="#cb8-221" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-222"><a href="#cb8-222" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-223"><a href="#cb8-223" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-224"><a href="#cb8-224" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-225"><a href="#cb8-225" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-226"><a href="#cb8-226" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-227"><a href="#cb8-227" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-228"><a href="#cb8-228" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-229"><a href="#cb8-229" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-230"><a href="#cb8-230" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-231"><a href="#cb8-231" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-232"><a href="#cb8-232" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-233"><a href="#cb8-233" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-234"><a href="#cb8-234" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-235"><a href="#cb8-235" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-236"><a href="#cb8-236" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-237"><a href="#cb8-237" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-238"><a href="#cb8-238" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-239"><a href="#cb8-239" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-240"><a href="#cb8-240" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-241"><a href="#cb8-241" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-242"><a href="#cb8-242" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-243"><a href="#cb8-243" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-244"><a href="#cb8-244" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-245"><a href="#cb8-245" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-246"><a href="#cb8-246" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-247"><a href="#cb8-247" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-248"><a href="#cb8-248" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-249"><a href="#cb8-249" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-250"><a href="#cb8-250" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-251"><a href="#cb8-251" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-252"><a href="#cb8-252" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-253"><a href="#cb8-253" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-254"><a href="#cb8-254" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-255"><a href="#cb8-255" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-256"><a href="#cb8-256" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-257"><a href="#cb8-257" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-258"><a href="#cb8-258" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-259"><a href="#cb8-259" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-260"><a href="#cb8-260" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-261"><a href="#cb8-261" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-262"><a href="#cb8-262" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-263"><a href="#cb8-263" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-264"><a href="#cb8-264" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-265"><a href="#cb8-265" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-266"><a href="#cb8-266" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-267"><a href="#cb8-267" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-268"><a href="#cb8-268" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-269"><a href="#cb8-269" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-270"><a href="#cb8-270" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span></code></pre></div>
+</div>
+<div id="inspect-tuning-results" class="section level2">
+<h2>Inspect Tuning Results</h2>
+<p>We can inspect the tuning results to see which hyperparameter
+combinations performed best.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Show the best performing models based on RMSE</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">show_best</span>(ames_tune_results, <span class="at">metric =</span> <span class="st">&quot;rmse&quot;</span>, <span class="at">n =</span> <span class="dv">5</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 10</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt;   processed_numerical_units processed_neighborhood_units processed_bldg_units</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt;                       &lt;int&gt;                        &lt;int&gt;                &lt;int&gt;</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt; 1                       128                           64                   64</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; 2                       128                           64                   40</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; 3                       128                           64                   16</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt; # ℹ 7 more variables: processed_condition_units &lt;int&gt;, .metric &lt;chr&gt;,</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt; #   .estimator &lt;chr&gt;, mean &lt;dbl&gt;, n &lt;int&gt;, std_err &lt;dbl&gt;, .config &lt;chr&gt;</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co"># Autoplot the results</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co"># Currently does not work due to a label issue: autoplot(ames_tune_results)</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co"># Select the best hyperparameters</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>best_functional_mlp_params <span class="ot">&lt;-</span> <span class="fu">select_best</span>(ames_tune_results, <span class="at">metric =</span> <span class="st">&quot;rmse&quot;</span>)</span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="fu">print</span>(best_functional_mlp_params)</span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 5</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt;   processed_numerical_units processed_neighborhood_units processed_bldg_units</span></span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="co">#&gt;                       &lt;int&gt;                        &lt;int&gt;                &lt;int&gt;</span></span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="co">#&gt; 1                       128                           64                   64</span></span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="co">#&gt; # ℹ 2 more variables: processed_condition_units &lt;int&gt;, .config &lt;chr&gt;</span></span></code></pre></div>
+</div>
+<div id="finalize-workflow-and-fit-model" class="section level2">
+<h2>Finalize Workflow and Fit Model</h2>
+<p>Once we have the best hyperparameters, we finalize the workflow and
+fit the model on the entire training dataset.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Finalize the workflow with the best hyperparameters</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>final_ames_wf <span class="ot">&lt;-</span> <span class="fu">finalize_workflow</span>(ames_wf, best_functional_mlp_params)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co"># Fit the final model on the full training data</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>final_ames_fit <span class="ot">&lt;-</span> <span class="fu">fit</span>(final_ames_wf, <span class="at">data =</span> ames_train)</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="fu">print</span>(final_ames_fit)</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; ══ Workflow [trained] ══════════════════════════════════════════════════════════</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co">#&gt; Preprocessor: Recipe</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co">#&gt; Model: ames_functional_mlp()</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co">#&gt; ── Preprocessor ────────────────────────────────────────────────────────────────</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co">#&gt; 8 Recipe Steps</span></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a><span class="co">#&gt; • step_normalize()</span></span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a><span class="co">#&gt; • step_collapse()</span></span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a><span class="co">#&gt; • step_dummy()</span></span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a><span class="co">#&gt; • step_collapse()</span></span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a><span class="co">#&gt; • step_dummy()</span></span>
+<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a><span class="co">#&gt; • step_collapse()</span></span>
+<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a><span class="co">#&gt; • step_dummy()</span></span>
+<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a><span class="co">#&gt; • step_collapse()</span></span>
+<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-24"><a href="#cb10-24" tabindex="-1"></a><span class="co">#&gt; ── Model ───────────────────────────────────────────────────────────────────────</span></span>
+<span id="cb10-25"><a href="#cb10-25" tabindex="-1"></a><span class="co">#&gt; $fit</span></span>
+<span id="cb10-26"><a href="#cb10-26" tabindex="-1"></a><span class="co">#&gt; Model: &quot;functional_685&quot;</span></span>
+<span id="cb10-27"><a href="#cb10-27" tabindex="-1"></a><span class="co">#&gt; ┌───────────────────────┬───────────────────┬─────────────┬────────────────────</span></span>
+<span id="cb10-28"><a href="#cb10-28" tabindex="-1"></a><span class="co">#&gt; │ Layer (type)          │ Output Shape      │     Param # │ Connected to       </span></span>
+<span id="cb10-29"><a href="#cb10-29" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb10-30"><a href="#cb10-30" tabindex="-1"></a><span class="co">#&gt; │ numerical_input       │ (None, 1, 10)     │           0 │ -                  </span></span>
+<span id="cb10-31"><a href="#cb10-31" tabindex="-1"></a><span class="co">#&gt; │ (InputLayer)          │                   │             │                    </span></span>
+<span id="cb10-32"><a href="#cb10-32" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb10-33"><a href="#cb10-33" tabindex="-1"></a><span class="co">#&gt; │ neighborhood_input    │ (None, 1, 28)     │           0 │ -                  </span></span>
+<span id="cb10-34"><a href="#cb10-34" tabindex="-1"></a><span class="co">#&gt; │ (InputLayer)          │                   │             │                    </span></span>
+<span id="cb10-35"><a href="#cb10-35" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb10-36"><a href="#cb10-36" tabindex="-1"></a><span class="co">#&gt; │ bldg_input            │ (None, 1, 4)      │           0 │ -                  </span></span>
+<span id="cb10-37"><a href="#cb10-37" tabindex="-1"></a><span class="co">#&gt; │ (InputLayer)          │                   │             │                    </span></span>
+<span id="cb10-38"><a href="#cb10-38" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb10-39"><a href="#cb10-39" tabindex="-1"></a><span class="co">#&gt; │ condition_input       │ (None, 1, 9)      │           0 │ -                  </span></span>
+<span id="cb10-40"><a href="#cb10-40" tabindex="-1"></a><span class="co">#&gt; │ (InputLayer)          │                   │             │                    </span></span>
+<span id="cb10-41"><a href="#cb10-41" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb10-42"><a href="#cb10-42" tabindex="-1"></a><span class="co">#&gt; │ dense_1293 (Dense)    │ (None, 1, 128)    │       1,408 │ numerical_input[0… </span></span>
+<span id="cb10-43"><a href="#cb10-43" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb10-44"><a href="#cb10-44" tabindex="-1"></a><span class="co">#&gt; │ dense_1294 (Dense)    │ (None, 1, 64)     │       1,856 │ neighborhood_inpu… </span></span>
+<span id="cb10-45"><a href="#cb10-45" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb10-46"><a href="#cb10-46" tabindex="-1"></a><span class="co">#&gt; │ dense_1295 (Dense)    │ (None, 1, 64)     │         320 │ bldg_input[0][0]   </span></span>
+<span id="cb10-47"><a href="#cb10-47" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb10-48"><a href="#cb10-48" tabindex="-1"></a><span class="co">#&gt; │ dense_1296 (Dense)    │ (None, 1, 64)     │         640 │ condition_input[0… </span></span>
+<span id="cb10-49"><a href="#cb10-49" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb10-50"><a href="#cb10-50" tabindex="-1"></a><span class="co">#&gt; │ concatenate_262       │ (None, 1, 320)    │           0 │ dense_1293[0][0],  </span></span>
+<span id="cb10-51"><a href="#cb10-51" tabindex="-1"></a><span class="co">#&gt; │ (Concatenate)         │                   │             │ dense_1294[0][0],  </span></span>
+<span id="cb10-52"><a href="#cb10-52" tabindex="-1"></a><span class="co">#&gt; │                       │                   │             │ dense_1295[0][0],  </span></span>
+<span id="cb10-53"><a href="#cb10-53" tabindex="-1"></a><span class="co">#&gt; │                       │                   │             │ dense_1296[0][0]   </span></span>
+<span id="cb10-54"><a href="#cb10-54" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb10-55"><a href="#cb10-55" tabindex="-1"></a><span class="co">#&gt; │ output (Dense)        │ (None, 1, 1)      │         321 │ concatenate_262[0… </span></span>
+<span id="cb10-56"><a href="#cb10-56" tabindex="-1"></a><span class="co">#&gt; └───────────────────────┴───────────────────┴─────────────┴────────────────────</span></span>
+<span id="cb10-57"><a href="#cb10-57" tabindex="-1"></a><span class="co">#&gt;  Total params: 13,637 (53.27 KB)</span></span>
+<span id="cb10-58"><a href="#cb10-58" tabindex="-1"></a><span class="co">#&gt;  Trainable params: 4,545 (17.75 KB)</span></span>
+<span id="cb10-59"><a href="#cb10-59" tabindex="-1"></a><span class="co">#&gt;  Non-trainable params: 0 (0.00 B)</span></span>
+<span id="cb10-60"><a href="#cb10-60" tabindex="-1"></a><span class="co">#&gt;  Optimizer params: 9,092 (35.52 KB)</span></span>
+<span id="cb10-61"><a href="#cb10-61" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-62"><a href="#cb10-62" tabindex="-1"></a><span class="co">#&gt; $history</span></span>
+<span id="cb10-63"><a href="#cb10-63" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-64"><a href="#cb10-64" tabindex="-1"></a><span class="co">#&gt; Final epoch (plot to see history):</span></span>
+<span id="cb10-65"><a href="#cb10-65" tabindex="-1"></a><span class="co">#&gt;                    loss: 1,223,256,192</span></span>
+<span id="cb10-66"><a href="#cb10-66" tabindex="-1"></a><span class="co">#&gt;     mean_absolute_error: 21,460</span></span>
+<span id="cb10-67"><a href="#cb10-67" tabindex="-1"></a><span class="co">#&gt;                val_loss: 6,121,800,192</span></span>
+<span id="cb10-68"><a href="#cb10-68" tabindex="-1"></a><span class="co">#&gt; val_mean_absolute_error: 59,486 </span></span>
+<span id="cb10-69"><a href="#cb10-69" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-70"><a href="#cb10-70" tabindex="-1"></a><span class="co">#&gt; $lvl</span></span>
+<span id="cb10-71"><a href="#cb10-71" tabindex="-1"></a><span class="co">#&gt; NULL</span></span>
+<span id="cb10-72"><a href="#cb10-72" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-73"><a href="#cb10-73" tabindex="-1"></a><span class="co">#&gt; $process_x</span></span>
+<span id="cb10-74"><a href="#cb10-74" tabindex="-1"></a><span class="co">#&gt; function (x) </span></span>
+<span id="cb10-75"><a href="#cb10-75" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-76"><a href="#cb10-76" tabindex="-1"></a><span class="co">#&gt; ...</span></span>
+<span id="cb10-77"><a href="#cb10-77" tabindex="-1"></a><span class="co">#&gt; and 88 more lines.</span></span></code></pre></div>
+<div id="inspect-final-model" class="section level3">
+<h3>Inspect Final Model</h3>
+<p>You can extract the underlying Keras model and its training history
+for further inspection.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Extract the Keras model summary</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>final_ames_fit <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="fu">extract_fit_parsnip</span>() <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="fu">extract_keras_model</span>() <span class="sc">|&gt;</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="fu">summary</span>()</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt; Model: &quot;functional_685&quot;</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt; ┌───────────────────────┬───────────────────┬─────────────┬────────────────────</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt; │ Layer (type)          │ Output Shape      │     Param # │ Connected to       </span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co">#&gt; │ numerical_input       │ (None, 1, 10)     │           0 │ -                  </span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co">#&gt; │ (InputLayer)          │                   │             │                    </span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="co">#&gt; │ neighborhood_input    │ (None, 1, 28)     │           0 │ -                  </span></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="co">#&gt; │ (InputLayer)          │                   │             │                    </span></span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="co">#&gt; │ bldg_input            │ (None, 1, 4)      │           0 │ -                  </span></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a><span class="co">#&gt; │ (InputLayer)          │                   │             │                    </span></span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a><span class="co">#&gt; │ condition_input       │ (None, 1, 9)      │           0 │ -                  </span></span>
+<span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a><span class="co">#&gt; │ (InputLayer)          │                   │             │                    </span></span>
+<span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a><span class="co">#&gt; │ dense_1293 (Dense)    │ (None, 1, 128)    │       1,408 │ numerical_input[0… </span></span>
+<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a><span class="co">#&gt; │ dense_1294 (Dense)    │ (None, 1, 64)     │       1,856 │ neighborhood_inpu… </span></span>
+<span id="cb11-25"><a href="#cb11-25" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb11-26"><a href="#cb11-26" tabindex="-1"></a><span class="co">#&gt; │ dense_1295 (Dense)    │ (None, 1, 64)     │         320 │ bldg_input[0][0]   </span></span>
+<span id="cb11-27"><a href="#cb11-27" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb11-28"><a href="#cb11-28" tabindex="-1"></a><span class="co">#&gt; │ dense_1296 (Dense)    │ (None, 1, 64)     │         640 │ condition_input[0… </span></span>
+<span id="cb11-29"><a href="#cb11-29" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb11-30"><a href="#cb11-30" tabindex="-1"></a><span class="co">#&gt; │ concatenate_262       │ (None, 1, 320)    │           0 │ dense_1293[0][0],  </span></span>
+<span id="cb11-31"><a href="#cb11-31" tabindex="-1"></a><span class="co">#&gt; │ (Concatenate)         │                   │             │ dense_1294[0][0],  </span></span>
+<span id="cb11-32"><a href="#cb11-32" tabindex="-1"></a><span class="co">#&gt; │                       │                   │             │ dense_1295[0][0],  </span></span>
+<span id="cb11-33"><a href="#cb11-33" tabindex="-1"></a><span class="co">#&gt; │                       │                   │             │ dense_1296[0][0]   </span></span>
+<span id="cb11-34"><a href="#cb11-34" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
+<span id="cb11-35"><a href="#cb11-35" tabindex="-1"></a><span class="co">#&gt; │ output (Dense)        │ (None, 1, 1)      │         321 │ concatenate_262[0… </span></span>
+<span id="cb11-36"><a href="#cb11-36" tabindex="-1"></a><span class="co">#&gt; └───────────────────────┴───────────────────┴─────────────┴────────────────────</span></span>
+<span id="cb11-37"><a href="#cb11-37" tabindex="-1"></a><span class="co">#&gt;  Total params: 13,637 (53.27 KB)</span></span>
+<span id="cb11-38"><a href="#cb11-38" tabindex="-1"></a><span class="co">#&gt;  Trainable params: 4,545 (17.75 KB)</span></span>
+<span id="cb11-39"><a href="#cb11-39" tabindex="-1"></a><span class="co">#&gt;  Non-trainable params: 0 (0.00 B)</span></span>
+<span id="cb11-40"><a href="#cb11-40" tabindex="-1"></a><span class="co">#&gt;  Optimizer params: 9,092 (35.52 KB)</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Plot the Keras model</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>final_ames_fit <span class="sc">|&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="fu">extract_fit_parsnip</span>() <span class="sc">|&gt;</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  <span class="fu">extract_keras_model</span>() <span class="sc">|&gt;</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">show_shapes =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="float">
+<img role="img" aria-label="Model" src="images/model_plot_shapes_fs.png" fig-alt="A picture showing the model shape" alt="Model" />
+<div class="figcaption">Model</div>
+</div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Plot the training history</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>final_ames_fit <span class="sc">|&gt;</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="fu">extract_fit_parsnip</span>() <span class="sc">|&gt;</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>  <span class="fu">extract_keras_history</span>() <span class="sc">|&gt;</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>  <span class="fu">plot</span>()</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+</div>
+<div id="make-predictions-and-evaluate" class="section level2">
+<h2>Make Predictions and Evaluate</h2>
+<p>Finally, we will make predictions on the test set and evaluate the
+model’s performance.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Make predictions on the test set</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>ames_test_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(final_ames_fit, <span class="at">new_data =</span> ames_test)</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="co">#&gt; 19/19 - 0s - 9ms/step</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co"># Combine predictions with actuals</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>ames_results <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>  <span class="at">Sale_Price =</span> ames_test<span class="sc">$</span>Sale_Price,</span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>  <span class="at">.pred =</span> ames_test_pred<span class="sc">$</span>.pred</span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>)</span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(ames_results))</span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 2</span></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="co">#&gt;   Sale_Price   .pred</span></span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="co">#&gt;        &lt;int&gt;   &lt;dbl&gt;</span></span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="co">#&gt; 1     105000  98897.</span></span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="co">#&gt; 2     172000 160951.</span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="co">#&gt; 3     189900 193486.</span></span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a><span class="co">#&gt; 4     115000 127459.</span></span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="co">#&gt; 5     395192 269234.</span></span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a><span class="co">#&gt; 6     214000 213245.</span></span>
+<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a></span>
+<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a><span class="co"># Evaluate performance using yardstick metrics</span></span>
+<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a>metrics_results <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(</span>
+<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a>  rmse,</span>
+<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a>  mae,</span>
+<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a>  rsq</span>
+<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a>)(</span>
+<span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a>  ames_results,</span>
+<span id="cb14-29"><a href="#cb14-29" tabindex="-1"></a>  <span class="at">truth =</span> Sale_Price,</span>
+<span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a>  <span class="at">estimate =</span> .pred</span>
+<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a>)</span>
+<span id="cb14-32"><a href="#cb14-32" tabindex="-1"></a></span>
+<span id="cb14-33"><a href="#cb14-33" tabindex="-1"></a><span class="fu">print</span>(metrics_results)</span>
+<span id="cb14-34"><a href="#cb14-34" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 3</span></span>
+<span id="cb14-35"><a href="#cb14-35" tabindex="-1"></a><span class="co">#&gt;   .metric .estimator .estimate</span></span>
+<span id="cb14-36"><a href="#cb14-36" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;</span></span>
+<span id="cb14-37"><a href="#cb14-37" tabindex="-1"></a><span class="co">#&gt; 1 rmse    standard   50602.   </span></span>
+<span id="cb14-38"><a href="#cb14-38" tabindex="-1"></a><span class="co">#&gt; 2 mae     standard   30965.   </span></span>
+<span id="cb14-39"><a href="#cb14-39" tabindex="-1"></a><span class="co">#&gt; 3 rsq     standard       0.786</span></span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
