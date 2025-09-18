@@ -142,45 +142,6 @@ get_keras_object <- function(
   name
 }
 
-#' Dials Parameter for Keras Optimizers
-#' @param values A character vector of possible optimizers. Defaults to all
-#'   known optimizers (keras defaults + custom registered).
-#' @keywords internal
-#' @export
-#' @return A `dials` parameter object for Keras optimizers.
-optimizer_function <- function(values = NULL) {
-  if (is.null(values)) {
-    values <- unique(c(
-      keras_optimizers,
-      names(.kerasnip_custom_objects$optimizers)
-    ))
-  }
-  dials::new_qual_param(
-    type = "character",
-    values = values,
-    label = c(optimizer_function = "Optimizer Function"),
-    finalize = NULL
-  )
-}
-
-#' Dials Parameter for Keras Loss Functions
-#' @param values A character vector of possible loss functions. Defaults to all
-#'   known losses (keras defaults + custom registered).
-#' @keywords internal
-#' @export
-#' @return A `dials` parameter object for Keras loss.
-loss_function_keras <- function(values = NULL) {
-  if (is.null(values)) {
-    values <- unique(c(keras_losses, names(.kerasnip_custom_objects$losses)))
-  }
-  dials::new_qual_param(
-    type = "character",
-    values = values,
-    label = c(loss_function_keras = "Loss Function"),
-    finalize = NULL
-  )
-}
-
 #' Process Predictor Input for Keras (Functional API)
 #'
 #' @description
@@ -415,4 +376,31 @@ process_y_sequential <- function(
 get_model_env <- function() {
   current <- utils::getFromNamespace("parsnip", ns = "parsnip")
   current
+}
+
+#' Check if a Kerasnip Model Specification Exists
+#'
+#' @description
+#' This is an internal helper function to check if a model specification has been
+#' registered in the `parsnip` model environment.
+#'
+#' @param model_name A character string giving the name of the model
+#'   specification function to check (e.g., "my_mlp").
+#' @return A logical value, `TRUE` if the model exists, `FALSE` otherwise.
+#' @examples
+#' \donttest{
+#' if (requireNamespace("parsnip", quietly = TRUE)) {
+#'   library(parsnip)
+#'
+#'   # Check for a model that exists in parsnip
+#'   model_exists("mlp")
+#'
+#'   # Check for a model that does not exist
+#'   model_exists("non_existent_model")
+#' }
+#' }
+#' @keywords internal
+#' @export
+model_exists <- function(model_name) {
+  model_name %in% ls(get_model_env())
 }

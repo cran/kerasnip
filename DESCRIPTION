@@ -1,10 +1,10 @@
 Package: kerasnip
 Title: A Bridge Between 'keras' and 'tidymodels'
-Version: 0.0.1
+Version: 0.0.3
 Authors@R: 
     person("David", "Díaz", , "daviddrsch@gmail.com", role = c("aut", "cre"))
 Description: Provides a seamless bridge between 'keras' and the 'tidymodels'
-    ecosystem. It allows for the dynamic creation of 'parsnip' model
+    frameworks. It allows for the dynamic creation of 'parsnip' model
     specifications for 'keras' models.
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -17,9 +17,9 @@ Suggests: testthat (>= 3.0.0), modeldata, tidymodels, finetune, tune,
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2025-08-23 14:37:26 UTC; david
+Packaged: 2025-09-18 01:16:08 UTC; david
 Author: David Díaz [aut, cre]
 Maintainer: David Díaz <daviddrsch@gmail.com>
 Depends: R (>= 4.1.0)
 Repository: CRAN
-Date/Publication: 2025-09-03 08:00:07 UTC
+Date/Publication: 2025-09-18 07:30:02 UTC

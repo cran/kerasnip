@@ -55,7 +55,7 @@
 #'
 #'   # Check it's gone
 #'   !exists("my_temp_model")
-#'   !"my_temp_model" %in% parsnip::show_engines(NULL)$model
+#'   !model_exists("my_temp_model")
 #' }
 #' }
 remove_keras_spec <- function(model_name, env = parent.frame()) {
@@ -74,7 +74,13 @@ remove_keras_spec <- function(model_name, env = parent.frame()) {
   # 2. Nuke every parsnip object whose name starts with model_name
   model_env <- get_model_env()
   all_regs <- ls(envir = model_env)
-  to_kill <- grep(paste0("^", model_name), all_regs, value = TRUE)
+  to_kill <- intersect(
+    all_regs,
+    paste0(
+      model_name,
+      c("", "_args", "_encoding", "_fit", "_modes", "_pkgs", "_predict")
+    )
+  )
   if (length(to_kill)) {
     rm(list = to_kill, envir = model_env)
     message(

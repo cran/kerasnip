@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Tuning Multiple Similar Parameters: Ensuring autoplot Uniqueness</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Tuning Multiple Similar Parameters:
+Ensuring <code>autoplot</code> Uniqueness</h1>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>When using <code>kerasnip</code> to define and tune Keras models
+within the <code>tidymodels</code> framework, you might encounter
+situations where you want to tune multiple parameters that, by default,
+map to the same underlying <code>dials</code> parameter type. A common
+example is tuning the number of units in multiple
+<code>layer_dense</code> blocks within the same model.</p>
+<p>While <code>kerasnip</code> intelligently maps these parameters
+(e.g., <code>dense1_units</code> and <code>dense2_units</code> both map
+to <code>dials::hidden_units()</code>), this can lead to ambiguity when
+visualizing tuning results with <code>ggplot2::autoplot()</code>.
+Without a way to distinguish between these otherwise identical parameter
+types, <code>autoplot()</code> may produce errors or misleading
+plots.</p>
+<p>This vignette demonstrates how to explicitly provide unique
+identifiers to your tuned parameters, ensuring <code>autoplot()</code>
+can correctly visualize the results for each distinct parameter.</p>
+</div>
+<div id="the-problem-implicit" class="section level2">
+<h2>The Problem (Implicit)</h2>
+<p>Consider a model with two dense layers, each with a
+<code>units</code> parameter. If you were to define them for tuning
+without unique <code>id</code>s, <code>autoplot()</code> would encounter
+an issue because it cannot distinguish between the two parameters.</p>
+<p>For example, if you were to run
+<code>ggplot2::autoplot(tune_res)</code> without unique
+<code>id</code>s, you might encounter an error similar to this:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co">#&gt; Error in `dplyr::rename()`:</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co">#&gt; ! Names must be unique.</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; ✖ These names are duplicated:</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt;   * &quot;# Hidden Units&quot; at locations 1 and 2.</span></span></code></pre></div>
+<p>This error clearly indicates that <code>autoplot()</code> is trying
+to rename columns for plotting, but it finds duplicate names like “#
+Hidden Units” because both <code>dense1_units</code> and
+<code>dense2_units</code> are generically identified as
+<code>hidden_units</code> by <code>dials</code> without further
+distinction. This makes it impossible for <code>autoplot()</code> to
+differentiate their tuning results.</p>
+</div>
+<div id="the-solution-using-unique-ids-with-tune" class="section level2">
+<h2>The Solution: Using Unique <code>id</code>s with
+<code>tune()</code></h2>
+<p>The solution is to provide a unique <code>id</code> argument to the
+<code>tune()</code> function for each parameter you wish to
+distinguish.</p>
+<p>Let’s define a simple sequential Keras model with two dense
+layers:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(kerasnip)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(keras3)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">library</span>(parsnip)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">library</span>(dials)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">library</span>(workflows)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">library</span>(recipes)</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">library</span>(rsample)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">library</span>(tune)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co"># Define a spec with multiple hidden unit parameters</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>model_name <span class="ot">&lt;-</span> <span class="st">&quot;autoplot_unique_spec&quot;</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co"># Clean up the spec if it already exists from a previous run</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(model_name, <span class="at">mode =</span> <span class="st">&quot;function&quot;</span>)) {</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  <span class="fu">suppressMessages</span>(<span class="fu">remove_keras_spec</span>(model_name))</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>}</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>input_block <span class="ot">&lt;-</span> <span class="cf">function</span>(model, input_shape) {</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>  keras3<span class="sc">::</span><span class="fu">keras_model_sequential</span>(<span class="at">input_shape =</span> input_shape)</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>}</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>dense_block <span class="ot">&lt;-</span> <span class="cf">function</span>(model, <span class="at">units =</span> <span class="dv">10</span>) {</span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>  model <span class="sc">|&gt;</span> keras3<span class="sc">::</span><span class="fu">layer_dense</span>(<span class="at">units =</span> units)</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>}</span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>output_block <span class="ot">&lt;-</span> <span class="cf">function</span>(model, num_classes) {</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>  model <span class="sc">|&gt;</span></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>    keras3<span class="sc">::</span><span class="fu">layer_dense</span>(<span class="at">units =</span> num_classes, <span class="at">activation =</span> <span class="st">&quot;softmax&quot;</span>)</span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>}</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a><span class="fu">create_keras_sequential_spec</span>(</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>  <span class="at">model_name =</span> model_name,</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>  <span class="at">layer_blocks =</span> <span class="fu">list</span>(</span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>    <span class="at">input =</span> input_block,</span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>    <span class="at">dense1 =</span> dense_block,</span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a>    <span class="at">dense2 =</span> dense_block,</span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a>    <span class="at">output =</span> output_block</span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a>  ),</span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">&quot;classification&quot;</span></span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a>)</span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a><span class="co"># Now, create the model specification and assign unique IDs for tuning</span></span>
+<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a>tune_spec <span class="ot">&lt;-</span> <span class="fu">autoplot_unique_spec</span>(</span>
+<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a>  <span class="at">dense1_units =</span> <span class="fu">tune</span>(<span class="at">id =</span> <span class="st">&quot;dense_layer_one_units&quot;</span>),</span>
+<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a>  <span class="at">dense2_units =</span> <span class="fu">tune</span>(<span class="at">id =</span> <span class="st">&quot;dense_layer_two_units&quot;</span>)</span>
+<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">&quot;keras&quot;</span>)</span>
+<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a></span>
+<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a><span class="fu">print</span>(tune_spec)</span>
+<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a><span class="co">#&gt; autoplot unique spec Model Specification (classification)</span></span>
+<span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a><span class="co">#&gt; Main Arguments:</span></span>
+<span id="cb2-53"><a href="#cb2-53" tabindex="-1"></a><span class="co">#&gt;   num_input = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-54"><a href="#cb2-54" tabindex="-1"></a><span class="co">#&gt;   num_dense1 = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-55"><a href="#cb2-55" tabindex="-1"></a><span class="co">#&gt;   num_dense2 = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-56"><a href="#cb2-56" tabindex="-1"></a><span class="co">#&gt;   num_output = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-57"><a href="#cb2-57" tabindex="-1"></a><span class="co">#&gt;   dense1_units = tune(id = &quot;dense_layer_one_units&quot;)</span></span>
+<span id="cb2-58"><a href="#cb2-58" tabindex="-1"></a><span class="co">#&gt;   dense2_units = tune(id = &quot;dense_layer_two_units&quot;)</span></span>
+<span id="cb2-59"><a href="#cb2-59" tabindex="-1"></a><span class="co">#&gt;   learn_rate = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-60"><a href="#cb2-60" tabindex="-1"></a><span class="co">#&gt;   fit_batch_size = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-61"><a href="#cb2-61" tabindex="-1"></a><span class="co">#&gt;   fit_epochs = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-62"><a href="#cb2-62" tabindex="-1"></a><span class="co">#&gt;   fit_callbacks = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-63"><a href="#cb2-63" tabindex="-1"></a><span class="co">#&gt;   fit_validation_split = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-64"><a href="#cb2-64" tabindex="-1"></a><span class="co">#&gt;   fit_validation_data = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-65"><a href="#cb2-65" tabindex="-1"></a><span class="co">#&gt;   fit_shuffle = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-66"><a href="#cb2-66" tabindex="-1"></a><span class="co">#&gt;   fit_class_weight = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-67"><a href="#cb2-67" tabindex="-1"></a><span class="co">#&gt;   fit_sample_weight = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-68"><a href="#cb2-68" tabindex="-1"></a><span class="co">#&gt;   fit_initial_epoch = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-69"><a href="#cb2-69" tabindex="-1"></a><span class="co">#&gt;   fit_steps_per_epoch = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-70"><a href="#cb2-70" tabindex="-1"></a><span class="co">#&gt;   fit_validation_steps = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-71"><a href="#cb2-71" tabindex="-1"></a><span class="co">#&gt;   fit_validation_batch_size = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-72"><a href="#cb2-72" tabindex="-1"></a><span class="co">#&gt;   fit_validation_freq = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-73"><a href="#cb2-73" tabindex="-1"></a><span class="co">#&gt;   fit_verbose = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-74"><a href="#cb2-74" tabindex="-1"></a><span class="co">#&gt;   fit_view_metrics = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-75"><a href="#cb2-75" tabindex="-1"></a><span class="co">#&gt;   compile_optimizer = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-76"><a href="#cb2-76" tabindex="-1"></a><span class="co">#&gt;   compile_loss = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-77"><a href="#cb2-77" tabindex="-1"></a><span class="co">#&gt;   compile_metrics = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-78"><a href="#cb2-78" tabindex="-1"></a><span class="co">#&gt;   compile_loss_weights = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-79"><a href="#cb2-79" tabindex="-1"></a><span class="co">#&gt;   compile_weighted_metrics = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-80"><a href="#cb2-80" tabindex="-1"></a><span class="co">#&gt;   compile_run_eagerly = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-81"><a href="#cb2-81" tabindex="-1"></a><span class="co">#&gt;   compile_steps_per_execution = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-82"><a href="#cb2-82" tabindex="-1"></a><span class="co">#&gt;   compile_jit_compile = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-83"><a href="#cb2-83" tabindex="-1"></a><span class="co">#&gt;   compile_auto_scale_loss = structure(list(), class = &quot;rlang_zap&quot;)</span></span>
+<span id="cb2-84"><a href="#cb2-84" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-85"><a href="#cb2-85" tabindex="-1"></a><span class="co">#&gt; Computational engine: keras</span></span></code></pre></div>
+<p>Notice how <code>dense1_units</code> and <code>dense2_units</code>
+are both passed to <code>tune()</code>, but each is given a distinct
+<code>id</code>. This <code>id</code> acts as a label that
+<code>autoplot()</code> can use to differentiate the parameters.</p>
+<div id="setting-up-the-tuning-workflow" class="section level3">
+<h3>Setting up the Tuning Workflow</h3>
+<p>Next, we’ll set up a <code>tidymodels</code> workflow, define the
+parameter ranges, and create a tuning grid.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Set up workflow and tuning grid</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>rec <span class="ot">&lt;-</span> recipes<span class="sc">::</span><span class="fu">recipe</span>(Species <span class="sc">~</span> ., <span class="at">data =</span> iris)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>tune_wf <span class="ot">&lt;-</span> workflows<span class="sc">::</span><span class="fu">workflow</span>(rec, tune_spec)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>params <span class="ot">&lt;-</span> tune<span class="sc">::</span><span class="fu">extract_parameter_set_dials</span>(tune_wf)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># Update the parameter ranges using kerasnip::hidden_units</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co"># The `id`s provided in tune() are automatically detected and used here.</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>params <span class="ot">&lt;-</span> params <span class="sc">|&gt;</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="fu">update</span>(</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>    <span class="at">dense_layer_one_units =</span> <span class="fu">hidden_units</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">4</span><span class="dt">L</span>, <span class="dv">8</span><span class="dt">L</span>)),</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>    <span class="at">dense_layer_two_units =</span> <span class="fu">hidden_units</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">4</span><span class="dt">L</span>, <span class="dv">8</span><span class="dt">L</span>))</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  )</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>grid <span class="ot">&lt;-</span> dials<span class="sc">::</span><span class="fu">grid_regular</span>(params, <span class="at">levels =</span> <span class="dv">2</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>control <span class="ot">&lt;-</span> tune<span class="sc">::</span><span class="fu">control_grid</span>(<span class="at">save_pred =</span> <span class="cn">FALSE</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="fu">print</span>(grid)</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; # A tibble: 4 × 2</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt;   dense_layer_one_units dense_layer_two_units</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt;                   &lt;int&gt;                 &lt;int&gt;</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt; 1                     4                     4</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt; 2                     8                     4</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt; 3                     4                     8</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt; 4                     8                     8</span></span></code></pre></div>
+</div>
+<div id="running-the-tuning-process" class="section level3">
+<h3>Running the Tuning Process</h3>
+<p>Now, we run <code>tune::tune_grid</code> to perform the actual
+tuning. For demonstration purposes, we’ll use a small number of
+resamples and a simple dataset.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Run tuning</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>tune_res <span class="ot">&lt;-</span> tune<span class="sc">::</span><span class="fu">tune_grid</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  tune_wf,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">resamples =</span> rsample<span class="sc">::</span><span class="fu">vfold_cv</span>(iris, <span class="at">v =</span> <span class="dv">2</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">grid =</span> grid,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">control =</span> control</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>)</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; 3/3 - 0s - 34ms/step</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; 3/3 - 0s - 15ms/step</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; 3/3 - 0s - 30ms/step</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; 3/3 - 0s - 16ms/step</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; 3/3 - 0s - 31ms/step</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; 3/3 - 0s - 15ms/step</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; 3/3 - 0s - 26ms/step</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; 3/3 - 0s - 18ms/step</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; 3/3 - 0s - 33ms/step</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; 3/3 - 0s - 19ms/step</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; 3/3 - 0s - 30ms/step</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; 3/3 - 0s - 18ms/step</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; 3/3 - 0s - 34ms/step</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt; 3/3 - 0s - 17ms/step</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; 3/3 - 0s - 33ms/step</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt; 3/3 - 0s - 18ms/step</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="fu">print</span>(tune_res)</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt; # Tuning results</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt; # 2-fold cross-validation </span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 4</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt;   splits          id    .metrics          .notes          </span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt;   &lt;list&gt;          &lt;chr&gt; &lt;list&gt;            &lt;list&gt;          </span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; 1 &lt;split [75/75]&gt; Fold1 &lt;tibble [12 × 6]&gt; &lt;tibble [0 × 3]&gt;</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt; 2 &lt;split [75/75]&gt; Fold2 &lt;tibble [12 × 6]&gt; &lt;tibble [0 × 3]&gt;</span></span></code></pre></div>
+</div>
+<div id="visualizing-results-with-autoplot" class="section level3">
+<h3>Visualizing Results with <code>autoplot()</code></h3>
+<p>With the tuning complete, we can now use
+<code>ggplot2::autoplot()</code> to visualize the results. Because we
+provided unique <code>id</code>s, <code>autoplot()</code> can correctly
+generate separate plots for each tuned parameter.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Assert that autoplot works without error</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">autoplot</span>(tune_res)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<p>As you can see, <code>autoplot()</code> successfully generates a plot
+showing the performance across the different values for
+<code>dense_layer_one_units</code> and
+<code>dense_layer_two_units</code> independently.</p>
+</div>
+</div>
+<div id="why-unique-ids-are-necessary" class="section level2">
+<h2>Why Unique <code>id</code>s are Necessary</h2>
+<p>Internally, <code>kerasnip</code> maps arguments like
+<code>units</code> from your <code>layer_blocks</code> functions to
+appropriate <code>dials</code> parameter objects (e.g.,
+<code>dials::hidden_units()</code>). When multiple such arguments exist,
+they all point to the <em>same type</em> of <code>dials</code>
+parameter.</p>
+<p>The <code>id</code> argument in <code>tune()</code> serves as a
+unique identifier that <code>tune</code> and
+<code>ggplot2::autoplot()</code> use to distinguish between different
+instances of these parameter types. Without it, <code>autoplot()</code>
+would see multiple parameters of type <code>hidden_units</code> and
+wouldn’t know how to plot them separately, leading to errors or
+combining them incorrectly.</p>
+</div>
+<div id="best-practices" class="section level2">
+<h2>Best Practices</h2>
+<ul>
+<li><strong>Always use unique <code>id</code>s:</strong> When tuning
+multiple parameters that are conceptually similar (e.g.,
+<code>units</code> in different layers, <code>rate</code> in different
+dropout layers), always provide a descriptive and unique <code>id</code>
+to the <code>tune()</code> function.</li>
+<li><strong>Descriptive <code>id</code>s:</strong> Choose
+<code>id</code>s that clearly indicate which part of the model the
+parameter belongs to (e.g., <code>dense_layer_one_units</code>,
+<code>conv_filter_size</code>). This improves readability and
+understanding of your tuning results.</li>
+</ul>
+<p>By following this practice, you ensure that your
+<code>kerasnip</code> models are robustly tunable and that their results
+can be clearly visualized using the <code>tidymodels</code>
+ecosystem.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
