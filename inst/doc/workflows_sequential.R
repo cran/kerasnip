@@ -12,10 +12,10 @@ set.seed(123)
 library(kerasnip)
 library(tidymodels)
 library(keras3)
-library(dplyr)          # For data manipulation
-library(ggplot2)        # For plotting
-library(future)         # For parallel processing
-library(finetune)       # For racing
+library(dplyr) # For data manipulation
+library(ggplot2) # For plotting
+library(future) # For parallel processing
+library(finetune) # For racing
 
 ## ----data-prep----------------------------------------------------------------
 # Remove rows with missing values

@@ -12,10 +12,10 @@ set.seed(123)
 library(kerasnip)
 library(tidymodels)
 library(keras3)
-library(dplyr)       # For data manipulation
-library(ggplot2)     # For plotting
-library(future)      # For parallel processing
-library(finetune)    # For racing
+library(dplyr) # For data manipulation
+library(ggplot2) # For plotting
+library(future) # For parallel processing
+library(finetune) # For racing
 
 ## ----data-prep----------------------------------------------------------------
 # Select relevant columns and remove rows with missing values
@@ -108,10 +108,10 @@ create_keras_functional_spec(
     combined_features = inp_spec(
       concatenate_features,
       c(
-        processed_numerical = "numeric",
-        processed_neighborhood = "neighborhood",
-        processed_bldg = "bldg",
-        processed_condition = "condition"
+        numeric = "processed_numerical",
+        neighborhood = "processed_neighborhood",
+        bldg = "processed_bldg",
+        condition = "processed_condition"
       )
     ),
     output = inp_spec(output_regression, "combined_features")

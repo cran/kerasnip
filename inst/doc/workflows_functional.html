@@ -361,15 +361,17 @@ modeling and tuning.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(kerasnip)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(keras3)</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)       <span class="co"># For data manipulation</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(ggplot2)     <span class="co"># For plotting</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(future)      <span class="co"># For parallel processing</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;future&#39;</span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; The following object is masked from &#39;package:keras3&#39;:</span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt;     %&lt;-%</span></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="fu">library</span>(finetune)    <span class="co"># For racing</span></span></code></pre></div>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(dplyr) <span class="co"># For data manipulation</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(ggplot2) <span class="co"># For plotting</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(future) <span class="co"># For parallel processing</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; Warning: package &#39;future&#39; was built under R version 4.5.1</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;future&#39;</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; The following object is masked from &#39;package:keras3&#39;:</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt;     %&lt;-%</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="fu">library</span>(finetune) <span class="co"># For racing</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; Warning: package &#39;finetune&#39; was built under R version 4.5.1</span></span></code></pre></div>
 </div>
 <div id="data-preparation" class="section level2">
 <h2>Data Preparation</h2>
@@ -483,10 +485,10 @@ concatenated before the final output layer.</p>
 <span id="cb4-53"><a href="#cb4-53" tabindex="-1"></a>    <span class="at">combined_features =</span> <span class="fu">inp_spec</span>(</span>
 <span id="cb4-54"><a href="#cb4-54" tabindex="-1"></a>      concatenate_features,</span>
 <span id="cb4-55"><a href="#cb4-55" tabindex="-1"></a>      <span class="fu">c</span>(</span>
-<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a>        <span class="at">processed_numerical =</span> <span class="st">&quot;numeric&quot;</span>,</span>
-<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a>        <span class="at">processed_neighborhood =</span> <span class="st">&quot;neighborhood&quot;</span>,</span>
-<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a>        <span class="at">processed_bldg =</span> <span class="st">&quot;bldg&quot;</span>,</span>
-<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a>        <span class="at">processed_condition =</span> <span class="st">&quot;condition&quot;</span></span>
+<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a>        <span class="at">numeric =</span> <span class="st">&quot;processed_numerical&quot;</span>,</span>
+<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a>        <span class="at">neighborhood =</span> <span class="st">&quot;processed_neighborhood&quot;</span>,</span>
+<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a>        <span class="at">bldg =</span> <span class="st">&quot;processed_bldg&quot;</span>,</span>
+<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a>        <span class="at">condition =</span> <span class="st">&quot;processed_condition&quot;</span></span>
 <span id="cb4-60"><a href="#cb4-60" tabindex="-1"></a>      )</span>
 <span id="cb4-61"><a href="#cb4-61" tabindex="-1"></a>    ),</span>
 <span id="cb4-62"><a href="#cb4-62" tabindex="-1"></a>    <span class="at">output =</span> <span class="fu">inp_spec</span>(output_regression, <span class="st">&quot;combined_features&quot;</span>)</span>
@@ -692,263 +694,265 @@ cross-validation and find the best hyperparameters.</p>
 <span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">control_race</span>(<span class="at">save_pred =</span> <span class="cn">TRUE</span>, <span class="at">save_workflow =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>)</span>
 <span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
 <span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
 <span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
 <span id="cb8-42"><a href="#cb8-42" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-43"><a href="#cb8-43" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-44"><a href="#cb8-44" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-45"><a href="#cb8-45" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-46"><a href="#cb8-46" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-47"><a href="#cb8-47" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-48"><a href="#cb8-48" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-49"><a href="#cb8-49" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-50"><a href="#cb8-50" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-51"><a href="#cb8-51" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-52"><a href="#cb8-52" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-53"><a href="#cb8-53" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-43"><a href="#cb8-43" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-44"><a href="#cb8-44" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-45"><a href="#cb8-45" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-46"><a href="#cb8-46" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-47"><a href="#cb8-47" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-48"><a href="#cb8-48" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-49"><a href="#cb8-49" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-50"><a href="#cb8-50" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-51"><a href="#cb8-51" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-52"><a href="#cb8-52" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-53"><a href="#cb8-53" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
 <span id="cb8-54"><a href="#cb8-54" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
 <span id="cb8-55"><a href="#cb8-55" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-56"><a href="#cb8-56" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-57"><a href="#cb8-57" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-58"><a href="#cb8-58" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-59"><a href="#cb8-59" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-60"><a href="#cb8-60" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-61"><a href="#cb8-61" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-62"><a href="#cb8-62" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-63"><a href="#cb8-63" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-64"><a href="#cb8-64" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-65"><a href="#cb8-65" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-66"><a href="#cb8-66" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-67"><a href="#cb8-67" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-68"><a href="#cb8-68" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-69"><a href="#cb8-69" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-70"><a href="#cb8-70" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-71"><a href="#cb8-71" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-72"><a href="#cb8-72" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-73"><a href="#cb8-73" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-74"><a href="#cb8-74" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-56"><a href="#cb8-56" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-57"><a href="#cb8-57" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-58"><a href="#cb8-58" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-59"><a href="#cb8-59" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-60"><a href="#cb8-60" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-61"><a href="#cb8-61" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-62"><a href="#cb8-62" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-63"><a href="#cb8-63" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-64"><a href="#cb8-64" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-65"><a href="#cb8-65" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-66"><a href="#cb8-66" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-67"><a href="#cb8-67" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-68"><a href="#cb8-68" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-69"><a href="#cb8-69" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-70"><a href="#cb8-70" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-71"><a href="#cb8-71" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-72"><a href="#cb8-72" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-73"><a href="#cb8-73" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-74"><a href="#cb8-74" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
 <span id="cb8-75"><a href="#cb8-75" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-76"><a href="#cb8-76" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-76"><a href="#cb8-76" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
 <span id="cb8-77"><a href="#cb8-77" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-78"><a href="#cb8-78" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-79"><a href="#cb8-79" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-80"><a href="#cb8-80" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-81"><a href="#cb8-81" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-82"><a href="#cb8-82" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-83"><a href="#cb8-83" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-84"><a href="#cb8-84" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-85"><a href="#cb8-85" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-86"><a href="#cb8-86" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-87"><a href="#cb8-87" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-88"><a href="#cb8-88" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-89"><a href="#cb8-89" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-78"><a href="#cb8-78" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-79"><a href="#cb8-79" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-80"><a href="#cb8-80" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-81"><a href="#cb8-81" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-82"><a href="#cb8-82" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-83"><a href="#cb8-83" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-84"><a href="#cb8-84" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-85"><a href="#cb8-85" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-86"><a href="#cb8-86" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-87"><a href="#cb8-87" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-88"><a href="#cb8-88" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-89"><a href="#cb8-89" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
 <span id="cb8-90"><a href="#cb8-90" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-91"><a href="#cb8-91" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-92"><a href="#cb8-92" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-93"><a href="#cb8-93" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
-<span id="cb8-94"><a href="#cb8-94" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-95"><a href="#cb8-95" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-96"><a href="#cb8-96" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-91"><a href="#cb8-91" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-92"><a href="#cb8-92" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-93"><a href="#cb8-93" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-94"><a href="#cb8-94" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-95"><a href="#cb8-95" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-96"><a href="#cb8-96" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
 <span id="cb8-97"><a href="#cb8-97" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-98"><a href="#cb8-98" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-98"><a href="#cb8-98" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
 <span id="cb8-99"><a href="#cb8-99" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-100"><a href="#cb8-100" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-101"><a href="#cb8-101" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-102"><a href="#cb8-102" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-103"><a href="#cb8-103" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-104"><a href="#cb8-104" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-105"><a href="#cb8-105" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-106"><a href="#cb8-106" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-107"><a href="#cb8-107" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-108"><a href="#cb8-108" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-109"><a href="#cb8-109" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-110"><a href="#cb8-110" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-111"><a href="#cb8-111" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-100"><a href="#cb8-100" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-101"><a href="#cb8-101" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-102"><a href="#cb8-102" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-103"><a href="#cb8-103" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-104"><a href="#cb8-104" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-105"><a href="#cb8-105" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-106"><a href="#cb8-106" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-107"><a href="#cb8-107" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-108"><a href="#cb8-108" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-109"><a href="#cb8-109" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 19ms/step</span></span>
+<span id="cb8-110"><a href="#cb8-110" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 19ms/step</span></span>
+<span id="cb8-111"><a href="#cb8-111" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 18ms/step</span></span>
 <span id="cb8-112"><a href="#cb8-112" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-113"><a href="#cb8-113" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-114"><a href="#cb8-114" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-115"><a href="#cb8-115" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-116"><a href="#cb8-116" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-117"><a href="#cb8-117" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-118"><a href="#cb8-118" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-113"><a href="#cb8-113" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-114"><a href="#cb8-114" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-115"><a href="#cb8-115" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-116"><a href="#cb8-116" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-117"><a href="#cb8-117" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-118"><a href="#cb8-118" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
 <span id="cb8-119"><a href="#cb8-119" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-120"><a href="#cb8-120" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-121"><a href="#cb8-121" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-122"><a href="#cb8-122" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-123"><a href="#cb8-123" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-124"><a href="#cb8-124" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-125"><a href="#cb8-125" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-126"><a href="#cb8-126" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-127"><a href="#cb8-127" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-120"><a href="#cb8-120" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-121"><a href="#cb8-121" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-122"><a href="#cb8-122" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-123"><a href="#cb8-123" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-124"><a href="#cb8-124" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-125"><a href="#cb8-125" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-126"><a href="#cb8-126" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-127"><a href="#cb8-127" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
 <span id="cb8-128"><a href="#cb8-128" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-129"><a href="#cb8-129" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-130"><a href="#cb8-130" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-129"><a href="#cb8-129" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 18ms/step</span></span>
+<span id="cb8-130"><a href="#cb8-130" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
 <span id="cb8-131"><a href="#cb8-131" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-132"><a href="#cb8-132" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-133"><a href="#cb8-133" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-134"><a href="#cb8-134" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-135"><a href="#cb8-135" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-136"><a href="#cb8-136" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-137"><a href="#cb8-137" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-138"><a href="#cb8-138" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-139"><a href="#cb8-139" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-140"><a href="#cb8-140" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-141"><a href="#cb8-141" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-142"><a href="#cb8-142" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-143"><a href="#cb8-143" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 17ms/step</span></span>
-<span id="cb8-144"><a href="#cb8-144" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
-<span id="cb8-145"><a href="#cb8-145" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-146"><a href="#cb8-146" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-147"><a href="#cb8-147" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-148"><a href="#cb8-148" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-132"><a href="#cb8-132" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-133"><a href="#cb8-133" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-134"><a href="#cb8-134" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-135"><a href="#cb8-135" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-136"><a href="#cb8-136" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 18ms/step</span></span>
+<span id="cb8-137"><a href="#cb8-137" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-138"><a href="#cb8-138" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-139"><a href="#cb8-139" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-140"><a href="#cb8-140" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-141"><a href="#cb8-141" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-142"><a href="#cb8-142" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-143"><a href="#cb8-143" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-144"><a href="#cb8-144" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-145"><a href="#cb8-145" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-146"><a href="#cb8-146" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-147"><a href="#cb8-147" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-148"><a href="#cb8-148" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
 <span id="cb8-149"><a href="#cb8-149" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-150"><a href="#cb8-150" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-151"><a href="#cb8-151" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-152"><a href="#cb8-152" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-153"><a href="#cb8-153" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-154"><a href="#cb8-154" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-155"><a href="#cb8-155" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-156"><a href="#cb8-156" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-157"><a href="#cb8-157" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-158"><a href="#cb8-158" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-159"><a href="#cb8-159" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-160"><a href="#cb8-160" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-161"><a href="#cb8-161" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-162"><a href="#cb8-162" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-163"><a href="#cb8-163" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
-<span id="cb8-164"><a href="#cb8-164" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-165"><a href="#cb8-165" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-166"><a href="#cb8-166" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-167"><a href="#cb8-167" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-150"><a href="#cb8-150" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-151"><a href="#cb8-151" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-152"><a href="#cb8-152" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-153"><a href="#cb8-153" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-154"><a href="#cb8-154" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-155"><a href="#cb8-155" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-156"><a href="#cb8-156" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-157"><a href="#cb8-157" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-158"><a href="#cb8-158" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-159"><a href="#cb8-159" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-160"><a href="#cb8-160" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-161"><a href="#cb8-161" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-162"><a href="#cb8-162" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-163"><a href="#cb8-163" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-164"><a href="#cb8-164" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-165"><a href="#cb8-165" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-166"><a href="#cb8-166" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-167"><a href="#cb8-167" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
 <span id="cb8-168"><a href="#cb8-168" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-169"><a href="#cb8-169" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-170"><a href="#cb8-170" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-171"><a href="#cb8-171" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-172"><a href="#cb8-172" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-173"><a href="#cb8-173" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-174"><a href="#cb8-174" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-175"><a href="#cb8-175" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-176"><a href="#cb8-176" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-177"><a href="#cb8-177" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-178"><a href="#cb8-178" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-179"><a href="#cb8-179" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-180"><a href="#cb8-180" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-181"><a href="#cb8-181" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-182"><a href="#cb8-182" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-183"><a href="#cb8-183" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-184"><a href="#cb8-184" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-185"><a href="#cb8-185" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-186"><a href="#cb8-186" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-187"><a href="#cb8-187" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-188"><a href="#cb8-188" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-189"><a href="#cb8-189" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-190"><a href="#cb8-190" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-191"><a href="#cb8-191" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-192"><a href="#cb8-192" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-193"><a href="#cb8-193" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-194"><a href="#cb8-194" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
-<span id="cb8-195"><a href="#cb8-195" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-196"><a href="#cb8-196" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-197"><a href="#cb8-197" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-198"><a href="#cb8-198" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-199"><a href="#cb8-199" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-200"><a href="#cb8-200" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-201"><a href="#cb8-201" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-202"><a href="#cb8-202" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-203"><a href="#cb8-203" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-204"><a href="#cb8-204" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-205"><a href="#cb8-205" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
+<span id="cb8-169"><a href="#cb8-169" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 17ms/step</span></span>
+<span id="cb8-170"><a href="#cb8-170" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-171"><a href="#cb8-171" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-172"><a href="#cb8-172" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 20ms/step</span></span>
+<span id="cb8-173"><a href="#cb8-173" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-174"><a href="#cb8-174" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-175"><a href="#cb8-175" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 17ms/step</span></span>
+<span id="cb8-176"><a href="#cb8-176" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-177"><a href="#cb8-177" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-178"><a href="#cb8-178" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 17ms/step</span></span>
+<span id="cb8-179"><a href="#cb8-179" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-180"><a href="#cb8-180" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-181"><a href="#cb8-181" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 21ms/step</span></span>
+<span id="cb8-182"><a href="#cb8-182" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-183"><a href="#cb8-183" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-184"><a href="#cb8-184" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-185"><a href="#cb8-185" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-186"><a href="#cb8-186" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 17ms/step</span></span>
+<span id="cb8-187"><a href="#cb8-187" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-188"><a href="#cb8-188" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-189"><a href="#cb8-189" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-190"><a href="#cb8-190" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-191"><a href="#cb8-191" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-192"><a href="#cb8-192" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 24ms/step</span></span>
+<span id="cb8-193"><a href="#cb8-193" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-194"><a href="#cb8-194" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-195"><a href="#cb8-195" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 19ms/step</span></span>
+<span id="cb8-196"><a href="#cb8-196" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 20ms/step</span></span>
+<span id="cb8-197"><a href="#cb8-197" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-198"><a href="#cb8-198" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-199"><a href="#cb8-199" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-200"><a href="#cb8-200" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-201"><a href="#cb8-201" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-202"><a href="#cb8-202" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-203"><a href="#cb8-203" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-204"><a href="#cb8-204" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-205"><a href="#cb8-205" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
 <span id="cb8-206"><a href="#cb8-206" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-207"><a href="#cb8-207" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
-<span id="cb8-208"><a href="#cb8-208" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-209"><a href="#cb8-209" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-210"><a href="#cb8-210" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-211"><a href="#cb8-211" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-212"><a href="#cb8-212" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-213"><a href="#cb8-213" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-214"><a href="#cb8-214" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-215"><a href="#cb8-215" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-216"><a href="#cb8-216" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-217"><a href="#cb8-217" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-218"><a href="#cb8-218" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-219"><a href="#cb8-219" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-220"><a href="#cb8-220" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-221"><a href="#cb8-221" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-222"><a href="#cb8-222" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-223"><a href="#cb8-223" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-224"><a href="#cb8-224" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-225"><a href="#cb8-225" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-226"><a href="#cb8-226" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-227"><a href="#cb8-227" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-228"><a href="#cb8-228" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
-<span id="cb8-229"><a href="#cb8-229" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-230"><a href="#cb8-230" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-231"><a href="#cb8-231" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-232"><a href="#cb8-232" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-233"><a href="#cb8-233" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-234"><a href="#cb8-234" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-235"><a href="#cb8-235" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-207"><a href="#cb8-207" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-208"><a href="#cb8-208" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-209"><a href="#cb8-209" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-210"><a href="#cb8-210" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-211"><a href="#cb8-211" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-212"><a href="#cb8-212" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-213"><a href="#cb8-213" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-214"><a href="#cb8-214" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-215"><a href="#cb8-215" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-216"><a href="#cb8-216" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 16ms/step</span></span>
+<span id="cb8-217"><a href="#cb8-217" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-218"><a href="#cb8-218" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-219"><a href="#cb8-219" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-220"><a href="#cb8-220" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-221"><a href="#cb8-221" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-222"><a href="#cb8-222" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
+<span id="cb8-223"><a href="#cb8-223" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 19ms/step</span></span>
+<span id="cb8-224"><a href="#cb8-224" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-225"><a href="#cb8-225" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-226"><a href="#cb8-226" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-227"><a href="#cb8-227" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-228"><a href="#cb8-228" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-229"><a href="#cb8-229" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-230"><a href="#cb8-230" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-231"><a href="#cb8-231" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-232"><a href="#cb8-232" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-233"><a href="#cb8-233" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-234"><a href="#cb8-234" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-235"><a href="#cb8-235" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
 <span id="cb8-236"><a href="#cb8-236" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-237"><a href="#cb8-237" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-238"><a href="#cb8-238" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-239"><a href="#cb8-239" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-240"><a href="#cb8-240" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-241"><a href="#cb8-241" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-242"><a href="#cb8-242" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
+<span id="cb8-237"><a href="#cb8-237" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-238"><a href="#cb8-238" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-239"><a href="#cb8-239" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-240"><a href="#cb8-240" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-241"><a href="#cb8-241" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-242"><a href="#cb8-242" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
 <span id="cb8-243"><a href="#cb8-243" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-244"><a href="#cb8-244" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-245"><a href="#cb8-245" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-246"><a href="#cb8-246" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
-<span id="cb8-247"><a href="#cb8-247" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-248"><a href="#cb8-248" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-249"><a href="#cb8-249" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-250"><a href="#cb8-250" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-251"><a href="#cb8-251" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-252"><a href="#cb8-252" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-253"><a href="#cb8-253" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-254"><a href="#cb8-254" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-255"><a href="#cb8-255" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-256"><a href="#cb8-256" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-257"><a href="#cb8-257" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-258"><a href="#cb8-258" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-259"><a href="#cb8-259" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-244"><a href="#cb8-244" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-245"><a href="#cb8-245" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-246"><a href="#cb8-246" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-247"><a href="#cb8-247" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-248"><a href="#cb8-248" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-249"><a href="#cb8-249" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-250"><a href="#cb8-250" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 15ms/step</span></span>
+<span id="cb8-251"><a href="#cb8-251" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-252"><a href="#cb8-252" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-253"><a href="#cb8-253" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-254"><a href="#cb8-254" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-255"><a href="#cb8-255" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-256"><a href="#cb8-256" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-257"><a href="#cb8-257" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-258"><a href="#cb8-258" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-259"><a href="#cb8-259" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
 <span id="cb8-260"><a href="#cb8-260" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-261"><a href="#cb8-261" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-262"><a href="#cb8-262" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-263"><a href="#cb8-263" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
-<span id="cb8-264"><a href="#cb8-264" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-265"><a href="#cb8-265" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-266"><a href="#cb8-266" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 12ms/step</span></span>
-<span id="cb8-267"><a href="#cb8-267" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 10ms/step</span></span>
-<span id="cb8-268"><a href="#cb8-268" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span>
-<span id="cb8-269"><a href="#cb8-269" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 11ms/step</span></span></code></pre></div>
+<span id="cb8-261"><a href="#cb8-261" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-262"><a href="#cb8-262" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-263"><a href="#cb8-263" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span>
+<span id="cb8-264"><a href="#cb8-264" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-265"><a href="#cb8-265" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-266"><a href="#cb8-266" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-267"><a href="#cb8-267" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-268"><a href="#cb8-268" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-269"><a href="#cb8-269" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-270"><a href="#cb8-270" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 13ms/step</span></span>
+<span id="cb8-271"><a href="#cb8-271" tabindex="-1"></a><span class="co">#&gt; 15/15 - 0s - 14ms/step</span></span></code></pre></div>
 </div>
 <div id="inspect-tuning-results" class="section level2">
 <h2>Inspect Tuning Results</h2>
@@ -956,26 +960,25 @@ cross-validation and find the best hyperparameters.</p>
 combinations performed best.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Show the best performing models based on RMSE</span></span>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">show_best</span>(ames_tune_results, <span class="at">metric =</span> <span class="st">&quot;rmse&quot;</span>, <span class="at">n =</span> <span class="dv">5</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 10</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 10</span></span>
 <span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt;   processed_numerical_units processed_neighborhood_units processed_bldg_units</span></span>
 <span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt;                       &lt;int&gt;                        &lt;int&gt;                &lt;int&gt;</span></span>
 <span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt; 1                       128                           64                   64</span></span>
 <span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; 2                       128                           64                   40</span></span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; 3                       128                           40                   64</span></span>
-<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt; # ℹ 7 more variables: processed_condition_units &lt;int&gt;, .metric &lt;chr&gt;,</span></span>
-<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt; #   .estimator &lt;chr&gt;, mean &lt;dbl&gt;, n &lt;int&gt;, std_err &lt;dbl&gt;, .config &lt;chr&gt;</span></span>
-<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a></span>
-<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co"># Autoplot the results</span></span>
-<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co"># Currently does not work due to a label issue: autoplot(ames_tune_results)</span></span>
-<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a></span>
-<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co"># Select the best hyperparameters</span></span>
-<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>best_functional_mlp_params <span class="ot">&lt;-</span> <span class="fu">select_best</span>(ames_tune_results, <span class="at">metric =</span> <span class="st">&quot;rmse&quot;</span>)</span>
-<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="fu">print</span>(best_functional_mlp_params)</span>
-<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 5</span></span>
-<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt;   processed_numerical_units processed_neighborhood_units processed_bldg_units</span></span>
-<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="co">#&gt;                       &lt;int&gt;                        &lt;int&gt;                &lt;int&gt;</span></span>
-<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="co">#&gt; 1                       128                           64                   64</span></span>
-<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="co">#&gt; # ℹ 2 more variables: processed_condition_units &lt;int&gt;, .config &lt;chr&gt;</span></span></code></pre></div>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; # ℹ 7 more variables: processed_condition_units &lt;int&gt;, .metric &lt;chr&gt;,</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt; #   .estimator &lt;chr&gt;, mean &lt;dbl&gt;, n &lt;int&gt;, std_err &lt;dbl&gt;, .config &lt;chr&gt;</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co"># Autoplot the results</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co"># Currently does not work due to a label issue: autoplot(ames_tune_results)</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co"># Select the best hyperparameters</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>best_functional_mlp_params <span class="ot">&lt;-</span> <span class="fu">select_best</span>(ames_tune_results, <span class="at">metric =</span> <span class="st">&quot;rmse&quot;</span>)</span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="fu">print</span>(best_functional_mlp_params)</span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 5</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co">#&gt;   processed_numerical_units processed_neighborhood_units processed_bldg_units</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt;                       &lt;int&gt;                        &lt;int&gt;                &lt;int&gt;</span></span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="co">#&gt; 1                       128                           64                   64</span></span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="co">#&gt; # ℹ 2 more variables: processed_condition_units &lt;int&gt;, .config &lt;chr&gt;</span></span></code></pre></div>
 </div>
 <div id="finalize-workflow-and-fit-model" class="section level2">
 <h2>Finalize Workflow and Fit Model</h2>
@@ -1006,7 +1009,7 @@ fit the model on the entire training dataset.</p>
 <span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb10-24"><a href="#cb10-24" tabindex="-1"></a><span class="co">#&gt; ── Model ───────────────────────────────────────────────────────────────────────</span></span>
 <span id="cb10-25"><a href="#cb10-25" tabindex="-1"></a><span class="co">#&gt; $fit</span></span>
-<span id="cb10-26"><a href="#cb10-26" tabindex="-1"></a><span class="co">#&gt; Model: &quot;functional_903&quot;</span></span>
+<span id="cb10-26"><a href="#cb10-26" tabindex="-1"></a><span class="co">#&gt; Model: &quot;functional_905&quot;</span></span>
 <span id="cb10-27"><a href="#cb10-27" tabindex="-1"></a><span class="co">#&gt; ┌───────────────────────┬───────────────────┬─────────────┬────────────────────</span></span>
 <span id="cb10-28"><a href="#cb10-28" tabindex="-1"></a><span class="co">#&gt; │ Layer (type)          │ Output Shape      │     Param # │ Connected to       </span></span>
 <span id="cb10-29"><a href="#cb10-29" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
@@ -1022,20 +1025,20 @@ fit the model on the entire training dataset.</p>
 <span id="cb10-39"><a href="#cb10-39" tabindex="-1"></a><span class="co">#&gt; │ condition_input       │ (None, 1, 9)      │           0 │ -                  </span></span>
 <span id="cb10-40"><a href="#cb10-40" tabindex="-1"></a><span class="co">#&gt; │ (InputLayer)          │                   │             │                    </span></span>
 <span id="cb10-41"><a href="#cb10-41" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
-<span id="cb10-42"><a href="#cb10-42" tabindex="-1"></a><span class="co">#&gt; │ dense_1508 (Dense)    │ (None, 1, 128)    │       1,408 │ numerical_input[0… </span></span>
+<span id="cb10-42"><a href="#cb10-42" tabindex="-1"></a><span class="co">#&gt; │ dense_1516 (Dense)    │ (None, 1, 128)    │       1,408 │ numerical_input[0… </span></span>
 <span id="cb10-43"><a href="#cb10-43" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
-<span id="cb10-44"><a href="#cb10-44" tabindex="-1"></a><span class="co">#&gt; │ dense_1509 (Dense)    │ (None, 1, 64)     │       1,856 │ neighborhood_inpu… </span></span>
+<span id="cb10-44"><a href="#cb10-44" tabindex="-1"></a><span class="co">#&gt; │ dense_1517 (Dense)    │ (None, 1, 64)     │       1,856 │ neighborhood_inpu… </span></span>
 <span id="cb10-45"><a href="#cb10-45" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
-<span id="cb10-46"><a href="#cb10-46" tabindex="-1"></a><span class="co">#&gt; │ dense_1510 (Dense)    │ (None, 1, 64)     │         320 │ bldg_input[0][0]   </span></span>
+<span id="cb10-46"><a href="#cb10-46" tabindex="-1"></a><span class="co">#&gt; │ dense_1518 (Dense)    │ (None, 1, 64)     │         320 │ bldg_input[0][0]   </span></span>
 <span id="cb10-47"><a href="#cb10-47" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
-<span id="cb10-48"><a href="#cb10-48" tabindex="-1"></a><span class="co">#&gt; │ dense_1511 (Dense)    │ (None, 1, 64)     │         640 │ condition_input[0… </span></span>
+<span id="cb10-48"><a href="#cb10-48" tabindex="-1"></a><span class="co">#&gt; │ dense_1519 (Dense)    │ (None, 1, 64)     │         640 │ condition_input[0… </span></span>
 <span id="cb10-49"><a href="#cb10-49" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
-<span id="cb10-50"><a href="#cb10-50" tabindex="-1"></a><span class="co">#&gt; │ concatenate_261       │ (None, 1, 320)    │           0 │ dense_1508[0][0],  </span></span>
-<span id="cb10-51"><a href="#cb10-51" tabindex="-1"></a><span class="co">#&gt; │ (Concatenate)         │                   │             │ dense_1509[0][0],  </span></span>
-<span id="cb10-52"><a href="#cb10-52" tabindex="-1"></a><span class="co">#&gt; │                       │                   │             │ dense_1510[0][0],  </span></span>
-<span id="cb10-53"><a href="#cb10-53" tabindex="-1"></a><span class="co">#&gt; │                       │                   │             │ dense_1511[0][0]   </span></span>
+<span id="cb10-50"><a href="#cb10-50" tabindex="-1"></a><span class="co">#&gt; │ concatenate_263       │ (None, 1, 320)    │           0 │ dense_1516[0][0],  </span></span>
+<span id="cb10-51"><a href="#cb10-51" tabindex="-1"></a><span class="co">#&gt; │ (Concatenate)         │                   │             │ dense_1517[0][0],  </span></span>
+<span id="cb10-52"><a href="#cb10-52" tabindex="-1"></a><span class="co">#&gt; │                       │                   │             │ dense_1518[0][0],  </span></span>
+<span id="cb10-53"><a href="#cb10-53" tabindex="-1"></a><span class="co">#&gt; │                       │                   │             │ dense_1519[0][0]   </span></span>
 <span id="cb10-54"><a href="#cb10-54" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
-<span id="cb10-55"><a href="#cb10-55" tabindex="-1"></a><span class="co">#&gt; │ output (Dense)        │ (None, 1, 1)      │         321 │ concatenate_261[0… </span></span>
+<span id="cb10-55"><a href="#cb10-55" tabindex="-1"></a><span class="co">#&gt; │ output (Dense)        │ (None, 1, 1)      │         321 │ concatenate_263[0… </span></span>
 <span id="cb10-56"><a href="#cb10-56" tabindex="-1"></a><span class="co">#&gt; └───────────────────────┴───────────────────┴─────────────┴────────────────────</span></span>
 <span id="cb10-57"><a href="#cb10-57" tabindex="-1"></a><span class="co">#&gt;  Total params: 13,637 (53.27 KB)</span></span>
 <span id="cb10-58"><a href="#cb10-58" tabindex="-1"></a><span class="co">#&gt;  Trainable params: 4,545 (17.75 KB)</span></span>
@@ -1045,10 +1048,10 @@ fit the model on the entire training dataset.</p>
 <span id="cb10-62"><a href="#cb10-62" tabindex="-1"></a><span class="co">#&gt; $history</span></span>
 <span id="cb10-63"><a href="#cb10-63" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb10-64"><a href="#cb10-64" tabindex="-1"></a><span class="co">#&gt; Final epoch (plot to see history):</span></span>
-<span id="cb10-65"><a href="#cb10-65" tabindex="-1"></a><span class="co">#&gt;                    loss: 1,182,453,248</span></span>
-<span id="cb10-66"><a href="#cb10-66" tabindex="-1"></a><span class="co">#&gt;     mean_absolute_error: 21,084</span></span>
-<span id="cb10-67"><a href="#cb10-67" tabindex="-1"></a><span class="co">#&gt;                val_loss: 6,033,973,248</span></span>
-<span id="cb10-68"><a href="#cb10-68" tabindex="-1"></a><span class="co">#&gt; val_mean_absolute_error: 58,934 </span></span>
+<span id="cb10-65"><a href="#cb10-65" tabindex="-1"></a><span class="co">#&gt;                    loss: 1,170,341,376</span></span>
+<span id="cb10-66"><a href="#cb10-66" tabindex="-1"></a><span class="co">#&gt;     mean_absolute_error: 21,093</span></span>
+<span id="cb10-67"><a href="#cb10-67" tabindex="-1"></a><span class="co">#&gt;                val_loss: 6,307,594,240</span></span>
+<span id="cb10-68"><a href="#cb10-68" tabindex="-1"></a><span class="co">#&gt; val_mean_absolute_error: 60,572 </span></span>
 <span id="cb10-69"><a href="#cb10-69" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb10-70"><a href="#cb10-70" tabindex="-1"></a><span class="co">#&gt; $lvl</span></span>
 <span id="cb10-71"><a href="#cb10-71" tabindex="-1"></a><span class="co">#&gt; NULL</span></span>
@@ -1067,7 +1070,7 @@ for further inspection.</p>
 <span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="fu">extract_fit_parsnip</span>() <span class="sc">|&gt;</span></span>
 <span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="fu">extract_keras_model</span>() <span class="sc">|&gt;</span></span>
 <span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="fu">summary</span>()</span>
-<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt; Model: &quot;functional_903&quot;</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt; Model: &quot;functional_905&quot;</span></span>
 <span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt; ┌───────────────────────┬───────────────────┬─────────────┬────────────────────</span></span>
 <span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt; │ Layer (type)          │ Output Shape      │     Param # │ Connected to       </span></span>
 <span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
@@ -1083,20 +1086,20 @@ for further inspection.</p>
 <span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a><span class="co">#&gt; │ condition_input       │ (None, 1, 9)      │           0 │ -                  </span></span>
 <span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a><span class="co">#&gt; │ (InputLayer)          │                   │             │                    </span></span>
 <span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
-<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a><span class="co">#&gt; │ dense_1508 (Dense)    │ (None, 1, 128)    │       1,408 │ numerical_input[0… </span></span>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a><span class="co">#&gt; │ dense_1516 (Dense)    │ (None, 1, 128)    │       1,408 │ numerical_input[0… </span></span>
 <span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
-<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a><span class="co">#&gt; │ dense_1509 (Dense)    │ (None, 1, 64)     │       1,856 │ neighborhood_inpu… </span></span>
+<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a><span class="co">#&gt; │ dense_1517 (Dense)    │ (None, 1, 64)     │       1,856 │ neighborhood_inpu… </span></span>
 <span id="cb11-25"><a href="#cb11-25" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
-<span id="cb11-26"><a href="#cb11-26" tabindex="-1"></a><span class="co">#&gt; │ dense_1510 (Dense)    │ (None, 1, 64)     │         320 │ bldg_input[0][0]   </span></span>
+<span id="cb11-26"><a href="#cb11-26" tabindex="-1"></a><span class="co">#&gt; │ dense_1518 (Dense)    │ (None, 1, 64)     │         320 │ bldg_input[0][0]   </span></span>
 <span id="cb11-27"><a href="#cb11-27" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
-<span id="cb11-28"><a href="#cb11-28" tabindex="-1"></a><span class="co">#&gt; │ dense_1511 (Dense)    │ (None, 1, 64)     │         640 │ condition_input[0… </span></span>
+<span id="cb11-28"><a href="#cb11-28" tabindex="-1"></a><span class="co">#&gt; │ dense_1519 (Dense)    │ (None, 1, 64)     │         640 │ condition_input[0… </span></span>
 <span id="cb11-29"><a href="#cb11-29" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
-<span id="cb11-30"><a href="#cb11-30" tabindex="-1"></a><span class="co">#&gt; │ concatenate_261       │ (None, 1, 320)    │           0 │ dense_1508[0][0],  </span></span>
-<span id="cb11-31"><a href="#cb11-31" tabindex="-1"></a><span class="co">#&gt; │ (Concatenate)         │                   │             │ dense_1509[0][0],  </span></span>
-<span id="cb11-32"><a href="#cb11-32" tabindex="-1"></a><span class="co">#&gt; │                       │                   │             │ dense_1510[0][0],  </span></span>
-<span id="cb11-33"><a href="#cb11-33" tabindex="-1"></a><span class="co">#&gt; │                       │                   │             │ dense_1511[0][0]   </span></span>
+<span id="cb11-30"><a href="#cb11-30" tabindex="-1"></a><span class="co">#&gt; │ concatenate_263       │ (None, 1, 320)    │           0 │ dense_1516[0][0],  </span></span>
+<span id="cb11-31"><a href="#cb11-31" tabindex="-1"></a><span class="co">#&gt; │ (Concatenate)         │                   │             │ dense_1517[0][0],  </span></span>
+<span id="cb11-32"><a href="#cb11-32" tabindex="-1"></a><span class="co">#&gt; │                       │                   │             │ dense_1518[0][0],  </span></span>
+<span id="cb11-33"><a href="#cb11-33" tabindex="-1"></a><span class="co">#&gt; │                       │                   │             │ dense_1519[0][0]   </span></span>
 <span id="cb11-34"><a href="#cb11-34" tabindex="-1"></a><span class="co">#&gt; ├───────────────────────┼───────────────────┼─────────────┼────────────────────</span></span>
-<span id="cb11-35"><a href="#cb11-35" tabindex="-1"></a><span class="co">#&gt; │ output (Dense)        │ (None, 1, 1)      │         321 │ concatenate_261[0… </span></span>
+<span id="cb11-35"><a href="#cb11-35" tabindex="-1"></a><span class="co">#&gt; │ output (Dense)        │ (None, 1, 1)      │         321 │ concatenate_263[0… </span></span>
 <span id="cb11-36"><a href="#cb11-36" tabindex="-1"></a><span class="co">#&gt; └───────────────────────┴───────────────────┴─────────────┴────────────────────</span></span>
 <span id="cb11-37"><a href="#cb11-37" tabindex="-1"></a><span class="co">#&gt;  Total params: 13,637 (53.27 KB)</span></span>
 <span id="cb11-38"><a href="#cb11-38" tabindex="-1"></a><span class="co">#&gt;  Trainable params: 4,545 (17.75 KB)</span></span>
@@ -1108,7 +1111,7 @@ for further inspection.</p>
 <span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  <span class="fu">extract_keras_model</span>() <span class="sc">|&gt;</span></span>
 <span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">show_shapes =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <div class="float">
-<img role="img" aria-label="Model" src="images/model_plot_shapes_fs.png" fig-alt="A picture showing the model shape" alt="Model" />
+<img role="img" aria-label="Model" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA8YAAAL3CAIAAADHossqAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsSAAALEgHS3X78AAAgAElEQVR4nOzdd3wU1f7/8TMJpJBQpRpAqRKqoFLEEqSpoCAiXsBrAURRVMSLBRBBsKBgkKsC14ICVkDFhoAgRaQJKJ3QQxEIkJBAevb8/vj8mO+4jZATskl4Pf/IY/bMmdkzZ8/Ovnf2bNbSWisAAAAAeRUU6AYAAAAARRuRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwEiJQDegGPrmm28efPDBQLeimAgPDz969GigW1GszJs37/777w90K4qJoKCgxMTEQLeimChbtmygm1C0nT59OtBNKCb69+8/Z86cQLeiCFu1alXDhg0D3YoAIFLnv6ysrOTk5EC3opjIzMwMdBOKG8ZnPrIsK9BNKD4Yligk0tLSGI0mcnJyAt2EwGDiBwAAAGCESA0AAAAYIVIDAAAARojUAAAAgBEiNQAAAGCESA0AAAAYIVIDAAAARojURZXWOuB7AHxhfKJQ0Vq3bNkyb9tGRETIHipWrJivjcKlqEOHDoYnN631rFmz8qs9yEdE6ksOSQWFGeMThYrW+vjx44FuBaAUp8dCj0hdtGmtIyIitNb2M02f8/TTT8vNm266SRbuu+8+qeb1aTlr1izZUH4QzrnDiIiIpk2bylr50WCt9S233MLTG/7JhT2v47NPnz5ys1KlSrJwzTXX+BmfP//8s6/xqZRq3bq1rA0NDZXCHj16MD7hSTvIzcsvv9xtiLotlCpVyv+ulFKLFi165ZVXlFJyQnZba99MTU29iMeGIkVr3aVLF6+nR/usaJe7/fXclb2f/v37e27o9V4u6tFdmojURd7OnTslZCQkJEiJZVmWZb311luelaWm119Rnj17tpTv3bvXbdXZs2f/+usv2W1SUpIULl68mF9jxnktXLhQxsny5culRAbSp59+6lnZz/icPn26lP/444+ea1etWiW7TU9Pl5K5c+cyPuGVDBX75g8//GBZ1vLly3/++Wev9b3m4MjIyJtuusneT8eOHYcPH66UWrhwYbdu3UaMGLF27VpZW7NmTft+faVzXJpq1KghgyQ4OFhKLMsKCgry+sGIr9NjcHDwtGnT7PIPP/xQFl555ZWpU6fWr19ftlq5cuUzzzwjqypWrMjp8WIgUhd59nPP8Bny+eefO9+2lipVyuVy3XrrrfacLbf3tQMGDDC5O1witm/fLguG43P69OnO4VenTp0DBw7069cvNjZWStzG5w033GByd7h0SJKeNWtW586dc7/VmTNnli9f7nmp7/rrr//uu+/GjRvXsmVLWTt79ux8bC2Kk6lTp3oWXuj145ycnEceecS5VXZ2dkhIyPDhwwcNGvT555/LPtu2bTthwgSpcPLkSYNWwycidTEUEhJiL588ebJHjx652So8PNwZetLS0izLmj9//r///W9nhTZt2uRva3EJKlmypCxkZ2f3798/N5u4jc+9e/fWrFnzww8/HDp0qJQEBQVZlmV/BY2PNZFLzz77rFLq3XffnTNnjl143tOm1vq+++5zjsnx48e/8847Bw4cUEo99thjWVlZlmW9++67rVq1ujgNR/HUtm1be7lu3brnra+13r17t3MohoeHnz59WpZvueUWpZRlWSNHjpQv2uLiIVIXQ6+//ro9Gatq1apPPfWU1vqbb76xK/iaU6W1LlOmTI0aNTz3GRISkpaWprWOj4+/+EeA4mz69OmZmZmRkZFKqVKlSr322mta6x07dtgV/IzPypUrt2/f3nOfYWFhLpdLXlou/hGgWJkwYYLWOiEh4Z577lFKLVmyRGtdq1YtWVu2bFl7tkZCQoI9JkuVKjVr1qxly5apc28Rn3/++ccff7xx48ZKqSlTpqxevVpr3bNnz8AcFYqm06dP//bbbzIPpHHjxrt27XK7OpCWlqaU6tu3rz0Ug4OD69ate+bMGaVU6dKllVLZ2dlhYWEtWrSQHU6cOFFrPW7cOKbyX3Qa+e3LL78M7AOaj7tq2rRpfu0tb8LCwgL9eBY3gf0YWufr+KxTp05+7S1vLMsK9ONZfATkEdRav/rqq/myqxYtWgTqKESgH8Dio3fv3oF6BPNlP5GRkfm1q7zZtGlToB/DwOAqNbz79ttvn3nmmU2bNgW6IYAXS5YsGTx48J49ewLdEOD/W79+fXh4eKBbAaiUlBT5mBoFrESgG4B8ll9f4+3evXu+7Adwyq/xKRMEAUP5+H8P+BcKMJRfQ4ihGChcpQYAAACMEKkBAAAAI0RqAAAAwAiRGgAAADBCpAYAAACMEKkBAAAAI0RqAAAAwAj/l/pi0QH97aJigP+seVExPg0xPi8SRuaFCg8PT09PD3QriiGG4oVaunRpu3btAt2KQOIqNQAAAGCESA0AAAAYIVIDAAAARojUAAAAgBEiNQAAAGCESA0AAAAYIVIXqJ9++unKK69s2LBh5cqVPdfm7d9ybdy40bBVcr+WZQ0cOFBKqlSpkue9bdu2zdeB2OWWZVmWdeeddyr+GVlhMmvWrFq1akVHR0dHR3uuzdsj9dlnnxm2yh6fY8eOlZKYmJg8723lypWeB5KTkyNj8umnn1bnxqd9v3m+L+QXy7IaNWpUsWLF5OTkPGx7QeW5d9lll6l/ntZM9uZnc1n122+/bdiwweQuYK5v377169evV6/e888/77nW/xj44osvvJZnZGQYtso+WaWmpkrJiRMn8ry34cOHV6tWza1QzpyWZblcLqXUSy+9lOf9F2ca+e3LL7/02rEul2vbtm32zYkTJ2qty5Yta5fYD8rMmTOfffZZrXWvXr3cVtmVJ0+efPfdd2utN2zYkJiYGBYWJuW//vqrUuro0aOy1SOPPDJ79mxZ9fjjj8+aNUtrPWLECGfDlOMfcEpJ5cqVtdZ//PGHUioxMVHWnjx5UimVnZ2ttd63b59S6u+//3Y7RqVUw4YNPQ8/MzPT3v+uXbumTJli32/nzp0TEhI8u0vq28eF/DJ79mxf43P//v32zRkzZmitW7durbXetWvX4cOHlVIhISFKqSlTpowZM0Zr3aRJE6nsOT4nTpzYt29frfWnn3567Nixyy67TMoXLFiglDp16pRsdf/993///feyasCAAXPmzNFa9+jRw9kwz/F58803a61XrlyplEpOTpa1x48fV0q5XC6t9c6dO5VSJ06ccDtGpVSrVq08D//XX3+1K8jLm32/devWTUlJ8ewuaY9lWZ6rkDe+XpJq1aplL99+++1a69GjRzs3ka3atGnTpUsXeSjLly/vdbcSOFatWiXlc+fOHThwoKyKjY296qqrcnJyFixYkJKSUrp06ZycHK11QkJCcHBwVlaWPjckxNVXXy0DY9asWb1793aujY2NbdKkiWweExPzwgsvfPDBB7Jq2LBhI0eOzP2xa61bt25tr/JaJywsjFfz/NW7d2+v/el8yXO5XJmZmVrrQ4cOaa2bNWvWpk0bpdR3332nlBoyZMjMmTO14yHr16+f28M0aNAgOZGmp6fLyJTT14wZM5RS6enpWuvZs2fXrl17+/btco9XX331hg0b9D9HwpkzZ2rXrq3/OYrkVXXWrFlKKWmnUmrNmjWtWrWSCsuWLatZs6asclJK3XPPPVWrVvUsdy547R+JH0qpTZs2+ejaYo4nYf7zFam//PJL502p4xap9T8HrjNSO7f97LPPZKFevXryBNNah4WF2U+PihUrOrf66quv7GW3E3p8fHyHDh2kcnZ2dv369bXWlStX7tu376uvviotTEhIUEotW7bMrhYeHq61DgkJkZcNN75O7lJep04deb7JzQMHDjzxxBNeKxOpLwZfkdqOKULq2JFaexufzkjt3HbUqFGy0Lx5808//VSWo6Ki5LXHc1d//vmnvTx9+nTnrrZu3frwww9L5czMzC5dumitb7755q5du06dOlVrHRISkp2drZSSncv4jIiI0FqXKFFCXqLc+Bqfc+bMkYEtl3z++usvrfXOnTvHjx/vdSdE6vzlKxd6FjojtV0YFBSktc7KykpMTHSL1G7LqampzvIff/xRxpUULliwYMeOHVrryMhI+/w2efJkX62aNWtWyZIltWNUp6Wl6X8OcudfuciXm8PUWm/atGnSpElE6gLmK1K7FcpNO1JrjzPb6NGjnZH6888/99zVwIED09PTZaQppeRl164QGhqqtU5MTExLS5NXan0uLtsmTJiwc+dO2eTo0aNyQS0hISEiIkKuktiXltPT01euXBkTE/PBBx88+eSTnkck9uzZ4ytS26OXSO0VT8L85ytS792713lTrgTnLVJrrUuVKqWUGjNmjB2p7c3tV3rnrpRSEec49zNjxgy52i2Vg4ODpW1ur0POXXXr1k2d8/rrr3seqf9IHRsbK2HF/+sEkfoi8RWp7YEk5BUib5Fanxuf7777rh2p7c0lsOrcjc/hw4fLm0CpLLHp5ptvtrc9evRo6dKlnbuqX7++PT7nzZvneaReD3/8+PElSpTQWv/3v//duHGjzt34JFLno9xE6oMHD2ofkbpNmzayEBUV5StSHzt2rGTJkm7D74UXXpCgIB/CLFiwQMq3b99+4MABr8PSubl89Ne1a1fPUe351+b/MN36xN7Eax0idb7zFanlorJN3tX7idTOx8UtUmutw8PDlVKHDh2SC9LOze1Ran/IPHHixJCQEBmKjz/+uHM/XoecXAiT8htuuEE+HnS2ys9Q9BqptdYlSpSQE7v2MRSJ1MylLji1atWqWrWqLK9aterYsWNKqZycHKXU4MGDPeu3bNmyY8eOXnd14MCBs2fPaq3d5jPJ1RHtOMmK9evXK6XOnDlz5syZLl26OFe1bt3ann2llMrOzo6KilJKDRgw4MUXX1RKlSpVym3+osyO1VqPGzduyJAh2uMpKnyVDxkypFmzZvbNEydOPProo15roiA1b968bt26svzNN9/IleOzZ88qpUaNGuVZv3379r16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yeYxMTGea19++WX/m//nP//xWl6nTp0Laoab77///tSpU/aZX12cF5fhw4dbltW8eXO3agEeObpo8tV4KYyNjd28efOOHTtk+ezZsz/88IOzWmxsbGxs7NChQ+2SI0eOzJo1y1lBFjIzM2NjYxMTE6Vw69atW7dulVVbtmz5888/fbVBKVW7dm1nSXZ2dmxsbHp6ur1/+15kOS0tzW1X9pnLTw9kZ2dXqlTJvpfvvvtu3759fup7ba1z2W7VpEmTpKO01qdOnZo6dWpmZqbWes+ePVrrRYsW/frrr0qpVatWSf2srKzY2Fipo5TasmXL9u3bZdW6detWrlzpPFhZSElJ+eyzz2T5jz/+8GzVLbfccvXVVztL1q1bZ9eMjY3dvn375s2b5ebMmTOlbbk89j59+shJU2t9xx13ZGdn25Wzs7Plxc+ti2x//fXXeZ8+5x2lx44d++WXX7TWhw8fdrlc7777rtbaHgbS+aNGjbI3PHTokN1dsbGxn376aWpqqn0zLi5OFpKTk+fPny/lmzZtsvvHsw29e/eeMGFCQkKC8zBjY2MPHz6stY6Pj9daz549+8yZM/YqGcBOM2fO9HWktWrV0o5nhP131qxZcqe57LFHH33UXr722mu11kePHnX2koyotLS0d955Rx5H55NLKeX2XDt58qSU//XXXzt37pTy33//3R7M2uPp6Vk4cuRI6dt77723Xbt22tGHv//++4YNG+xNnOeNzZs3O58L5z12KXzmmWfk5k8//RQSEiJt9lpf/im1Z7ktPT1dKZWVleXrvrZt2/bZZ5/J0IqNjV2/fv3u3budx/7pp5++8MILzq6YPHnyoUOHtNbR0dFpaWlffvmllB88eNCutnLlyi+//DIlJUVufvvtt0lJSfqfXXr06NG5c+e69caiRYu01keOHHE+CqmpqTNmzJCbKSkpU6dO9Twcy7KCgoL+/vtvz1UbNmyoXLnyhAkTtI9uXLVqla9u3L9/vywkJSUdP35cay3D4LfffluzZo1SavHixbGxsadOnZKW282eNm3a66+/7jzejRs3rl692r5pr0pNTY2NjZXnXWxs7MaNG+XZrbX+8ccfZfQ696Mdz68KFSo4S+QlTE7Lbq87Z8+elXOOm379+lWvXt3z8MeMGXPgwAGttT2A7YfJV18ppaKjo72usivUqVPHa7k0dceOHZs2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Vcv+TCQ6OtqeVtWsWbMrr7zyvG1o27atLMup7d///rf+57s9rfWaNWuCgoJkz57HJSWjRo16/vnnPcu11j/88INSSmblZmVlycSVXPaY1vq5555TSjkvV1esWHHcuHFylVq22rlzZ4kSJeQt4AMPPFClShW5Sn3ddddNnjxZtpJPuuVzc+d9ydeD3n77bSlcunSpUkreAffs2VMpJe/y5cKb26HZz1spycnJueqqq+SqvF0oV6m11ldeeWWtWrWysrKGDBnyyiuveO0rt05wzmpwPimuuuqq+vXre91E5PtV6o8//lg+T9RaN2rUyL7kaRdqrXv37q2Ukqu8zqvU/fr1i4iISEpKWrFihVKqbdu29erVk02aNm3q5yKQXKXWWs+bN09K/vzzz9KlS7dq1Upr7bxKrbWWqfNyWdHXKHUu/P77784ulR6TB/TUqVNeL7r4GaVy784LVA0aNLj55pudnXny5MmgoCD5rEnqy1SZ0aNH25e40tPTK1asaM/Isve2b98+pdTUqVNLlCihtV64cKG9+WeffaaUeuedd9w2ueWWW2SWglzstNdmZ2fXq1evQYMGzkK5Sq21btSoUbly5ZzXFP30odY6KyurYsWKN998s11ysSd+uF2lrl27dps2baRCuXLlpkyZ0qJFC7eJFnXq1GnYsKF2fAosa8uUKXPdddd17dpVaz1y5MjIyMhnn31Wa52ZmVmpUiV5NJ37GTFihHMOnizIDNc2bdoopaQP3TpKvpvlnMVks69Se/ZJ3iZ+iIYNG9asWdOetTJo0KCKFSvKVeqWLVtKeG3Tpo19pqpQocKECROqVKniNiWpefPmVatWdc6kkrXNmjWrW7euzJ9WStWtW1eekllZWVWrVvX6SuH2nRO56Ki1Hjp0qFLqP//5j2e/yeeEd955p9dOkJLOnTvLp5eiT58+ZcqUcU7XkWr2rFnPneTjVepu3brVqFHDPl7Pq85a61atWpUqVcr+rM9e26pVK7lqK0O3adOm0mNa69q1azdp0kRr/fDDDzvbICcNe+dyLUxrPWPGDKVU+/bttdZuV6m3bdsWHh7u9li4tWTRokVy7dZusDRMa923b1/nhWfnhl5PmFpree/00UcfyU05uv379yckJJw4cUIp1aJFi759+9pXf1u0aNGkSRNpiT3pRWst1w3lLOe8Sn399ddHRUXl5OSk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cwAUf6mpqVWqVLEsq1q1avxwJpBL/F/qS1dWVhbXHoqQJUuWyM98REdHB7otAIqnl1566e233/Ys58UCOC9Lax3oNgDwzvky1r1792+++UYp1aFDh8WLFweuUQCKraSkpLJlyyql6tWrt3v3brucqACcF1epgUKtdu3ae/bs8SznFQ6XOHnDyRMhHznfw+/atUsWypUrd/r06QC1CChKiNRA4UVcABBYSUlJgW4CUDTw9UQAAADACJEaAAAAMEKkBgAAAIwQqQEAAAAjRGoAAADACJEauBRVrVrVa7nhDzpYliV7iIyMlJt169Y13/OBAwd8bW6XR0dH2/ceFRVlWVb58uV93W9ycnLPnj2///57e635gXsWNm3a1LKsSpUquVXr2LHjmTNn3ConJiY+/PDDzl1djCatWbPG7iUREhKyZcuW9PT0L7/80tdO7PoLFy40aVLp0qU9CzMzM92a1KpVK7lZoUIF5RhUuVepUqU8bCVk6HoyfDiysrKqVKni3E/16tVNdui1PePHj3ceuCyvX7/eXl68eHFOTs4dd9xhctcAvCJSA8XKX3/9lZWVdfvtt9slMTEx8s/4YmJi7MJjx445b8bExBw+fFiW58yZ89tvv8ny5MmTP/nkE6XUiRMntNbt2rVzbuK2IOS+zp49KzebNWvmXJuTkxMTEyP/5lb21rFjR/mh9bS0tJiYGM8fXW/RosX111/v9WCdqaJly5Za66ioqD179hw5ckRrLf/8a/v27ePHj3fbsGzZsnPmzFFKxcXFrV271rkqJibm999/l+UjR46MGzdu//79crN///4rV6703wyby+WKi4vTWq9Zs0ZKJFEppRYtWuQZLitUqPD+++8rpXr06NGyZUvnqo8//nj27Nl2837++ef58+fLzR9//FG2yk2TlFKtW7fWWi9btkxuvvPOO6GhoUqpsLCwf/3rX26VBw8evG/fPq87XLZsWdeuXe0m7d279/XXX5ebu3fvHjx4sNcmeb6RUEqFhoZqrVNTU+1/flyrVi1ZSExMVBf+ryQty0pISNBaa63DwsKUUr1797abKpRS8+bN69+/v9yFPYZXrFhx9uzZJ554Qm66XK6YmBh7MC9fvnzu3Lmy/O23344dO9a+U3sPKSkp9957ryw/99xzdoWQkJBjx44ppYKDg90689tvv504caK9n5UrV37xxRd2eyZMmOD1GL0e+4MPPqi1vv3223/99dc33ngjKytLa33ttdc+//zza9as0Vp36NAhODj4hx9+8NeDAPJGAyhS2rdv7+eZu3TpUskTZcuW1VpLXlmwYIHL5XJu5bksW8ny4cOHnXVuueWWw4cPv/POO1rr4OBgrfXWrVu11iNGjHC7d9lk165dDzzwgH1TWqKUOnr0aJkyZbTWPXr0iI2NlViQlZWlzsUmt4Z57vm85Uopl8slEapVq1a+tpWS7777zu1+lVIZGRlyVc/em72cnJz8/fffy1uU8zbv5MmTztPs6tWrv/vuO7uaryZprXv27OnWpJMnTyYkJDhbWK5cuaNHj1arVu3PP/88ceKE187xVeg8gJf07QAAFfBJREFU87do0aJ27dqbN2/23ySl1FtvvZWenr5gwQK5uXr16rS0NLtJx48ff/7554cNGzZu3LjnnnsuMzMzD01KSkrS/3w46tevn5iY6H9Dz/LLL7/cXk5LS9Na165d27MBsrx9+/aMjAxfT43q1atrrTdu3OgsT0hIqFatmixXrVpVa92rVy/5m5mZKQ2++eabfR17cHBwSEiIy+WKioqS8oMHD8rbP33u7eg111yzfPnytm3bzp8/Pzk5OfedqbWW31i1b44dO/aaa65xG3h+nk3yKADIAyI1UMScN1LLglsdSXj2TefyggULlFL16tVzK8/MzGzevLlSqm7duhKynZt7DTRSMmrUqOeff96++a9//Ut7BCB17rKlLEdHR9v7/PHHHz2PKzeRWim1c+dOu7Bx48YHDx70uq0zUu/bt08u+h4+fLhcuXLOCm5/fR2117tITk4ODw/XWkdEREjn33333fLXT5O01j179nS5XNIhznK3rLlx48YLbZJdmJSUJFeC77777oiIiA4dOvhvkn3XdqT2bJJbF11ok1wuV1BQkFKqR48e0lFa66uvvnrlypV+NvRaLjFX7NixQ/uI1O+9954svPDCC76eGm+//bZS6pprrnGWb9u2TWt93XXXeTbAed3a17HLm1KllB2pnRXk77PPPjt69Og8dKY4efJkx44dtdZDhgyxnwue9+J1n0RqIM+Y+AEUZ506dVJKnTx5UiYWK6VmzZrlVqdz585a67i4uEmTJjnLQ0JCNmzYoM9ll5SUFKVUq1atlFLr1q3TWsulU09dunSRyuLzzz+XeQ5//PGH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JNBNZqkBACBEUgMAQIikBgCAEEkNAAAhkhoAAEIkNQAAhEhqAAAIkdQAABAiqQEAIKRPTw8A4O/NnDlz8eLFPT2Ki1L53ZO+BfBc+c5O4JyYpQYAgBBJDQAAIZIaAABCJDUAAIRIagAACJHUAAAQIqmBi1X8Y84+//zzf2QMOef169eXa0aNGnXeRzt16lSXDyrnnHM+depUSqm1tTXn/Pjjj6eU3n333ZzzrFmz0nmdjYceeqg88nkMddKkSV2uj/9Sqqf0Hzlg//79u1x/8uTJ0+4IIEJSAxe3P/7449ixY5VKJaW0f//+jo6O48ePp5QOHTpUbrD/T9VdTp48eeTIkdojlAuVSqW62f79+48ePVpWbErp6NGjHR0dKaXaHYuimDx5crk8ceLE2lF1dnbWHqr6b7lX7WCqvvjii759+565fuPGje3t7UVRNDQ0pJQOHDhQFMUrr7ySUpoxY0ZRFKtWrSqKYv369S+//PLfnq6q5ubmxYsXF0VRFEV9fX366zNWXSg3OHXqVKVSWbt2bfW8ldtUP/q6o6Pj2LFj5XJ7e3v56yjXHDhwoHoSqrtXV6aUmpqaTpw4kVLavHnzmjVragfc3t5e/iildPTo0WPHjpW/kZTSkSNHqj+qlXOujqTWhx9+WE3trVu3PvbYY2c7UwDdIKmBi1tra2u/fv2efPLJlFJbW1tnZ2dTU9Ozzz579913lxu0tbW1tra2traWN7/66qvGxsYBAwaMHTs2pbRq1aqWlpZhw4YdP368vr6+tbW17Mu2trb+/fu3t7fv27dv9OjR/fv3b2ho2LRp04ABA6p3/cQTT7z++uvl8t69e1esWFEur127trm5uaWlJedcFEVbW9ttt922devWckK0rq6unGk+7YHcfPPN5QuD04wfP765uTnn3NnZmVIq/601duzYt956a8KECU899VT3z9vhw4ery7t3704p3XfffWeesT59+rS2tt5www0ppXvuuSel9M0335SnqKWlpdw+59za2vree++VNxsaGvr167dz586c86BBg5qamtasWbNgwYIHH3xw8ODB5QNfuXJlS0tLnz59UkqDBw+ujuTEiRONjY0ppYEDB95yyy3V9TnnvXv3vvTSS+XuAwYMyDmXW+ac161bt2DBgpEjR572GP/qC25uv/326oula6+9dtGiRd0/bwBdktTAxa25uTmltHDhwvJmOdE7f/78v9p+woQJOef6+vrNmzenlKZMmZJS+u2335qamvbs2VNfX1/brK2trUOHDt2+fXt5gcS4ceNqD7Vw4cJrrrmmXB42bNi0adPK5UmTJh05cqTs6bI+P/744zIQJ0+eXN57zrma4N1RFEVd3f//xc45dznP/W8o03PDhg1n2aapqamuru7XX3+tXblly5aiKBYtWlRXV7du3bqU0pIlS1JKS5cuff/996dOnZpz7vIlRFV7e/sHH3xQvXn11Vc/99xztXdaXZ42bdozzzzz008/ndtjA/jnSGrgf8uKFSuKoqhUKqfNE+/fv3/48OGVSqWM4Kq33347pVT8qfZHd9xxR/ViifIIb7zxRrlcrp8+ffq3335bu8trr702d+7cSqXS2dk5derU7gz4tKuBy+nq6gxxSmnTpk0PPPBAdw5Va+DAgdXlyy677K8227JlS0rphx9+SH/m9Y4dO07bpk+fPp2dnXPmzPn+++9PG+qjjz562rT6p59+OmnSpC7P52mam5ur/9VwdpVKpVKp+NJ1oAdJaqBXKaeTi6JYuXJlzvm6666rri8XyvnRnPN3331Xu2N5MUbO+dVXX6091P3331++a7A8wuzZs6u7zJkzZ9myZdWbLS0tDz/8cEqpKIpBgwblnMeMGTN69OjaexkzZkw5sLO/N652fTnhXc7plteZ1NXVlRt88sknOecbb7yxvHn99dd3/0QdOnRo1qxZ1SOnlD766KNyzLVjOHHiRM75559/TimNGDEi51y9vmLIkCHlQnlNS11dXXXOvjRv3ryc85IlS3bu3JlSuvPOO3POb7755tChQ2+99dac8zvvvJNSuvLKK6u7nPZ6pnq19I8//lg71FrV387evXt37Nhx+eWXd/l4z/I2xMg7SgFK2ct64AKXc545c+bixYu7s+U/9Tetm4dqaGioZt95GDVq1Pbt289cv3r16toribtjzpw5L7744qBBg05bX6Zkj/+pf/75559++um/3WzXrl2HDx8+78bt6Ojo7Ozs8l2el1566b59+85cP3/+/Dlz5tTO+pcukPMGXCzMUgO9x7Zt2/7jQ23dujVyL132dErpXHs6pTR79uwze/rC8cgjj3RnsyuuuCJSsQ0NDV32dEqpy55OKU2fPv3MngY4V2apgQtd92epOZPZ1vPjvAHnxCw1AACESGoAAAiR1AAAECKpAQAgpE9PDwDg7x06dMh340U4ewD/Kp/4AVzozvIlHfCv8hQJdJNZauBCd/DgwZ4eAgCcjVlqAAAI8fZEAAAIkdQAABAiqQEAIERSAwBAiKQGAIAQSQ0AACGSGgAAQiQ1AACESGoAAAiR1AAAECKpAQAgRFIDAECIpAYAgBBJDQAAIZIaAABCJDUAAIRIagAACJHUAAAQIqkBACBEUgMAQIikBgCAEEkNAAAhkhoAAEIkNQAAhEhqAAAIkdQAABAiqQEAIERSAwBAiKQGAIAQSQ0AACGSGgAAQiQ1AACESGoAAAiR1AAAECKpAQAgRFIDAECIpAYAgBBJDQAAIZIaAABCJDUAAIRIagAACJHUAAAQIqkBACBEUgMAQIikBgCAEEkNAAAhkhoAAEIkNQAAhEhqAAAIkdQAABAiqQEAIERSAwBAiKQGAIAQSQ0AACGSGgAAQiQ1AACESGoAAAiR1AAAECKpAQAgRFIDAECIpAYAgBBJDQAAIZIaAABCJDUAAIRIagAACJHUAAAQIqkBACBEUgMAQIikBgCAEEkNAAAhkhoAAEIkNQAAhEhqAAAIkdQAABAiqQEAIERSAwBAiKQGAIAQSQ0AACGSGgAAQiQ1AACESGoAAAiR1AAAECKpAQAgRFIDAECIpAYAgBBJDQAAIZIaAABCJDUAAIRIagAACJHUAAAQIqkBACBEUgMAQIikBgCAEEkNAAAhkhoAAEIkNQAAhEhqAAAIkdQAABAiqQEAIERSAwBAiKQGAIAQSQ0AACGSGgAAQiQ1AACESGoAAAiR1AAAECKpAQAgRFIDAECIpAYAgBBJDQAAIZIaAABCJDUAAIRIagAACJHUAAAQIqkBACBEUgMAQIikBgCAEEkNAAAhkhoAAEIkNQAAhEhqAAAIkdQAABAiqQEAIERSAwBAiKQGAIAQSQ0AACGSGgAAQiQ1AACESGoAAAiR1AAAECKpAQAgRFIDAECIpAYAgBBJDQAAIZIaAABCJDUAAIRIagAACJHUAAAQIqkBACBEUgMAQIikBgCAEEkNAAAhkhoAAEIkNQAAhEhqAAAIkdQAABAiqQEAIERSAwBAiKQGAIAQSQ0AACGSGgAAQiQ1AACESGoAAAiR1AAAECKpAQAgRFIDAECIpAYAgBBJDQAAIZIaAABCJDUAAIRIagAACJHUAAAQIqkBACBEUgMAQIikBgCAEEkNAAAhkhoAAEIkNQAAhEhqAAAIkdQAABAiqQEAIERSAwBAiKQGAIAQSQ0AACGSGgAAQiQ1AACESGoAAAiR1AAAECKpAQAgRFIDAECIpAYAgBBJDQAAIZIaAABCJDUAAIRIagAACJHUAAAQIqkBACBEUgMAQIikBgCAEEkNAAAhkhoAAEIkNQAAhEhqAAAIkdQAABAiqQEAIERSAwBAiKQGAIAQSQ0AACGSGgAAQiQ1AACESGoAAAiR1AAAECKpAQAgRFIDAECIpAYAgBBJDQAAIZIaAABCJDUAAIRIagAACJHUAAAQIqkBACBEUgMAQIikBgCAEEkNAAAhkhoAAEIkNQAAhEhqAAAIkdQAABAiqQEAIERSAwBAiKQGAIAQSQ0AACGSGgAAQiQ1AACESGoAAAiR1AAAECKpAQAgRFIDAECIpAYAgBBJDQAAIZIaAABCJDUAAIRIagAACJHUAAAQIqkBACBEUgMAQIikBgCAEEkNAAAhkhoAAEIkNQAAhEhqAAAIkdQAABAiqQEAIERSAwBAiKQGAIAQSQ0AACGSGgAAQiQ1AACESGoAAAiR1AAAECKpAQAgRFIDAECIpAYAgBBJDQAAIZIaAABCJDUAAIRIagAACJHUAAAQIqkBACDk/wAi2s6Ab5SffQAAAABJRU5ErkJggg==" fig-alt="A picture showing the model shape" alt="Model" />
 <div class="figcaption">Model</div>
 </div>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Plot the training history</span></span>
@@ -1116,7 +1119,7 @@ for further inspection.</p>
 <span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="fu">extract_fit_parsnip</span>() <span class="sc">|&gt;</span></span>
 <span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>  <span class="fu">extract_keras_history</span>() <span class="sc">|&gt;</span></span>
 <span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>  <span class="fu">plot</span>()</span></code></pre></div>
-<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
 </div>
 </div>
 <div id="make-predictions-and-evaluate" class="section level2">
@@ -1125,7 +1128,7 @@ for further inspection.</p>
 model’s performance.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Make predictions on the test set</span></span>
 <span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>ames_test_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(final_ames_fit, <span class="at">new_data =</span> ames_test)</span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="co">#&gt; 19/19 - 0s - 9ms/step</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="co">#&gt; 19/19 - 0s - 11ms/step</span></span>
 <span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a></span>
 <span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co"># Combine predictions with actuals</span></span>
 <span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>ames_results <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
@@ -1137,12 +1140,12 @@ model’s performance.</p>
 <span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 2</span></span>
 <span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="co">#&gt;   Sale_Price   .pred</span></span>
 <span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="co">#&gt;        &lt;int&gt;   &lt;dbl&gt;</span></span>
-<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="co">#&gt; 1     105000  96711.</span></span>
-<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="co">#&gt; 2     172000 161315.</span></span>
-<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="co">#&gt; 3     189900 193916.</span></span>
-<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a><span class="co">#&gt; 4     115000 125766.</span></span>
-<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="co">#&gt; 5     395192 267807.</span></span>
-<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a><span class="co">#&gt; 6     214000 212324.</span></span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="co">#&gt; 1     105000  96194 </span></span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="co">#&gt; 2     172000 164555.</span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="co">#&gt; 3     189900 193158.</span></span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a><span class="co">#&gt; 4     115000 125476.</span></span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="co">#&gt; 5     395192 264802.</span></span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a><span class="co">#&gt; 6     214000 213375.</span></span>
 <span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a></span>
 <span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a><span class="co"># Evaluate performance using yardstick metrics</span></span>
 <span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a>metrics_results <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(</span>
@@ -1159,9 +1162,9 @@ model’s performance.</p>
 <span id="cb14-34"><a href="#cb14-34" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 3</span></span>
 <span id="cb14-35"><a href="#cb14-35" tabindex="-1"></a><span class="co">#&gt;   .metric .estimator .estimate</span></span>
 <span id="cb14-36"><a href="#cb14-36" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;</span></span>
-<span id="cb14-37"><a href="#cb14-37" tabindex="-1"></a><span class="co">#&gt; 1 rmse    standard   50536.   </span></span>
-<span id="cb14-38"><a href="#cb14-38" tabindex="-1"></a><span class="co">#&gt; 2 mae     standard   30674.   </span></span>
-<span id="cb14-39"><a href="#cb14-39" tabindex="-1"></a><span class="co">#&gt; 3 rsq     standard       0.788</span></span></code></pre></div>
+<span id="cb14-37"><a href="#cb14-37" tabindex="-1"></a><span class="co">#&gt; 1 rmse    standard   51458.   </span></span>
+<span id="cb14-38"><a href="#cb14-38" tabindex="-1"></a><span class="co">#&gt; 2 mae     standard   31130.   </span></span>
+<span id="cb14-39"><a href="#cb14-39" tabindex="-1"></a><span class="co">#&gt; 3 rsq     standard       0.780</span></span></code></pre></div>
 </div>
 
 
