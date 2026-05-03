@@ -7,21 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  eval = reticulate::py_module_available("keras") &&
-    requireNamespace("keras3", quietly = TRUE) &&
-    requireNamespace("ggplot2", quietly = TRUE) &&
-    requireNamespace("tune", quietly = TRUE) &&
-    requireNamespace("dials", quietly = TRUE) &&
-    requireNamespace("parsnip", quietly = TRUE) &&
-    requireNamespace("workflows", quietly = TRUE) &&
-    requireNamespace("recipes", quietly = TRUE) &&
-    requireNamespace("rsample", quietly = TRUE)
-)
-```
+
 
 ## Introduction
 
@@ -37,7 +23,8 @@ Consider a model with two dense layers, each with a `units` parameter. If you we
 
 For example, if you were to run `ggplot2::autoplot(tune_res)` without unique `id`s, you might encounter an error similar to this:
 
-```{r}
+
+``` r
 #> Error in `dplyr::rename()`:
 #> ! Names must be unique.
 #> ✖ These names are duplicated:
@@ -52,13 +39,34 @@ The solution is to provide a unique `id` argument to the `tune()` function for e
 
 Let's define a simple sequential Keras model with two dense layers:
 
-```{r model_definition}
+
+``` r
 library(kerasnip)
 library(keras3)
 library(parsnip)
+#> 
+#> Attaching package: 'parsnip'
+#> The following object is masked from 'package:kerasnip':
+#> 
+#>     get_model_env
 library(dials)
+#> Loading required package: scales
 library(workflows)
 library(recipes)
+#> Loading required package: dplyr
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
+#> 
+#> Attaching package: 'recipes'
+#> The following object is masked from 'package:stats':
+#> 
+#>     step
 library(rsample)
 library(tune)
 library(ggplot2)
@@ -102,6 +110,42 @@ tune_spec <- autoplot_unique_spec(
   set_engine("keras")
 
 print(tune_spec)
+#> autoplot unique spec Model Specification (classification)
+#> 
+#> Main Arguments:
+#>   num_input = structure(list(), class = "rlang_zap")
+#>   num_dense1 = structure(list(), class = "rlang_zap")
+#>   num_dense2 = structure(list(), class = "rlang_zap")
+#>   num_output = structure(list(), class = "rlang_zap")
+#>   dense1_units = tune(id = "dense_layer_one_units")
+#>   dense2_units = tune(id = "dense_layer_two_units")
+#>   learn_rate = structure(list(), class = "rlang_zap")
+#>   fit_batch_size = structure(list(), class = "rlang_zap")
+#>   fit_epochs = structure(list(), class = "rlang_zap")
+#>   fit_callbacks = structure(list(), class = "rlang_zap")
+#>   fit_validation_split = structure(list(), class = "rlang_zap")
+#>   fit_validation_data = structure(list(), class = "rlang_zap")
+#>   fit_shuffle = structure(list(), class = "rlang_zap")
+#>   fit_class_weight = structure(list(), class = "rlang_zap")
+#>   fit_sample_weight = structure(list(), class = "rlang_zap")
+#>   fit_initial_epoch = structure(list(), class = "rlang_zap")
+#>   fit_steps_per_epoch = structure(list(), class = "rlang_zap")
+#>   fit_validation_steps = structure(list(), class = "rlang_zap")
+#>   fit_validation_batch_size = structure(list(), class = "rlang_zap")
+#>   fit_validation_freq = structure(list(), class = "rlang_zap")
+#>   fit_verbose = structure(list(), class = "rlang_zap")
+#>   fit_view_metrics = structure(list(), class = "rlang_zap")
+#>   compile_optimizer = structure(list(), class = "rlang_zap")
+#>   compile_loss = structure(list(), class = "rlang_zap")
+#>   compile_metrics = structure(list(), class = "rlang_zap")
+#>   compile_loss_weights = structure(list(), class = "rlang_zap")
+#>   compile_weighted_metrics = structure(list(), class = "rlang_zap")
+#>   compile_run_eagerly = structure(list(), class = "rlang_zap")
+#>   compile_steps_per_execution = structure(list(), class = "rlang_zap")
+#>   compile_jit_compile = structure(list(), class = "rlang_zap")
+#>   compile_auto_scale_loss = structure(list(), class = "rlang_zap")
+#> 
+#> Computational engine: keras
 ```
 
 Notice how `dense1_units` and `dense2_units` are both passed to `tune()`, but each is given a distinct `id`. This `id` acts as a label that `autoplot()` can use to differentiate the parameters.
@@ -110,7 +154,8 @@ Notice how `dense1_units` and `dense2_units` are both passed to `tune()`, but ea
 
 Next, we'll set up a `tidymodels` workflow, define the parameter ranges, and create a tuning grid.
 
-```{r tuning_setup}
+
+``` r
 # Set up workflow and tuning grid
 rec <- recipes::recipe(Species ~ ., data = iris)
 tune_wf <- workflows::workflow(rec, tune_spec)
@@ -129,13 +174,21 @@ grid <- dials::grid_regular(params, levels = 2)
 control <- tune::control_grid(save_pred = FALSE, verbose = FALSE)
 
 print(grid)
+#> # A tibble: 4 × 2
+#>   dense_layer_one_units dense_layer_two_units
+#>                   <int>                 <int>
+#> 1                     4                     4
+#> 2                     8                     4
+#> 3                     4                     8
+#> 4                     8                     8
 ```
 
 ### Running the Tuning Process
 
 Now, we run `tune::tune_grid` to perform the actual tuning. For demonstration purposes, we'll use a small number of resamples and a simple dataset.
 
-```{r run_tuning}
+
+``` r
 # Run tuning
 tune_res <- tune::tune_grid(
   tune_wf,
@@ -143,18 +196,44 @@ tune_res <- tune::tune_grid(
   grid = grid,
   control = control
 )
+#> 3/3 - 0s - 79ms/step
+#> 3/3 - 0s - 29ms/step
+#> 3/3 - 0s - 67ms/step
+#> 3/3 - 0s - 24ms/step
+#> 3/3 - 0s - 60ms/step
+#> 3/3 - 0s - 24ms/step
+#> 3/3 - 0s - 94ms/step
+#> 3/3 - 0s - 26ms/step
+#> 3/3 - 0s - 75ms/step
+#> 3/3 - 0s - 36ms/step
+#> 3/3 - 0s - 90ms/step
+#> 3/3 - 0s - 34ms/step
+#> 3/3 - 0s - 73ms/step
+#> 3/3 - 0s - 22ms/step
+#> 3/3 - 0s - 85ms/step
+#> 3/3 - 0s - 33ms/step
 
 print(tune_res)
+#> # Tuning results
+#> # 2-fold cross-validation 
+#> # A tibble: 2 × 4
+#>   splits          id    .metrics          .notes          
+#>   <list>          <chr> <list>            <list>          
+#> 1 <split [75/75]> Fold1 <tibble [12 × 6]> <tibble [0 × 4]>
+#> 2 <split [75/75]> Fold2 <tibble [12 × 6]> <tibble [0 × 4]>
 ```
 
 ### Visualizing Results with `autoplot()`
 
 With the tuning complete, we can now use `ggplot2::autoplot()` to visualize the results. Because we provided unique `id`s, `autoplot()` can correctly generate separate plots for each tuned parameter.
 
-```{r autoplot_results, fig.width=7, fig.height=5}
+
+``` r
 # Assert that autoplot works without error
 ggplot2::autoplot(tune_res)
 ```
+
+![plot of chunk autoplot_results](figure/autoplot_results-1.png)
 
 As you can see, `autoplot()` successfully generates a plot showing the performance across the different values for `dense_layer_one_units` and `dense_layer_two_units` independently.
 
@@ -171,6 +250,4 @@ The `id` argument in `tune()` serves as a unique identifier that `tune` and `ggp
 
 By following this practice, you ensure that your `kerasnip` models are robustly tunable and that their results can be clearly visualized using the `tidymodels` ecosystem.
 
-```{r cleanup, include=FALSE}
-suppressMessages(remove_keras_spec(model_name))
-```
+

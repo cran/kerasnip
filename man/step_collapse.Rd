@@ -36,8 +36,8 @@ have been estimated.}
 default is "predictor_matrix".}
 
 \item{skip}{A logical. Should the step be skipped when the recipe is
-baked by \verb{[bake.recipe()]}? While all operations are baked when \code{prep} is run,
-skipping when \code{bake} is run may be other times when it is desirable to
+baked by \verb{[bake.recipe()]}? While all operations are baked when \code{prep} is
+run, skipping when \code{bake} is run may be other times when it is desirable to
 skip a processing step.}
 
 \item{id}{A character string that is unique to this step to identify it.}
@@ -45,8 +45,8 @@ skip a processing step.}
 \value{
 An updated version of \code{recipe} with the new step added to the
 sequence of existing steps (if any). For the \code{tidy} method, a tibble with
-columns \code{terms} which is the columns that are affected and \code{value} which is
-the type of collapse.
+columns \code{terms} (the selected column names), \code{value} (the name of the
+destination list-column), and \code{id} (the step identifier).
 }
 \description{
 \code{step_collapse()} creates a a \emph{specification} of a recipe step that will

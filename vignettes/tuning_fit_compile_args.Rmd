@@ -7,16 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  eval = reticulate::py_module_available("keras")
-)
-# Suppress verbose Keras output for the vignette
-options(keras.fit_verbose = 0)
-set.seed(123)
-```
+
 
 ## Introduction
 
@@ -34,17 +25,41 @@ This vignette provides a comprehensive example of how to tune these arguments wi
 
 First, we load the necessary packages.
 
-```{r load-packages}
+
+``` r
 library(kerasnip)
 library(tidymodels)
+#> ── Attaching packages ────────────────────────────────────────────────────────────────────────────── tidymodels 1.5.0 ──
+#> ✔ broom        1.0.12     ✔ recipes      1.3.2 
+#> ✔ dials        1.4.3      ✔ rsample      1.3.2 
+#> ✔ dplyr        1.2.1      ✔ tailor       0.1.0 
+#> ✔ ggplot2      4.0.3      ✔ tidyr        1.3.2 
+#> ✔ infer        1.1.0      ✔ tune         2.1.0 
+#> ✔ modeldata    1.5.1      ✔ workflows    1.3.0 
+#> ✔ parsnip      1.5.0      ✔ workflowsets 1.1.1 
+#> ✔ purrr        1.2.2      ✔ yardstick    1.4.0
+#> ── Conflicts ───────────────────────────────────────────────────────────────────────────────── tidymodels_conflicts() ──
+#> ✖ purrr::discard() masks scales::discard()
+#> ✖ dplyr::filter()  masks stats::filter()
+#> ✖ dplyr::lag()     masks stats::lag()
+#> ✖ recipes::step()  masks stats::step()
 library(keras3)
+#> 
+#> Attaching package: 'keras3'
+#> The following object is masked from 'package:yardstick':
+#> 
+#>     get_weights
+#> The following object is masked from 'package:infer':
+#> 
+#>     generate
 ```
 
 ## Data Preparation
 
 We will use the classic `iris` dataset for this example. It's a simple, small dataset, which is ideal for demonstrating the tuning process without long training times.
 
-```{r data-prep}
+
+``` r
 # Split data into training and testing sets
 set.seed(123)
 iris_split <- initial_split(iris, prop = 0.8, strata = Species)
@@ -59,7 +74,8 @@ iris_folds <- vfold_cv(iris_train, v = 3, strata = Species)
 
 We'll create a very simple sequential model with a single dense layer. This keeps the focus on tuning the `fit_*` and `compile_*` arguments rather than the model architecture.
 
-```{r define-kerasnip-model}
+
+``` r
 # Define layer blocks
 input_block <- function(model, input_shape) {
   keras_model_sequential(input_shape = input_shape)
@@ -87,7 +103,8 @@ create_keras_sequential_spec(
 
 Now, we create an instance of our `iris_mlp` model. We set the arguments we want to optimize to `tune()`.
 
-```{r define-tune-spec}
+
+``` r
 # Define the tunable model specification
 tune_spec <- iris_mlp(
   dense_units = 16, # Keep architecture fixed for this example
@@ -100,13 +117,48 @@ tune_spec <- iris_mlp(
   set_engine("keras")
 
 print(tune_spec)
+#> iris mlp Model Specification (classification)
+#> 
+#> Main Arguments:
+#>   num_input = structure(list(), class = "rlang_zap")
+#>   num_dense = structure(list(), class = "rlang_zap")
+#>   num_output = structure(list(), class = "rlang_zap")
+#>   dense_units = 16
+#>   learn_rate = tune()
+#>   fit_batch_size = tune()
+#>   fit_epochs = tune()
+#>   fit_callbacks = structure(list(), class = "rlang_zap")
+#>   fit_validation_split = structure(list(), class = "rlang_zap")
+#>   fit_validation_data = structure(list(), class = "rlang_zap")
+#>   fit_shuffle = structure(list(), class = "rlang_zap")
+#>   fit_class_weight = structure(list(), class = "rlang_zap")
+#>   fit_sample_weight = structure(list(), class = "rlang_zap")
+#>   fit_initial_epoch = structure(list(), class = "rlang_zap")
+#>   fit_steps_per_epoch = structure(list(), class = "rlang_zap")
+#>   fit_validation_steps = structure(list(), class = "rlang_zap")
+#>   fit_validation_batch_size = structure(list(), class = "rlang_zap")
+#>   fit_validation_freq = structure(list(), class = "rlang_zap")
+#>   fit_verbose = structure(list(), class = "rlang_zap")
+#>   fit_view_metrics = structure(list(), class = "rlang_zap")
+#>   compile_optimizer = tune()
+#>   compile_loss = tune()
+#>   compile_metrics = structure(list(), class = "rlang_zap")
+#>   compile_loss_weights = structure(list(), class = "rlang_zap")
+#>   compile_weighted_metrics = structure(list(), class = "rlang_zap")
+#>   compile_run_eagerly = structure(list(), class = "rlang_zap")
+#>   compile_steps_per_execution = structure(list(), class = "rlang_zap")
+#>   compile_jit_compile = structure(list(), class = "rlang_zap")
+#>   compile_auto_scale_loss = structure(list(), class = "rlang_zap")
+#> 
+#> Computational engine: keras
 ```
 
 ## Create Workflow and Tuning Grid
 
 Next, we create a `workflow` and define the search space for our hyperparameters using `dials`. `kerasnip` provides special `dials` parameter functions for `optimizer` and `loss`.
 
-```{r create-workflow-grid}
+
+``` r
 # Create a simple recipe
 iris_recipe <- recipe(Species ~ ., data = iris_train) |>
   step_normalize(all_numeric_predictors())
@@ -130,13 +182,28 @@ set.seed(456)
 tuning_grid <- grid_regular(params, levels = 2)
 
 tuning_grid
+#> # A tibble: 32 × 5
+#>    learn_rate fit_batch_size fit_epochs compile_optimizer compile_loss            
+#>         <dbl>          <int>      <int> <chr>             <chr>                   
+#>  1      0.001             16         10 adam              categorical_crossentropy
+#>  2      0.01              16         10 adam              categorical_crossentropy
+#>  3      0.001             64         10 adam              categorical_crossentropy
+#>  4      0.01              64         10 adam              categorical_crossentropy
+#>  5      0.001             16         30 adam              categorical_crossentropy
+#>  6      0.01              16         30 adam              categorical_crossentropy
+#>  7      0.001             64         30 adam              categorical_crossentropy
+#>  8      0.01              64         30 adam              categorical_crossentropy
+#>  9      0.001             16         10 sgd               categorical_crossentropy
+#> 10      0.01              16         10 sgd               categorical_crossentropy
+#> # ℹ 22 more rows
 ```
 
 ## Tune the Model
 
 With the workflow and grid defined, we can now run the hyperparameter tuning using `tune_grid()`.
 
-```{r tune-model, cache=TRUE}
+
+``` r
 tune_res <- tune_grid(
   tune_wf,
   resamples = iris_folds,
@@ -144,22 +211,232 @@ tune_res <- tune_grid(
   metrics = metric_set(accuracy, roc_auc),
   control = control_grid(save_pred = FALSE, save_workflow = TRUE, verbose = FALSE)
 )
+#> 2/2 - 0s - 83ms/step
+#> 2/2 - 0s - 39ms/step
+#> 2/2 - 0s - 74ms/step
+#> 2/2 - 0s - 34ms/step
+#> 2/2 - 0s - 172ms/step
+#> 2/2 - 0s - 59ms/step
+#> 2/2 - 0s - 80ms/step
+#> 2/2 - 0s - 47ms/step
+#> 2/2 - 0s - 105ms/step
+#> 2/2 - 0s - 52ms/step
+#> 2/2 - 0s - 105ms/step
+#> 2/2 - 0s - 45ms/step
+#> 2/2 - 0s - 120ms/step
+#> 2/2 - 0s - 58ms/step
+#> 2/2 - 0s - 98ms/step
+#> 2/2 - 0s - 32ms/step
+#> 2/2 - 0s - 104ms/step
+#> 2/2 - 0s - 32ms/step
+#> 2/2 - 0s - 99ms/step
+#> 2/2 - 0s - 42ms/step
+#> 2/2 - 0s - 107ms/step
+#> 2/2 - 0s - 60ms/step
+#> 2/2 - 0s - 92ms/step
+#> 2/2 - 0s - 46ms/step
+#> 2/2 - 0s - 202ms/step
+#> 2/2 - 0s - 125ms/step
+#> 2/2 - 0s - 122ms/step
+#> 2/2 - 0s - 31ms/step
+#> 2/2 - 0s - 72ms/step
+#> 2/2 - 0s - 33ms/step
+#> 2/2 - 0s - 64ms/step
+#> 2/2 - 0s - 28ms/step
+#> 2/2 - 0s - 118ms/step
+#> 2/2 - 0s - 29ms/step
+#> 2/2 - 0s - 64ms/step
+#> 2/2 - 0s - 30ms/step
+#> 2/2 - 0s - 60ms/step
+#> 2/2 - 0s - 35ms/step
+#> 2/2 - 0s - 65ms/step
+#> 2/2 - 0s - 33ms/step
+#> 2/2 - 0s - 67ms/step
+#> 2/2 - 0s - 31ms/step
+#> 2/2 - 0s - 84ms/step
+#> 2/2 - 0s - 34ms/step
+#> 2/2 - 0s - 63ms/step
+#> 2/2 - 0s - 34ms/step
+#> 2/2 - 0s - 62ms/step
+#> 2/2 - 0s - 33ms/step
+#> 2/2 - 0s - 62ms/step
+#> 2/2 - 0s - 29ms/step
+#> 2/2 - 0s - 72ms/step
+#> 2/2 - 0s - 34ms/step
+#> 2/2 - 0s - 72ms/step
+#> 2/2 - 0s - 67ms/step
+#> 2/2 - 0s - 65ms/step
+#> 2/2 - 0s - 33ms/step
+#> 2/2 - 0s - 61ms/step
+#> 2/2 - 0s - 29ms/step
+#> 2/2 - 0s - 61ms/step
+#> 2/2 - 0s - 29ms/step
+#> 2/2 - 0s - 67ms/step
+#> 2/2 - 0s - 29ms/step
+#> 2/2 - 0s - 59ms/step
+#> 2/2 - 0s - 28ms/step
+#> 2/2 - 0s - 71ms/step
+#> 2/2 - 0s - 30ms/step
+#> 2/2 - 0s - 68ms/step
+#> 2/2 - 0s - 34ms/step
+#> 2/2 - 0s - 58ms/step
+#> 2/2 - 0s - 30ms/step
+#> 2/2 - 0s - 68ms/step
+#> 2/2 - 0s - 29ms/step
+#> 2/2 - 0s - 77ms/step
+#> 2/2 - 0s - 30ms/step
+#> 2/2 - 0s - 73ms/step
+#> 2/2 - 0s - 26ms/step
+#> 2/2 - 0s - 69ms/step
+#> 2/2 - 0s - 32ms/step
+#> 2/2 - 0s - 69ms/step
+#> 2/2 - 0s - 28ms/step
+#> 2/2 - 0s - 58ms/step
+#> 2/2 - 0s - 27ms/step
+#> 2/2 - 0s - 55ms/step
+#> 2/2 - 0s - 31ms/step
+#> 2/2 - 0s - 60ms/step
+#> 2/2 - 0s - 27ms/step
+#> 2/2 - 0s - 62ms/step
+#> 2/2 - 0s - 33ms/step
+#> 2/2 - 0s - 61ms/step
+#> 2/2 - 0s - 32ms/step
+#> 2/2 - 0s - 61ms/step
+#> 2/2 - 0s - 30ms/step
+#> 2/2 - 0s - 63ms/step
+#> 2/2 - 0s - 31ms/step
+#> 2/2 - 0s - 67ms/step
+#> 2/2 - 0s - 30ms/step
+#> 2/2 - 0s - 57ms/step
+#> 2/2 - 0s - 27ms/step
+#> 2/2 - 0s - 65ms/step
+#> 2/2 - 0s - 31ms/step
+#> 2/2 - 0s - 75ms/step
+#> 2/2 - 0s - 35ms/step
+#> 2/2 - 0s - 71ms/step
+#> 2/2 - 0s - 34ms/step
+#> 2/2 - 0s - 69ms/step
+#> 2/2 - 0s - 33ms/step
+#> 2/2 - 0s - 67ms/step
+#> 2/2 - 0s - 30ms/step
+#> 2/2 - 0s - 64ms/step
+#> 2/2 - 0s - 32ms/step
+#> 2/2 - 0s - 59ms/step
+#> 2/2 - 0s - 32ms/step
+#> 2/2 - 0s - 57ms/step
+#> 2/2 - 0s - 27ms/step
+#> 2/2 - 0s - 56ms/step
+#> 2/2 - 0s - 36ms/step
+#> 2/2 - 0s - 59ms/step
+#> 2/2 - 0s - 31ms/step
+#> 2/2 - 0s - 64ms/step
+#> 2/2 - 0s - 36ms/step
+#> 2/2 - 0s - 72ms/step
+#> 2/2 - 0s - 30ms/step
+#> 2/2 - 0s - 65ms/step
+#> 2/2 - 0s - 30ms/step
+#> 2/2 - 0s - 53ms/step
+#> 2/2 - 0s - 24ms/step
+#> 2/2 - 0s - 64ms/step
+#> 2/2 - 0s - 28ms/step
+#> 2/2 - 0s - 85ms/step
+#> 2/2 - 0s - 38ms/step
+#> 2/2 - 0s - 61ms/step
+#> 2/2 - 0s - 29ms/step
+#> 2/2 - 0s - 75ms/step
+#> 2/2 - 0s - 31ms/step
+#> 2/2 - 0s - 69ms/step
+#> 2/2 - 0s - 36ms/step
+#> 2/2 - 0s - 64ms/step
+#> 2/2 - 0s - 30ms/step
+#> 2/2 - 0s - 65ms/step
+#> 2/2 - 0s - 31ms/step
+#> 2/2 - 0s - 73ms/step
+#> 2/2 - 0s - 30ms/step
+#> 2/2 - 0s - 58ms/step
+#> 2/2 - 0s - 26ms/step
+#> 2/2 - 0s - 77ms/step
+#> 2/2 - 0s - 26ms/step
+#> 2/2 - 0s - 76ms/step
+#> 2/2 - 0s - 29ms/step
+#> 2/2 - 0s - 61ms/step
+#> 2/2 - 0s - 27ms/step
+#> 2/2 - 0s - 67ms/step
+#> 2/2 - 0s - 33ms/step
+#> 2/2 - 0s - 53ms/step
+#> 2/2 - 0s - 29ms/step
+#> 2/2 - 0s - 64ms/step
+#> 2/2 - 0s - 32ms/step
+#> 2/2 - 0s - 64ms/step
+#> 2/2 - 0s - 38ms/step
+#> 2/2 - 0s - 68ms/step
+#> 2/2 - 0s - 31ms/step
+#> 2/2 - 0s - 75ms/step
+#> 2/2 - 0s - 28ms/step
+#> 2/2 - 0s - 59ms/step
+#> 2/2 - 0s - 33ms/step
+#> 2/2 - 0s - 65ms/step
+#> 2/2 - 0s - 26ms/step
+#> 2/2 - 0s - 59ms/step
+#> 2/2 - 0s - 28ms/step
+#> 2/2 - 0s - 71ms/step
+#> 2/2 - 0s - 28ms/step
+#> 2/2 - 0s - 66ms/step
+#> 2/2 - 0s - 36ms/step
+#> 2/2 - 0s - 66ms/step
+#> 2/2 - 0s - 28ms/step
+#> 2/2 - 0s - 66ms/step
+#> 2/2 - 0s - 34ms/step
+#> 2/2 - 0s - 68ms/step
+#> 2/2 - 0s - 32ms/step
+#> 2/2 - 0s - 61ms/step
+#> 2/2 - 0s - 29ms/step
+#> 2/2 - 0s - 67ms/step
+#> 2/2 - 0s - 29ms/step
+#> 2/2 - 0s - 64ms/step
+#> 2/2 - 0s - 29ms/step
+#> 2/2 - 0s - 76ms/step
+#> 2/2 - 0s - 30ms/step
+#> 2/2 - 0s - 65ms/step
+#> 2/2 - 0s - 30ms/step
+#> 2/2 - 0s - 62ms/step
+#> 2/2 - 0s - 30ms/step
+#> 2/2 - 0s - 69ms/step
+#> 2/2 - 0s - 31ms/step
 ```
 
 ## Inspect the Results
 
 Let's examine the results to see how the different combinations of fitting and compilation parameters performed.
 
-```{r inspect-results}
+
+``` r
 # Show the best performing models based on accuracy
 show_best(tune_res, metric = "accuracy")
+#> # A tibble: 5 × 11
+#>   learn_rate fit_batch_size fit_epochs compile_optimizer compile_loss     .metric .estimator  mean     n std_err .config
+#>        <dbl>          <int>      <int> <chr>             <chr>            <chr>   <chr>      <dbl> <int>   <dbl> <chr>  
+#> 1       0.01             64         30 adam              kl_divergence    accura… multiclass 0.935     3  0.0279 pre0_m…
+#> 2       0.01             16         30 adam              categorical_cro… accura… multiclass 0.934     3  0.0147 pre0_m…
+#> 3       0.01             16         30 adam              kl_divergence    accura… multiclass 0.934     3  0.0147 pre0_m…
+#> 4       0.01             64         30 adam              categorical_cro… accura… multiclass 0.901     3  0.0265 pre0_m…
+#> 5       0.01             16         10 adam              kl_divergence    accura… multiclass 0.893     3  0.0299 pre0_m…
 
 # Plot the results
 autoplot(tune_res) + theme_minimal()
+```
+
+![plot of chunk inspect-results](figure/inspect-results-1.png)
+
+``` r
 
 # Select the best hyperparameters
 best_params <- select_best(tune_res, metric = "accuracy")
 print(best_params)
+#> # A tibble: 1 × 6
+#>   learn_rate fit_batch_size fit_epochs compile_optimizer compile_loss  .config         
+#>        <dbl>          <int>      <int> <chr>             <chr>         <chr>           
+#> 1       0.01             64         30 adam              kl_divergence pre0_mod30_post0
 ```
 
 The results show that `tune` has successfully explored different optimizers, loss functions, learning rates, epochs, and batch sizes, identifying the combination that yields the best accuracy.
@@ -168,7 +445,8 @@ The results show that `tune` has successfully explored different optimizers, los
 
 Finally, we finalize our workflow with the best-performing hyperparameters and fit the model one last time on the full training dataset.
 
-```{r finalize-fit}
+
+``` r
 # Finalize the workflow
 final_wf <- finalize_workflow(tune_wf, best_params)
 
@@ -176,17 +454,86 @@ final_wf <- finalize_workflow(tune_wf, best_params)
 final_fit <- fit(final_wf, data = iris_train)
 
 print(final_fit)
+#> ══ Workflow [trained] ══════════════════════════════════════════════════════════════════════════════════════════════════
+#> Preprocessor: Recipe
+#> Model: iris_mlp()
+#> 
+#> ── Preprocessor ────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> 1 Recipe Step
+#> 
+#> • step_normalize()
+#> 
+#> ── Model ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> $fit
+#> Model: "sequential_96"
+#> ┌─────────────────────────────────────────────────────┬────────────────────────────────────────┬───────────────────────
+#> │ Layer (type)                                        │ Output Shape                           │               Param # 
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
+#> │ dense_192 (Dense)                                   │ (None, 16)                             │                    80 
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
+#> │ dense_193 (Dense)                                   │ (None, 3)                              │                    51 
+#> └─────────────────────────────────────────────────────┴────────────────────────────────────────┴───────────────────────
+#>  Total params: 395 (1.55 KB)
+#>  Trainable params: 131 (524.00 B)
+#>  Non-trainable params: 0 (0.00 B)
+#>  Optimizer params: 264 (1.04 KB)
+#> 
+#> $keras_bytes
+#>     [1] 50 4b 03 04 14 00 00 00 00 00 00 00 21 00 71 a1 30 04 40 00 00 00 40 00 00 00 0d 00 00 00 6d 65 74 61 64 61 74
+#>    [38] 61 2e 6a 73 6f 6e 7b 22 6b 65 72 61 73 5f 76 65 72 73 69 6f 6e 22 3a 20 22 33 2e 31 34 2e 30 22 2c 20 22 64 61
+#>    [75] 74 65 5f 73 61 76 65 64 22 3a 20 22 32 30 32 36 2d 30 35 2d 30 31 40 31 31 3a 34 38 3a 33 37 22 7d 50 4b 03 04
+#>   [112] 14 00 00 00 00 00 00 00 21 00 12 e4 b0 c3 27 0b 00 00 27 0b 00 00 0b 00 00 00 63 6f 6e 66 69 67 2e 6a 73 6f 6e
+#>   [149] 7b 22 6d 6f 64 75 6c 65 22 3a 20 22 6b 65 72 61 73 22 2c 20 22 63 6c 61 73 73 5f 6e 61 6d 65 22 3a 20 22 53 65
+#>   [186] 71 75 65 6e 74 69 61 6c 22 2c 20 22 63 6f 6e 66 69 67 22 3a 20 7b 22 6e 61 6d 65 22 3a 20 22 73 65 71 75 65 6e
+#>   [223] 74 69 61 6c 5f 39 36 22 2c 20 22 74 72 61 69 6e 61 62 6c 65 22 3a 20 74 72 75 65 2c 20 22 64 74 79 70 65 22 3a
+#>   [260] 20 7b 22 6d 6f 64 75 6c 65 22 3a 20 22 6b 65 72 61 73 22 2c 20 22 63 6c 61 73 73 5f 6e 61 6d 65 22 3a 20 22 44
+#>   [297] 54 79 70 65 50 6f 6c 69 63 79 22 2c 20 22 63 6f 6e 66 69 67 22 3a 20 7b 22 6e 61 6d 65 22 3a 20 22 66 6c 6f 61
+#>   [334] 74 33 32 22 7d 2c 20 22 72 65 67 69 73 74 65 72 65 64 5f 6e 61 6d 65 22 3a 20 6e 75 6c 6c 2c 20 22 73 68 61 72
+#>   [371] 65 64 5f 6f 62 6a 65 63 74 5f 69 64 22 3a 20 32 39 33 38 33 35 36 38 34 36 34 31 36 7d 2c 20 22 6c 61 79 65 72
+#>   [408] 73 22 3a 20 5b 7b 22 6d 6f 64 75 6c 65 22 3a 20 22 6b 65 72 61 73 2e 6c 61 79 65 72 73 22 2c 20 22 63 6c 61 73
+#>   [445] 73 5f 6e 61 6d 65 22 3a 20 22 49 6e 70 75 74 4c 61 79 65 72 22 2c 20 22 63 6f 6e 66 69 67 22 3a 20 7b 22 62 61
+#>   [482] 74 63 68 5f 73 68 61 70 65 22 3a 20 5b 6e 75 6c 6c 2c 20 34 5d 2c 20 22 64 74 79 70 65 22 3a 20 22 66 6c 6f 61
+#>   [519] 74 33 32 22 2c 20 22 73 70 61 72 73 65 22 3a 20 66 61 6c 73 65 2c 20 22 72 61 67 67 65 64 22 3a 20 66 61 6c 73
+#>   [556] 65 2c 20 22 6e 61 6d 65 22 3a 20 22 69 6e 70 75 74 5f 6c 61 79 65 72 5f 39 36 22 2c 20 22 6f 70 74 69 6f 6e 61
+#>   [593] 6c 22 3a 20 66 61 6c 73 65 7d 2c 20 22 72 65 67 69 73 74 65 72 65 64 5f 6e 61 6d 65 22 3a 20 6e 75 6c 6c 7d 2c
+#>   [630] 20 7b 22 6d 6f 64 75 6c 65 22 3a 20 22 6b 65 72 61 73 2e 6c 61 79 65 72 73 22 2c 20 22 63 6c 61 73 73 5f 6e 61
+#>   [667] 6d 65 22 3a 20 22 44 65 6e 73 65 22 2c 20 22 63 6f 6e 66 69 67 22 3a 20 7b 22 6e 61 6d 65 22 3a 20 22 64 65 6e
+#>   [704] 73 65 5f 31 39 32 22 2c 20 22 74 72 61 69 6e 61 62 6c 65 22 3a 20 74 72 75 65 2c 20 22 64 74 79 70 65 22 3a 20
+#>   [741] 7b 22 6d 6f 64 75 6c 65 22 3a 20 22 6b 65 72 61 73 22 2c 20 22 63 6c 61 73 73 5f 6e 61 6d 65 22 3a 20 22 44 54
+#>   [778] 79 70 65 50 6f 6c 69 63 79 22 2c 20 22 63 6f 6e 66 69 67 22 3a 20 7b 22 6e 61 6d 65 22 3a 20 22 66 6c 6f 61 74
+#>   [815] 33 32 22 7d 2c 20 22 72 65 67 69 73 74 65 72 65 64 5f 6e 61 6d 65 22 3a 20 6e 75 6c 6c 7d 2c 20 22 75 6e 69 74
+#>   [852] 73 22 3a 20 31 36 2c 20 22 61 63 74 69 76 61 74 69 6f 6e 22 3a 20 22 72 65 6c 75 22 2c 20 22 75 73 65 5f 62 69
+#>   [889] 61 73 22 3a 20 74 72 75 65 2c 20 22 6b 65 72 6e 65 6c 5f 69 6e 69 74 69 61 6c 69 7a 65 72 22 3a 20 7b 22 6d 6f
+#>   [926] 64 75 6c 65 22 3a 20 22 6b 65 72 61 73 2e 69 6e 69 74 69 61 6c 69 7a 65 72 73 22 2c 20 22 63 6c 61 73 73 5f 6e
+#>   [963] 61 6d 65 22 3a 20 22 47 6c 6f 72 6f 74 55 6e 69 66 6f 72 6d 22 2c 20 22 63 6f 6e 66 69 67 22 3a 20 7b 22 73 65
+#>  [1000] 65 64 22 3a 20 6e 75 6c 6c 7d 2c 20 22 72 65 67 69 73 74 65 72 65 64 5f 6e 61 6d 65 22 3a 20 6e 75 6c 6c 7d 2c
+#>  [1037] 20 22 62 69 61 73 5f 69 6e 69 74 69 61 6c 69 7a 65 72 22 3a 20 7b 22 6d 6f 64 75 6c 65 22 3a 20 22 6b 65 72 61
+#>  [1074] 73 2e 69 6e 69 74 69 61 6c 69 7a 65 72 73 22 2c 20 22 63 6c 61 73 73 5f 6e 61 6d 65 22 3a 20 22 5a 65 72 6f 73
+#>  [1111] 22 2c 20 22 63 6f 6e 66 69 67 22 3a 20 7b 7d 2c 20 22 72 65 67 69 73 74 65 72 65 64 5f 6e 61 6d 65 22 3a 20 6e
+#>  [1148] 75 6c 6c 7d 2c 20 22 6b 65 72 6e 65 6c 5f 72 65 67 75 6c 61 72 69 7a 65 72 22 3a 20 6e 75 6c 6c 2c 20 22 62 69
+#>  [1185] 61 73 5f 72 65 67 75 6c 61 72 69 7a 65 72 22 3a 20 6e 75 6c 6c 2c 20 22 6b 65 72 6e 65 6c 5f 63 6f 6e 73 74 72
+#>  [1222] 61 69 6e 74 22 3a 20 6e 75 6c 6c 2c 20 22 62 69 61 73 5f 63 6f 6e 73 74 72 61 69 6e 74 22 3a 20 6e 75 6c 6c 2c
+#>  [1259] 20 22 71 75 61 6e 74 69 7a 61 74 69 6f 6e 5f 63 6f 6e 66 69 67 22 3a 20 6e 75 6c 6c 7d 2c 20 22 72 65 67 69 73
+#> 
+#> ...
+#> and 634 more lines.
 ```
 
 We can now use this `final_fit` object to make predictions on the test set.
 
-```{r predict}
+
+``` r
 # Make predictions
 predictions <- predict(final_fit, new_data = iris_test)
+#> 1/1 - 0s - 105ms/step
 
 # Evaluate performance
 bind_cols(predictions, iris_test) |>
   accuracy(truth = Species, estimate = .pred_class)
+#> # A tibble: 1 × 3
+#>   .metric  .estimator .estimate
+#>   <chr>    <chr>          <dbl>
+#> 1 accuracy multiclass     0.933
 ```
 
 ## Conclusion

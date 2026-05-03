@@ -3,7 +3,8 @@
 #' @description
 #' This internal helper introspects the user-provided `layer_blocks` functions
 #' to generate a complete list of arguments for the new model specification.
-#' The logic for discovering arguments differs for sequential and functional models.
+#' The logic for discovering arguments differs for sequential and functional
+#' models.
 #'
 #' @details
 #' For **sequential models** (`functional = FALSE`):
@@ -32,7 +33,8 @@ collect_spec_args <- function(
 ) {
   if (any(c("compile", "fit", "optimizer") %in% names(layer_blocks))) {
     stop(
-      "`compile`, `fit` and `optimizer` are protected names and cannot be used as layer block names.",
+      "`compile`, `fit` and `optimizer` are protected names and\n",
+      "cannot be used as layer block names.",
       call. = FALSE
     )
   }
@@ -205,8 +207,7 @@ inp_spec <- function(block, input_map) {
     }
 
     new_names <- original_names
-    match_indices <- match(names(input_map), original_names)
-    new_names[match_indices] <- unname(input_map)
+    new_names[match(names(input_map), original_names)] <- unname(input_map)
     names(new_formals) <- new_names
   } else {
     stop("`input_map` must be a single string or a named character vector.")

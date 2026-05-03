@@ -7,16 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  eval = reticulate::py_module_available("keras")
-)
-# Suppress verbose Keras output for the vignette
-options(keras.fit_verbose = 0)
-set.seed(123)
-```
+
 
 ## Introduction
 
@@ -28,13 +19,41 @@ The `kerasnip` package allows you to define Keras models using a modular "layer 
 
 First, we load the necessary packages.
 
-```{r load-packages}
+
+``` r
 library(kerasnip)
 library(tidymodels)
+#> ── Attaching packages ────────────────────────────────────────────────────────────────────────────── tidymodels 1.5.0 ──
+#> ✔ broom        1.0.12     ✔ recipes      1.3.2 
+#> ✔ dials        1.4.3      ✔ rsample      1.3.2 
+#> ✔ dplyr        1.2.1      ✔ tailor       0.1.0 
+#> ✔ ggplot2      4.0.3      ✔ tidyr        1.3.2 
+#> ✔ infer        1.1.0      ✔ tune         2.1.0 
+#> ✔ modeldata    1.5.1      ✔ workflows    1.3.0 
+#> ✔ parsnip      1.5.0      ✔ workflowsets 1.1.1 
+#> ✔ purrr        1.2.2      ✔ yardstick    1.4.0
+#> ── Conflicts ───────────────────────────────────────────────────────────────────────────────── tidymodels_conflicts() ──
+#> ✖ purrr::discard() masks scales::discard()
+#> ✖ dplyr::filter()  masks stats::filter()
+#> ✖ dplyr::lag()     masks stats::lag()
+#> ✖ recipes::step()  masks stats::step()
 library(keras3)
+#> 
+#> Attaching package: 'keras3'
+#> The following object is masked from 'package:yardstick':
+#> 
+#>     get_weights
+#> The following object is masked from 'package:infer':
+#> 
+#>     generate
 library(dplyr) # For data manipulation
 library(ggplot2) # For plotting
 library(future) # For parallel processing
+#> 
+#> Attaching package: 'future'
+#> The following object is masked from 'package:keras3':
+#> 
+#>     %<-%
 library(finetune) # For racing
 ```
 
@@ -42,7 +61,8 @@ library(finetune) # For racing
 
 We'll use the `penguins` dataset from the `modeldata` package. We will clean it by removing rows with missing values and ensuring the `species` column is a factor.
 
-```{r data-prep}
+
+``` r
 # Remove rows with missing values
 penguins_df <- penguins |>
   na.omit() |>
@@ -67,7 +87,8 @@ We will create a `recipes` object to preprocess our data. This recipe will:
 *   Normalize all numeric predictors.
 *   Create dummy variables for all categorical predictors.
 
-```{r create-recipe}
+
+``` r
 penguin_recipe <- recipe(species ~ ., data = penguin_train) |>
   step_normalize(all_numeric_predictors()) |>
   step_dummy(all_nominal_predictors())
@@ -79,7 +100,8 @@ Now, we define our Keras sequential model using `kerasnip`'s layer blocks. We'll
 
 For a sequential Keras model with tabular data, all preprocessed input features are typically combined into a single input layer. The `recipes` package handles this preprocessing, transforming predictors into a single matrix that serves as the input to the Keras model.
 
-```{r define-kerasnip-model}
+
+``` r
 # Define layer blocks
 input_block <- function(model, input_shape) {
   keras_model_sequential(input_shape = input_shape)
@@ -113,7 +135,8 @@ create_keras_sequential_spec(
 
 We'll define our `penguin_mlp` model specification and set some hyperparameters to `tune()`, indicating that they should be optimized. We will also set fixed parameters for compilation and fitting.
 
-```{r define-tune-spec}
+
+``` r
 # Define the tunable model specification
 mlp_spec <- penguin_mlp(
   # Tunable parameters for hidden layers
@@ -135,25 +158,120 @@ mlp_spec <- penguin_mlp(
   set_engine("keras")
 
 print(mlp_spec)
+#> penguin mlp Model Specification (classification)
+#> 
+#> Main Arguments:
+#>   num_input = structure(list(), class = "rlang_zap")
+#>   num_hidden_1 = structure(list(), class = "rlang_zap")
+#>   num_hidden_2 = structure(list(), class = "rlang_zap")
+#>   num_output = structure(list(), class = "rlang_zap")
+#>   hidden_1_units = tune()
+#>   hidden_1_activation = structure(list(), class = "rlang_zap")
+#>   hidden_1_rate = tune()
+#>   hidden_2_units = tune()
+#>   hidden_2_activation = structure(list(), class = "rlang_zap")
+#>   hidden_2_rate = tune()
+#>   output_activation = structure(list(), class = "rlang_zap")
+#>   learn_rate = structure(list(), class = "rlang_zap")
+#>   fit_batch_size = 32
+#>   fit_epochs = 20
+#>   fit_callbacks = list(callback_early_stopping(monitor = "val_loss", patience = 5))
+#>   fit_validation_split = 0.2
+#>   fit_validation_data = structure(list(), class = "rlang_zap")
+#>   fit_shuffle = structure(list(), class = "rlang_zap")
+#>   fit_class_weight = structure(list(), class = "rlang_zap")
+#>   fit_sample_weight = structure(list(), class = "rlang_zap")
+#>   fit_initial_epoch = structure(list(), class = "rlang_zap")
+#>   fit_steps_per_epoch = structure(list(), class = "rlang_zap")
+#>   fit_validation_steps = structure(list(), class = "rlang_zap")
+#>   fit_validation_batch_size = structure(list(), class = "rlang_zap")
+#>   fit_validation_freq = structure(list(), class = "rlang_zap")
+#>   fit_verbose = structure(list(), class = "rlang_zap")
+#>   fit_view_metrics = structure(list(), class = "rlang_zap")
+#>   compile_optimizer = adam
+#>   compile_loss = categorical_crossentropy
+#>   compile_metrics = c("accuracy")
+#>   compile_loss_weights = structure(list(), class = "rlang_zap")
+#>   compile_weighted_metrics = structure(list(), class = "rlang_zap")
+#>   compile_run_eagerly = structure(list(), class = "rlang_zap")
+#>   compile_steps_per_execution = structure(list(), class = "rlang_zap")
+#>   compile_jit_compile = structure(list(), class = "rlang_zap")
+#>   compile_auto_scale_loss = structure(list(), class = "rlang_zap")
+#> 
+#> Computational engine: keras
 ```
 
 ## Create Workflow
 
 A `workflow` combines the recipe and the model specification.
 
-```{r create-workflow}
+
+``` r
 penguin_wf <- workflow() |>
   add_recipe(penguin_recipe) |>
   add_model(mlp_spec)
 
 print(penguin_wf)
+#> ══ Workflow ════════════════════════════════════════════════════════════════════════════════════════════════════════════
+#> Preprocessor: Recipe
+#> Model: penguin_mlp()
+#> 
+#> ── Preprocessor ────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> 2 Recipe Steps
+#> 
+#> • step_normalize()
+#> • step_dummy()
+#> 
+#> ── Model ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> penguin mlp Model Specification (classification)
+#> 
+#> Main Arguments:
+#>   num_input = structure(list(), class = "rlang_zap")
+#>   num_hidden_1 = structure(list(), class = "rlang_zap")
+#>   num_hidden_2 = structure(list(), class = "rlang_zap")
+#>   num_output = structure(list(), class = "rlang_zap")
+#>   hidden_1_units = tune()
+#>   hidden_1_activation = structure(list(), class = "rlang_zap")
+#>   hidden_1_rate = tune()
+#>   hidden_2_units = tune()
+#>   hidden_2_activation = structure(list(), class = "rlang_zap")
+#>   hidden_2_rate = tune()
+#>   output_activation = structure(list(), class = "rlang_zap")
+#>   learn_rate = structure(list(), class = "rlang_zap")
+#>   fit_batch_size = 32
+#>   fit_epochs = 20
+#>   fit_callbacks = list(callback_early_stopping(monitor = "val_loss", patience = 5))
+#>   fit_validation_split = 0.2
+#>   fit_validation_data = structure(list(), class = "rlang_zap")
+#>   fit_shuffle = structure(list(), class = "rlang_zap")
+#>   fit_class_weight = structure(list(), class = "rlang_zap")
+#>   fit_sample_weight = structure(list(), class = "rlang_zap")
+#>   fit_initial_epoch = structure(list(), class = "rlang_zap")
+#>   fit_steps_per_epoch = structure(list(), class = "rlang_zap")
+#>   fit_validation_steps = structure(list(), class = "rlang_zap")
+#>   fit_validation_batch_size = structure(list(), class = "rlang_zap")
+#>   fit_validation_freq = structure(list(), class = "rlang_zap")
+#>   fit_verbose = structure(list(), class = "rlang_zap")
+#>   fit_view_metrics = structure(list(), class = "rlang_zap")
+#>   compile_optimizer = adam
+#>   compile_loss = categorical_crossentropy
+#>   compile_metrics = c("accuracy")
+#>   compile_loss_weights = structure(list(), class = "rlang_zap")
+#>   compile_weighted_metrics = structure(list(), class = "rlang_zap")
+#>   compile_run_eagerly = structure(list(), class = "rlang_zap")
+#>   compile_steps_per_execution = structure(list(), class = "rlang_zap")
+#>   compile_jit_compile = structure(list(), class = "rlang_zap")
+#>   compile_auto_scale_loss = structure(list(), class = "rlang_zap")
+#> 
+#> Computational engine: keras
 ```
 
 ## Define Tuning Grid
 
 We will create a regular grid for our hyperparameters.
 
-```{r create-tuning-grid}
+
+``` r
 # Define the tuning grid
 params <- extract_parameter_set_dials(penguin_wf) |>
   update(
@@ -165,13 +283,28 @@ params <- extract_parameter_set_dials(penguin_wf) |>
 mlp_grid <- grid_regular(params, levels = 3)
 
 print(mlp_grid)
+#> # A tibble: 81 × 4
+#>    hidden_1_units hidden_1_rate hidden_2_units hidden_2_rate
+#>             <int>         <dbl>          <int>         <dbl>
+#>  1             32         0.1               16           0.1
+#>  2             80         0.1               16           0.1
+#>  3            128         0.1               16           0.1
+#>  4             32         0.25              16           0.1
+#>  5             80         0.25              16           0.1
+#>  6            128         0.25              16           0.1
+#>  7             32         0.400             16           0.1
+#>  8             80         0.400             16           0.1
+#>  9            128         0.400             16           0.1
+#> 10             32         0.1               40           0.1
+#> # ℹ 71 more rows
 ```
 
 ## Tune Model
 
 Now, we'll use `tune_race_anova()` to perform cross-validation and find the best hyperparameters.
 
-```{r tune-model, cache=TRUE}
+
+``` r
 # Note: Parallel processing with `plan(multisession)` is currently not working
 # with Keras models due to backend conflicts
 
@@ -189,9 +322,18 @@ penguin_tune_results <- tune_race_anova(
 
 We can inspect the tuning results to see which hyperparameter combinations performed best.
 
-```{r inspect-results}
+
+``` r
 # Show the best performing models based on accuracy
 show_best(penguin_tune_results, metric = "accuracy", n = 5)
+#> # A tibble: 5 × 10
+#>   hidden_1_units hidden_1_rate hidden_2_units hidden_2_rate .metric  .estimator  mean     n std_err .config         
+#>            <int>         <dbl>          <int>         <dbl> <chr>    <chr>      <dbl> <int>   <dbl> <chr>           
+#> 1             32         0.1               64         0.25  accuracy multiclass     1     5       0 pre0_mod08_post0
+#> 2             32         0.400             40         0.400 accuracy multiclass     1     5       0 pre0_mod24_post0
+#> 3             32         0.400             64         0.1   accuracy multiclass     1     5       0 pre0_mod25_post0
+#> 4             80         0.1               16         0.1   accuracy multiclass     1     5       0 pre0_mod28_post0
+#> 5             80         0.1               16         0.25  accuracy multiclass     1     5       0 pre0_mod29_post0
 
 # Autoplot the results
 # Currently does not work due to a label issue: autoplot(penguin_tune_results)
@@ -199,13 +341,18 @@ show_best(penguin_tune_results, metric = "accuracy", n = 5)
 # Select the best hyperparameters
 best_mlp_params <- select_best(penguin_tune_results, metric = "accuracy")
 print(best_mlp_params)
+#> # A tibble: 1 × 5
+#>   hidden_1_units hidden_1_rate hidden_2_units hidden_2_rate .config         
+#>            <int>         <dbl>          <int>         <dbl> <chr>           
+#> 1             32           0.1             64          0.25 pre0_mod08_post0
 ```
 
 ## Finalize Workflow and Fit Model
 
 Once we have the best hyperparameters, we finalize the workflow and fit the model on the entire training dataset.
 
-```{r finalize-fit}
+
+``` r
 # Finalize the workflow with the best hyperparameters
 final_penguin_wf <- finalize_workflow(penguin_wf, best_mlp_params)
 
@@ -213,21 +360,105 @@ final_penguin_wf <- finalize_workflow(penguin_wf, best_mlp_params)
 final_penguin_fit <- fit(final_penguin_wf, data = penguin_train)
 
 print(final_penguin_fit)
+#> ══ Workflow [trained] ══════════════════════════════════════════════════════════════════════════════════════════════════
+#> Preprocessor: Recipe
+#> Model: penguin_mlp()
+#> 
+#> ── Preprocessor ────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> 2 Recipe Steps
+#> 
+#> • step_normalize()
+#> • step_dummy()
+#> 
+#> ── Model ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> $fit
+#> Model: "sequential_376"
+#> ┌─────────────────────────────────────────────────────┬────────────────────────────────────────┬───────────────────────
+#> │ Layer (type)                                        │ Output Shape                           │               Param # 
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
+#> │ dense_1127 (Dense)                                  │ (None, 32)                             │                   256 
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
+#> │ dropout_750 (Dropout)                               │ (None, 32)                             │                     0 
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
+#> │ dense_1128 (Dense)                                  │ (None, 64)                             │                 2,112 
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
+#> │ dropout_751 (Dropout)                               │ (None, 64)                             │                     0 
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
+#> │ dense_1129 (Dense)                                  │ (None, 3)                              │                   195 
+#> └─────────────────────────────────────────────────────┴────────────────────────────────────────┴───────────────────────
+#>  Total params: 7,691 (30.05 KB)
+#>  Trainable params: 2,563 (10.01 KB)
+#>  Non-trainable params: 0 (0.00 B)
+#>  Optimizer params: 5,128 (20.04 KB)
+#> 
+#> $keras_bytes
+#>     [1] 50 4b 03 04 14 00 00 00 00 00 00 00 21 00 f1 8f 83 4b 40 00 00 00 40 00 00 00 0d 00 00 00 6d 65 74 61 64 61 74
+#>    [38] 61 2e 6a 73 6f 6e 7b 22 6b 65 72 61 73 5f 76 65 72 73 69 6f 6e 22 3a 20 22 33 2e 31 34 2e 30 22 2c 20 22 64 61
+#>    [75] 74 65 5f 73 61 76 65 64 22 3a 20 22 32 30 32 36 2d 30 35 2d 30 31 40 31 32 3a 31 35 3a 34 30 22 7d 50 4b 03 04
+#>   [112] 14 00 00 00 00 00 00 00 21 00 fa 5d 54 2d 1d 11 00 00 1d 11 00 00 0b 00 00 00 63 6f 6e 66 69 67 2e 6a 73 6f 6e
+#>   [149] 7b 22 6d 6f 64 75 6c 65 22 3a 20 22 6b 65 72 61 73 22 2c 20 22 63 6c 61 73 73 5f 6e 61 6d 65 22 3a 20 22 53 65
+#>   [186] 71 75 65 6e 74 69 61 6c 22 2c 20 22 63 6f 6e 66 69 67 22 3a 20 7b 22 6e 61 6d 65 22 3a 20 22 73 65 71 75 65 6e
+#>   [223] 74 69 61 6c 5f 33 37 36 22 2c 20 22 74 72 61 69 6e 61 62 6c 65 22 3a 20 74 72 75 65 2c 20 22 64 74 79 70 65 22
+#>   [260] 3a 20 7b 22 6d 6f 64 75 6c 65 22 3a 20 22 6b 65 72 61 73 22 2c 20 22 63 6c 61 73 73 5f 6e 61 6d 65 22 3a 20 22
+#>   [297] 44 54 79 70 65 50 6f 6c 69 63 79 22 2c 20 22 63 6f 6e 66 69 67 22 3a 20 7b 22 6e 61 6d 65 22 3a 20 22 66 6c 6f
+#>   [334] 61 74 33 32 22 7d 2c 20 22 72 65 67 69 73 74 65 72 65 64 5f 6e 61 6d 65 22 3a 20 6e 75 6c 6c 2c 20 22 73 68 61
+#>   [371] 72 65 64 5f 6f 62 6a 65 63 74 5f 69 64 22 3a 20 31 39 38 30 33 37 32 35 38 30 35 36 30 7d 2c 20 22 6c 61 79 65
+#>   [408] 72 73 22 3a 20 5b 7b 22 6d 6f 64 75 6c 65 22 3a 20 22 6b 65 72 61 73 2e 6c 61 79 65 72 73 22 2c 20 22 63 6c 61
+#>   [445] 73 73 5f 6e 61 6d 65 22 3a 20 22 49 6e 70 75 74 4c 61 79 65 72 22 2c 20 22 63 6f 6e 66 69 67 22 3a 20 7b 22 62
+#>   [482] 61 74 63 68 5f 73 68 61 70 65 22 3a 20 5b 6e 75 6c 6c 2c 20 37 5d 2c 20 22 64 74 79 70 65 22 3a 20 22 66 6c 6f
+#>   [519] 61 74 33 32 22 2c 20 22 73 70 61 72 73 65 22 3a 20 66 61 6c 73 65 2c 20 22 72 61 67 67 65 64 22 3a 20 66 61 6c
+#>   [556] 73 65 2c 20 22 6e 61 6d 65 22 3a 20 22 69 6e 70 75 74 5f 6c 61 79 65 72 5f 33 37 36 22 2c 20 22 6f 70 74 69 6f
+#>   [593] 6e 61 6c 22 3a 20 66 61 6c 73 65 7d 2c 20 22 72 65 67 69 73 74 65 72 65 64 5f 6e 61 6d 65 22 3a 20 6e 75 6c 6c
+#>   [630] 7d 2c 20 7b 22 6d 6f 64 75 6c 65 22 3a 20 22 6b 65 72 61 73 2e 6c 61 79 65 72 73 22 2c 20 22 63 6c 61 73 73 5f
+#>   [667] 6e 61 6d 65 22 3a 20 22 44 65 6e 73 65 22 2c 20 22 63 6f 6e 66 69 67 22 3a 20 7b 22 6e 61 6d 65 22 3a 20 22 64
+#>   [704] 65 6e 73 65 5f 31 31 32 37 22 2c 20 22 74 72 61 69 6e 61 62 6c 65 22 3a 20 74 72 75 65 2c 20 22 64 74 79 70 65
+#>   [741] 22 3a 20 7b 22 6d 6f 64 75 6c 65 22 3a 20 22 6b 65 72 61 73 22 2c 20 22 63 6c 61 73 73 5f 6e 61 6d 65 22 3a 20
+#>   [778] 22 44 54 79 70 65 50 6f 6c 69 63 79 22 2c 20 22 63 6f 6e 66 69 67 22 3a 20 7b 22 6e 61 6d 65 22 3a 20 22 66 6c
+#>   [815] 6f 61 74 33 32 22 7d 2c 20 22 72 65 67 69 73 74 65 72 65 64 5f 6e 61 6d 65 22 3a 20 6e 75 6c 6c 7d 2c 20 22 75
+#>   [852] 6e 69 74 73 22 3a 20 33 32 2c 20 22 61 63 74 69 76 61 74 69 6f 6e 22 3a 20 22 72 65 6c 75 22 2c 20 22 75 73 65
+#>   [889] 5f 62 69 61 73 22 3a 20 74 72 75 65 2c 20 22 6b 65 72 6e 65 6c 5f 69 6e 69 74 69 61 6c 69 7a 65 72 22 3a 20 7b
+#>   [926] 22 6d 6f 64 75 6c 65 22 3a 20 22 6b 65 72 61 73 2e 69 6e 69 74 69 61 6c 69 7a 65 72 73 22 2c 20 22 63 6c 61 73
+#>   [963] 73 5f 6e 61 6d 65 22 3a 20 22 47 6c 6f 72 6f 74 55 6e 69 66 6f 72 6d 22 2c 20 22 63 6f 6e 66 69 67 22 3a 20 7b
+#>  [1000] 22 73 65 65 64 22 3a 20 6e 75 6c 6c 7d 2c 20 22 72 65 67 69 73 74 65 72 65 64 5f 6e 61 6d 65 22 3a 20 6e 75 6c
+#>  [1037] 6c 7d 2c 20 22 62 69 61 73 5f 69 6e 69 74 69 61 6c 69 7a 65 72 22 3a 20 7b 22 6d 6f 64 75 6c 65 22 3a 20 22 6b
+#> 
+#> ...
+#> and 1674 more lines.
 ```
 
 ### Inspect Final Model
 
 You can extract the underlying Keras model and its training history for further inspection.
 
-```{r inspect-final-keras-model-summary}
+
+``` r
 # Extract the Keras model summary
 final_penguin_fit |>
   extract_fit_parsnip() |>
   extract_keras_model() |>
   summary()
+#> Model: "sequential_376"
+#> ┌─────────────────────────────────────────────────────┬────────────────────────────────────────┬───────────────────────
+#> │ Layer (type)                                        │ Output Shape                           │               Param # 
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
+#> │ dense_1127 (Dense)                                  │ (None, 32)                             │                   256 
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
+#> │ dropout_750 (Dropout)                               │ (None, 32)                             │                     0 
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
+#> │ dense_1128 (Dense)                                  │ (None, 64)                             │                 2,112 
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
+#> │ dropout_751 (Dropout)                               │ (None, 64)                             │                     0 
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
+#> │ dense_1129 (Dense)                                  │ (None, 3)                              │                   195 
+#> └─────────────────────────────────────────────────────┴────────────────────────────────────────┴───────────────────────
+#>  Total params: 7,691 (30.05 KB)
+#>  Trainable params: 2,563 (10.01 KB)
+#>  Non-trainable params: 0 (0.00 B)
+#>  Optimizer params: 5,128 (20.04 KB)
 ```
 
-```{r inspect-final-keras-model-plot, eval=FALSE}
+
+``` r
 # Plot the Keras model
 final_penguin_fit |>
   extract_fit_parsnip() |>
@@ -237,7 +468,8 @@ final_penguin_fit |>
 
 ![Model](images/model_plot_shapes_ws.png){fig-alt="A picture showing the model shape"}
 
-```{r inspect-final-keras-model-history}
+
+``` r
 # Plot the training history
 final_penguin_fit |>
   extract_fit_parsnip() |>
@@ -245,18 +477,23 @@ final_penguin_fit |>
   plot()
 ```
 
+![plot of chunk inspect-final-keras-model-history](figure/inspect-final-keras-model-history-1.png)
+
 ## Make Predictions and Evaluate
 
 Finally, we will make predictions on the test set and evaluate the model's performance.
 
-```{r predict-evaluate}
+
+``` r
 # Make predictions on the test set
 penguin_test_pred <- predict(final_penguin_fit, new_data = penguin_test)
+#> 3/3 - 0s - 38ms/step
 penguin_test_prob <- predict(
   final_penguin_fit,
   new_data = penguin_test,
   type = "prob"
 )
+#> 3/3 - 0s - 19ms/step
 
 # Combine predictions with actuals
 penguin_results <- penguin_test |>
@@ -264,6 +501,15 @@ penguin_results <- penguin_test |>
   bind_cols(penguin_test_pred, penguin_test_prob)
 
 print(head(penguin_results))
+#> # A tibble: 6 × 5
+#>   species .pred_class .pred_Adelie .pred_Chinstrap .pred_Gentoo
+#>   <fct>   <fct>              <dbl>           <dbl>        <dbl>
+#> 1 Adelie  Adelie             1.000        1.37e- 7     1.41e- 8
+#> 2 Adelie  Adelie             1            1.11e-11     4.72e-12
+#> 3 Adelie  Adelie             1            3.23e-11     3.48e-11
+#> 4 Adelie  Adelie             1            7.12e-10     1.13e-10
+#> 5 Adelie  Adelie             1            4.24e-11     1.11e-11
+#> 6 Adelie  Adelie             0.899        1.01e- 1     5.16e- 5
 
 # Evaluate performance using yardstick metrics
 metrics_results <- metric_set(
@@ -280,8 +526,72 @@ metrics_results <- metric_set(
 )
 
 print(metrics_results)
+#> # A tibble: 3 × 3
+#>   .metric  .estimator .estimate
+#>   <chr>    <chr>          <dbl>
+#> 1 accuracy multiclass         1
+#> 2 f_meas   macro              1
+#> 3 roc_auc  hand_till          1
 
 # Confusion Matrix
 conf_mat(penguin_results, truth = species, estimate = .pred_class) |>
   autoplot(type = "heatmap")
 ```
+
+![plot of chunk predict-evaluate](figure/predict-evaluate-1.png)
+
+## Saving and Reloading Your Model
+
+`kerasnip` serializes the Keras model weights to bytes at fit time and stores them alongside the workflow object. This means plain `saveRDS()` / `readRDS()` **works out of the box** — the underlying Keras model is restored automatically the first time `predict()` is called on the reloaded object.
+
+
+``` r
+# Save
+saveRDS(final_penguin_fit, "penguin_model.rds")
+
+# Reload — no extra steps needed
+final_penguin_fit_loaded <- readRDS("penguin_model.rds")
+
+predict(final_penguin_fit_loaded, new_data = penguin_test) |> head()
+#> 3/3 - 0s - 48ms/step
+#> # A tibble: 6 × 1
+#>   .pred_class
+#>   <fct>      
+#> 1 Adelie     
+#> 2 Adelie     
+#> 3 Adelie     
+#> 4 Adelie     
+#> 5 Adelie     
+#> 6 Adelie
+```
+
+If you need a fully self-contained bundle suitable for deployment with `vetiver` or other MLOps tools, use `bundle::bundle()` instead:
+
+
+``` r
+library(bundle)
+
+# Save as a portable bundle
+bundled <- bundle(final_penguin_fit)
+saveRDS(bundled, "penguin_model_bundle.rds")
+
+# Reload in any R session
+library(kerasnip)
+library(bundle)
+
+final_penguin_fit_loaded <- unbundle(readRDS("penguin_model_bundle.rds"))
+
+predict(final_penguin_fit_loaded, new_data = penguin_test) |> head()
+#> 3/3 - 0s - 56ms/step
+#> # A tibble: 6 × 1
+#>   .pred_class
+#>   <fct>      
+#> 1 Adelie     
+#> 2 Adelie     
+#> 3 Adelie     
+#> 4 Adelie     
+#> 5 Adelie     
+#> 6 Adelie
+```
+
+See `vignette("saving_and_reloading")` for a detailed comparison of both approaches.

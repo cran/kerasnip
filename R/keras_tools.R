@@ -4,8 +4,8 @@
 #' @description
 #' This function provides an `kera_evaluate()` method for `model_fit` objects
 #' created by `kerasnip`. It preprocesses the new data into the format expected
-#' by Keras and then calls `keras3::evaluate()` on the underlying model to compute
-#' the loss and any other metrics.
+#' by Keras and then calls `keras3::evaluate()` on the underlying model to
+#' compute the loss and any other metrics.
 #'
 #' @param object A `model_fit` object produced by a `kerasnip` specification.
 #' @param x A data frame or matrix of new predictor data.
@@ -108,7 +108,18 @@ keras_evaluate <- function(object, x, y = NULL, ...) {
   }
 
   # 4. Call the underlying Keras evaluate method
-  keras_model <- object$fit$fit
+  keras_model <- tryCatch(
+    {
+      reticulate::py_validate_xptr(object$fit$fit)
+      object$fit$fit
+    },
+    error = function(e) {
+      if (is.null(object$fit$keras_bytes)) {
+        stop(e)
+      }
+      keras_model_from_bytes(object$fit$keras_bytes)
+    }
+  )
   keras3::evaluate(keras_model, x = x_proc, y = y_proc, ...)
 }
 
@@ -130,7 +141,18 @@ keras_evaluate <- function(object, x, y = NULL, ...) {
 #' @seealso keras_evaluate, extract_keras_history
 #' @export
 extract_keras_model <- function(object) {
-  object$fit$fit
+  tryCatch(
+    {
+      reticulate::py_validate_xptr(object$fit$fit)
+      object$fit$fit
+    },
+    error = function(e) {
+      if (is.null(object$fit$keras_bytes)) {
+        stop(e)
+      }
+      keras_model_from_bytes(object$fit$keras_bytes)
+    }
+  )
 }
 
 #' Extract Keras Training History
@@ -153,4 +175,66 @@ extract_keras_model <- function(object) {
 #' @export
 extract_keras_history <- function(object) {
   object$fit$history
+}
+
+#' Tidy a Fitted Kerasnip Model
+#'
+#' @description
+#' Returns a tibble with one row per layer of the underlying Keras model,
+#' summarising the layer name, Python class, and parameter count.
+#'
+#' @param x A `kerasnip_model_fit` object.
+#' @param ... Not used.
+#' @return A tibble with columns `layer` (character), `class` (character),
+#'   and `n_params` (integer).
+#' @importFrom generics tidy
+#' @importFrom tibble tibble
+#' @importFrom utils tail
+#' @keywords internal
+#' @export
+tidy.kerasnip_model_fit <- function(x, ...) {
+  model <- extract_keras_model(x)
+  layers <- model$layers
+
+  layer_name <- vapply(layers, function(l) l$name, character(1))
+  layer_class <- vapply(
+    layers,
+    function(l) {
+      parts <- strsplit(class(l)[[1L]], ".", fixed = TRUE)[[1L]]
+      tail(parts, 1L)
+    },
+    character(1)
+  )
+  n_params <- vapply(
+    layers,
+    function(l) {
+      tryCatch(as.integer(l$count_params()), error = function(e) NA_integer_)
+    },
+    integer(1)
+  )
+
+  tibble(layer = layer_name, class = layer_class, n_params = n_params)
+}
+
+#' Glance at a Fitted Kerasnip Model
+#'
+#' @description
+#' Returns a one-row tibble of summary statistics from the final training epoch:
+#' every metric the model was compiled with (e.g. `loss`, `accuracy`).
+#'
+#' @param x A `kerasnip_model_fit` object.
+#' @param ... Not used.
+#' @return A one-row tibble with one column per compiled metric. Returns an
+#'   empty tibble if training history has been stripped (e.g. by butcher).
+#' @importFrom generics glance
+#' @importFrom tibble as_tibble tibble
+#' @keywords internal
+#' @export
+glance.kerasnip_model_fit <- function(x, ...) {
+  history <- x$fit$history
+  if (is.null(history) || is.null(history$metrics)) {
+    return(tibble::tibble())
+  }
+  last_vals <- lapply(history$metrics, function(m) m[[length(m)]])
+  as_tibble(last_vals)
 }
