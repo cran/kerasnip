@@ -196,22 +196,30 @@ tune_res <- tune::tune_grid(
   grid = grid,
   control = control
 )
-#> 3/3 - 0s - 79ms/step
-#> 3/3 - 0s - 29ms/step
-#> 3/3 - 0s - 67ms/step
-#> 3/3 - 0s - 24ms/step
-#> 3/3 - 0s - 60ms/step
-#> 3/3 - 0s - 24ms/step
-#> 3/3 - 0s - 94ms/step
-#> 3/3 - 0s - 26ms/step
-#> 3/3 - 0s - 75ms/step
-#> 3/3 - 0s - 36ms/step
-#> 3/3 - 0s - 90ms/step
-#> 3/3 - 0s - 34ms/step
-#> 3/3 - 0s - 73ms/step
+#> 3/3 - 0s - 62ms/step
+#> 3/3 - 0s - 51ms/step
+#> 3/3 - 0s - 47ms/step
+#> 3/3 - 0s - 48ms/step
+#> 3/3 - 0s - 66ms/step
+#> 3/3 - 0s - 28ms/step
+#> 3/3 - 0s - 66ms/step
+#> 3/3 - 0s - 40ms/step
+#> 3/3 - 0s - 18ms/step
+#> 3/3 - 0s - 72ms/step
+#> 3/3 - 0s - 54ms/step
+#> 3/3 - 0s - 27ms/step
+#> 3/3 - 0s - 51ms/step
+#> 3/3 - 0s - 68ms/step
 #> 3/3 - 0s - 22ms/step
-#> 3/3 - 0s - 85ms/step
-#> 3/3 - 0s - 33ms/step
+#> 3/3 - 0s - 47ms/step
+#> 3/3 - 0s - 42ms/step
+#> 3/3 - 0s - 22ms/step
+#> 3/3 - 0s - 50ms/step
+#> 3/3 - 0s - 70ms/step
+#> 3/3 - 0s - 28ms/step
+#> 3/3 - 0s - 86ms/step
+#> 3/3 - 0s - 64ms/step
+#> 3/3 - 0s - 32ms/step
 
 print(tune_res)
 #> # Tuning results

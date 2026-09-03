@@ -17,7 +17,7 @@
 #'       \item Block-specific hyperparameters (e.g., `dense_units`),
 #'          introspecting `layer_blocks` to find default values.
 #'       \item Architecture parameters (e.g., `num_dense`).
-#'       \item Global training parameters (e.g., `epochs`, `learn_rate`).
+#'       \item Global training parameters (e.g., `fit_epochs`, `learn_rate`).
 #'       \item Compilation override parameters (e.g., `compile_loss`).
 #'     }
 #'   \item \strong{Sections (`@section`):} It creates dedicated sections for:
@@ -262,6 +262,8 @@ generate_roxygen_docs <- function(
     "#' @section Model Fitting:",
     "#' The model is fit using `keras3::fit()`. You can pass any",
     "#' argument to this function by prefixing it with `fit_`.",
+    "#' Fit arguments can also be passed without the `fit_` prefix",
+    "#' (e.g. `epochs` for `fit_epochs`); the `fit_` form takes precedence.",
     "#' For example, to add Keras callbacks, you can pass",
     "#' `fit_callbacks = list(callback_early_stopping())`.",
     "#' Common arguments include `fit_epochs`, `fit_batch_size`,",

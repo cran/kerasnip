@@ -37,20 +37,21 @@ We’ll start by loading `kerasnip`, `tidymodels` and `keras3`:
 ``` r
 library(kerasnip)
 library(tidymodels)
-#> ── Attaching packages ────────────────────────────────────────────────────────────────────────────── tidymodels 1.5.0 ──
-#> ✔ broom        1.0.12     ✔ recipes      1.3.2 
-#> ✔ dials        1.4.3      ✔ rsample      1.3.2 
+#> ── Attaching packages ───────────────── tidymodels 1.5.0 ──
+#> ✔ broom        1.0.13     ✔ recipes      1.3.3 
+#> ✔ dials        1.4.4      ✔ rsample      1.3.2 
 #> ✔ dplyr        1.2.1      ✔ tailor       0.1.0 
 #> ✔ ggplot2      4.0.3      ✔ tidyr        1.3.2 
 #> ✔ infer        1.1.0      ✔ tune         2.1.0 
 #> ✔ modeldata    1.5.1      ✔ workflows    1.3.0 
-#> ✔ parsnip      1.5.0      ✔ workflowsets 1.1.1 
+#> ✔ parsnip      1.6.0      ✔ workflowsets 1.1.1 
 #> ✔ purrr        1.2.2      ✔ yardstick    1.4.0
-#> ── Conflicts ───────────────────────────────────────────────────────────────────────────────── tidymodels_conflicts() ──
-#> ✖ purrr::discard() masks scales::discard()
-#> ✖ dplyr::filter()  masks stats::filter()
-#> ✖ dplyr::lag()     masks stats::lag()
-#> ✖ recipes::step()  masks stats::step()
+#> ── Conflicts ──────────────────── tidymodels_conflicts() ──
+#> ✖ purrr::discard()         masks scales::discard()
+#> ✖ dplyr::filter()          masks stats::filter()
+#> ✖ parsnip::get_model_env() masks kerasnip::get_model_env()
+#> ✖ dplyr::lag()             masks stats::lag()
+#> ✖ recipes::step()          masks stats::step()
 library(keras3)
 #> 
 #> Attaching package: 'keras3'
@@ -198,6 +199,7 @@ mlp_spec <- mnist_mlp(
 
 # Fit the model
 mlp_fit <- fit(mlp_spec, y ~ x, data = train_df)
+#> 1875/1875 - 5s - 3ms/step
 ```
 
 
@@ -206,19 +208,19 @@ mlp_fit |>
   extract_keras_model() |>
   summary()
 #> Model: "sequential"
-#> ┌─────────────────────────────────────────────────────┬────────────────────────────────────────┬───────────────────────
-#> │ Layer (type)                                        │ Output Shape                           │               Param # 
-#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
-#> │ dense (Dense)                                       │ (None, 256)                            │               200,960 
-#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
-#> │ dropout (Dropout)                                   │ (None, 256)                            │                     0 
-#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
-#> │ dense_1 (Dense)                                     │ (None, 128)                            │                32,896 
-#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
-#> │ dropout_1 (Dropout)                                 │ (None, 128)                            │                     0 
-#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
-#> │ dense_2 (Dense)                                     │ (None, 10)                             │                 1,290 
-#> └─────────────────────────────────────────────────────┴────────────────────────────────────────┴───────────────────────
+#> ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓
+#> ┃ Layer (type)                                        ┃ Output Shape                           ┃               Param # ┃
+#> ┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩
+#> │ dense (Dense)                                       │ (None, 256)                            │               200,960 │
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────┤
+#> │ dropout (Dropout)                                   │ (None, 256)                            │                     0 │
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────┤
+#> │ dense_1 (Dense)                                     │ (None, 128)                            │                32,896 │
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────┤
+#> │ dropout_1 (Dropout)                                 │ (None, 128)                            │                     0 │
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────┤
+#> │ dense_2 (Dense)                                     │ (None, 10)                             │                 1,290 │
+#> └─────────────────────────────────────────────────────┴────────────────────────────────────────┴───────────────────────┘
 #>  Total params: 470,294 (1.79 MB)
 #>  Trainable params: 235,146 (918.54 KB)
 #>  Non-trainable params: 0 (0.00 B)
@@ -250,12 +252,12 @@ The `keras_evaluate()` function provides a straightforward way to assess the mod
 
 ``` r
 mlp_fit |> keras_evaluate(x_test, y_test)
-#> 313/313 - 1s - 2ms/step - accuracy: 0.9816 - loss: 0.0933
+#> 313/313 - 1s - 3ms/step - accuracy: 0.9817 - loss: 0.0886
 #> $accuracy
-#> [1] 0.9816
+#> [1] 0.9817
 #> 
 #> $loss
-#> [1] 0.09331781
+#> [1] 0.08861916
 ```
 
 ### Making Predictions
@@ -267,7 +269,7 @@ Once the model is trained, we can use the standard `tidymodels` `predict()` func
 # Predict the class for the first 5 images in the test set
 class_preds <- mlp_fit |>
   predict(new_data = head(select(test_df, x)))
-#> 1/1 - 0s - 112ms/step
+#> 1/1 - 0s - 81ms/step
 class_preds
 #> # A tibble: 6 × 1
 #>   .pred_class
@@ -287,17 +289,17 @@ To get the underlying probabilities for each class, we can set `type = "prob"`. 
 # Predict probabilities for the first 5 images
 prob_preds <- mlp_fit |>
   predict(new_data = head(select(test_df, x)), type = "prob")
-#> 1/1 - 0s - 79ms/step
+#> 1/1 - 0s - 42ms/step
 prob_preds
 #> # A tibble: 6 × 10
-#>     .pred_0   .pred_1  .pred_2  .pred_3   .pred_4  .pred_5  .pred_6  .pred_7  .pred_8  .pred_9
-#>       <dbl>     <dbl>    <dbl>    <dbl>     <dbl>    <dbl>    <dbl>    <dbl>    <dbl>    <dbl>
-#> 1 5.50 e-17 2.57 e-15 2.56e-11 1.41e- 9 3.52 e-19 1.40e-14 3.42e-27 1   e+ 0 7.46e-19 1.19e-10
-#> 2 7.14 e-19 1.02 e-12 1   e+ 0 2.66e-13 4.80 e-25 3.38e-22 8.05e-18 8.01e-20 2.42e-18 2.33e-27
-#> 3 1.17 e-11 1.000e+ 0 8.86e- 9 1.80e-11 4.10 e- 8 3.54e-12 2.33e- 9 7.20e- 8 1.40e- 8 8.54e-11
-#> 4 1.000e+ 0 5.15 e-11 8.54e- 9 3.70e-12 3.02 e-11 8.76e-10 1.26e- 7 1.23e-10 8.62e-12 9.42e-10
-#> 5 3.89 e-11 3.38 e-11 1.01e-11 3.33e-14 1.000e+ 0 1.75e-13 2.33e-11 1.73e- 7 5.30e-14 2.48e- 7
-#> 6 1.88 e-12 1.000e+ 0 1.17e-10 1.25e-12 5.62 e- 8 3.72e-14 2.97e-10 2.18e- 8 3.60e- 9 2.09e-11
+#>    .pred_0   .pred_1  .pred_2  .pred_3   .pred_4  .pred_5  .pred_6  .pred_7  .pred_8  .pred_9
+#>      <dbl>     <dbl>    <dbl>    <dbl>     <dbl>    <dbl>    <dbl>    <dbl>    <dbl>    <dbl>
+#> 1 2.62e-21 1.07 e-15 7.46e-12 4.47e-14 2.44 e-18 4.68e-18 3.09e-27 1   e+ 0 7.03e-19 3.15e-14
+#> 2 1.76e-18 5.11 e-10 1   e+ 0 8.01e-14 1.14 e-22 1.08e-20 2.28e-16 5.92e-17 7.76e-18 1.22e-28
+#> 3 1.06e-13 1.000e+ 0 3.65e- 9 1.31e-11 9.77 e- 9 2.49e-10 9.61e-10 3.67e- 7 2.34e- 9 2.54e-13
+#> 4 1   e+ 0 3.67 e-17 1.04e- 9 5.76e-12 2.73 e-12 3.62e-11 7.92e-10 9.28e-12 3.18e-13 4.39e-10
+#> 5 1.42e-12 3.82 e-13 5.75e-10 8.42e-14 1.000e+ 0 2.95e-11 1.51e-11 1.11e- 7 1.48e-11 1.56e- 6
+#> 6 8.40e-14 1.000e+ 0 4.06e-10 4.94e-12 1.40 e- 9 3.10e-11 7.30e-11 1.84e- 7 1.35e-10 9.70e-14
 ```
 
 We can then compare the predicted class to the actual class for these images to see how the model is performing.
@@ -314,14 +316,14 @@ comparison <- bind_cols(
   )
 comparison
 #> # A tibble: 6 × 12
-#>   .pred_class   .pred_0   .pred_1  .pred_2  .pred_3   .pred_4  .pred_5  .pred_6  .pred_7  .pred_8  .pred_9 y    
-#>   <fct>           <dbl>     <dbl>    <dbl>    <dbl>     <dbl>    <dbl>    <dbl>    <dbl>    <dbl>    <dbl> <fct>
-#> 1 7           5.50 e-17 2.57 e-15 2.56e-11 1.41e- 9 3.52 e-19 1.40e-14 3.42e-27 1   e+ 0 7.46e-19 1.19e-10 7    
-#> 2 2           7.14 e-19 1.02 e-12 1   e+ 0 2.66e-13 4.80 e-25 3.38e-22 8.05e-18 8.01e-20 2.42e-18 2.33e-27 2    
-#> 3 1           1.17 e-11 1.000e+ 0 8.86e- 9 1.80e-11 4.10 e- 8 3.54e-12 2.33e- 9 7.20e- 8 1.40e- 8 8.54e-11 1    
-#> 4 0           1.000e+ 0 5.15 e-11 8.54e- 9 3.70e-12 3.02 e-11 8.76e-10 1.26e- 7 1.23e-10 8.62e-12 9.42e-10 0    
-#> 5 4           3.89 e-11 3.38 e-11 1.01e-11 3.33e-14 1.000e+ 0 1.75e-13 2.33e-11 1.73e- 7 5.30e-14 2.48e- 7 4    
-#> 6 1           1.88 e-12 1.000e+ 0 1.17e-10 1.25e-12 5.62 e- 8 3.72e-14 2.97e-10 2.18e- 8 3.60e- 9 2.09e-11 1
+#>   .pred_class  .pred_0   .pred_1  .pred_2  .pred_3   .pred_4  .pred_5  .pred_6  .pred_7  .pred_8  .pred_9 y    
+#>   <fct>          <dbl>     <dbl>    <dbl>    <dbl>     <dbl>    <dbl>    <dbl>    <dbl>    <dbl>    <dbl> <fct>
+#> 1 7           2.62e-21 1.07 e-15 7.46e-12 4.47e-14 2.44 e-18 4.68e-18 3.09e-27 1   e+ 0 7.03e-19 3.15e-14 7    
+#> 2 2           1.76e-18 5.11 e-10 1   e+ 0 8.01e-14 1.14 e-22 1.08e-20 2.28e-16 5.92e-17 7.76e-18 1.22e-28 2    
+#> 3 1           1.06e-13 1.000e+ 0 3.65e- 9 1.31e-11 9.77 e- 9 2.49e-10 9.61e-10 3.67e- 7 2.34e- 9 2.54e-13 1    
+#> 4 0           1   e+ 0 3.67 e-17 1.04e- 9 5.76e-12 2.73 e-12 3.62e-11 7.92e-10 9.28e-12 3.18e-13 4.39e-10 0    
+#> 5 4           1.42e-12 3.82 e-13 5.75e-10 8.42e-14 1.000e+ 0 2.95e-11 1.51e-11 1.11e- 7 1.48e-11 1.56e- 6 4    
+#> 6 1           8.40e-14 1.000e+ 0 4.06e-10 4.94e-12 1.40 e- 9 3.10e-11 7.30e-11 1.84e- 7 1.35e-10 9.70e-14 1
 ```
 
 ## Example 2: Tuning the Model Architecture
@@ -395,87 +397,168 @@ tune_res <- tune_grid(
   metrics = metric_set(accuracy),
   control = control_grid(save_pred = FALSE, save_workflow = TRUE)
 )
-#> 2/2 - 0s - 67ms/step
-#> 2/2 - 0s - 82ms/step
-#> 2/2 - 0s - 85ms/step
-#> 2/2 - 0s - 73ms/step
-#> 2/2 - 0s - 66ms/step
-#> 2/2 - 0s - 100ms/step
-#> 2/2 - 0s - 67ms/step
-#> 2/2 - 0s - 79ms/step
-#> 2/2 - 0s - 92ms/step
-#> 2/2 - 0s - 67ms/step
-#> 2/2 - 0s - 80ms/step
-#> 2/2 - 0s - 75ms/step
-#> 2/2 - 0s - 64ms/step
-#> 2/2 - 0s - 77ms/step
-#> 2/2 - 0s - 96ms/step
-#> 2/2 - 0s - 60ms/step
-#> 2/2 - 0s - 88ms/step
-#> 2/2 - 0s - 87ms/step
-#> 2/2 - 0s - 70ms/step
-#> 2/2 - 0s - 78ms/step
-#> 2/2 - 0s - 96ms/step
-#> 2/2 - 0s - 63ms/step
-#> 2/2 - 0s - 72ms/step
-#> 2/2 - 0s - 110ms/step
-#> 2/2 - 0s - 79ms/step
-#> 2/2 - 0s - 76ms/step
-#> 2/2 - 0s - 94ms/step
-#> 2/2 - 0s - 70ms/step
-#> 2/2 - 0s - 71ms/step
-#> 2/2 - 0s - 89ms/step
-#> 2/2 - 0s - 70ms/step
-#> 2/2 - 0s - 76ms/step
-#> 2/2 - 0s - 82ms/step
-#> 2/2 - 0s - 62ms/step
-#> 2/2 - 0s - 86ms/step
-#> 2/2 - 0s - 85ms/step
-#> 2/2 - 0s - 68ms/step
-#> 2/2 - 0s - 76ms/step
-#> 2/2 - 0s - 85ms/step
-#> 2/2 - 0s - 70ms/step
-#> 2/2 - 0s - 74ms/step
-#> 2/2 - 0s - 78ms/step
-#> 2/2 - 0s - 75ms/step
-#> 2/2 - 0s - 81ms/step
-#> 2/2 - 0s - 81ms/step
-#> 2/2 - 0s - 55ms/step
-#> 2/2 - 0s - 77ms/step
-#> 2/2 - 0s - 86ms/step
-#> 2/2 - 0s - 53ms/step
-#> 2/2 - 0s - 79ms/step
-#> 2/2 - 0s - 82ms/step
-#> 2/2 - 0s - 60ms/step
-#> 2/2 - 0s - 82ms/step
-#> 2/2 - 0s - 93ms/step
-#> 2/2 - 0s - 57ms/step
-#> 2/2 - 0s - 69ms/step
-#> 2/2 - 0s - 85ms/step
-#> 2/2 - 0s - 60ms/step
-#> 2/2 - 0s - 65ms/step
-#> 2/2 - 0s - 89ms/step
-#> 2/2 - 0s - 59ms/step
-#> 2/2 - 0s - 62ms/step
-#> 2/2 - 0s - 98ms/step
-#> 2/2 - 0s - 63ms/step
-#> 2/2 - 0s - 71ms/step
-#> 2/2 - 0s - 93ms/step
-#> 2/2 - 0s - 63ms/step
-#> 2/2 - 0s - 69ms/step
-#> 2/2 - 0s - 84ms/step
-#> 2/2 - 0s - 65ms/step
-#> 2/2 - 0s - 73ms/step
-#> 2/2 - 0s - 85ms/step
+#> 3/3 - 0s - 36ms/step
+#> 2/2 - 0s - 50ms/step
+#> 3/3 - 0s - 43ms/step
 #> 2/2 - 0s - 61ms/step
-#> 2/2 - 0s - 66ms/step
-#> 2/2 - 0s - 77ms/step
+#> 3/3 - 0s - 44ms/step
+#> 2/2 - 0s - 73ms/step
+#> 3/3 - 0s - 35ms/step
+#> 2/2 - 0s - 48ms/step
+#> 3/3 - 0s - 40ms/step
+#> 2/2 - 0s - 61ms/step
+#> 3/3 - 0s - 41ms/step
+#> 2/2 - 0s - 79ms/step
+#> 3/3 - 0s - 34ms/step
+#> 2/2 - 0s - 50ms/step
+#> 3/3 - 0s - 41ms/step
+#> 2/2 - 0s - 62ms/step
+#> 3/3 - 0s - 46ms/step
+#> 2/2 - 0s - 60ms/step
+#> 3/3 - 0s - 57ms/step
+#> 2/2 - 0s - 48ms/step
+#> 3/3 - 0s - 41ms/step
+#> 2/2 - 0s - 55ms/step
+#> 3/3 - 0s - 54ms/step
+#> 2/2 - 0s - 81ms/step
+#> 3/3 - 0s - 35ms/step
+#> 2/2 - 0s - 49ms/step
+#> 3/3 - 0s - 47ms/step
+#> 2/2 - 0s - 65ms/step
+#> 3/3 - 0s - 49ms/step
+#> 2/2 - 0s - 62ms/step
+#> 3/3 - 0s - 39ms/step
+#> 2/2 - 0s - 51ms/step
+#> 3/3 - 0s - 39ms/step
+#> 2/2 - 0s - 83ms/step
+#> 3/3 - 0s - 47ms/step
+#> 2/2 - 0s - 67ms/step
+#> 3/3 - 0s - 29ms/step
+#> 2/2 - 0s - 51ms/step
+#> 3/3 - 0s - 42ms/step
+#> 2/2 - 0s - 57ms/step
+#> 3/3 - 0s - 48ms/step
+#> 2/2 - 0s - 93ms/step
+#> 3/3 - 0s - 34ms/step
+#> 2/2 - 1s - 316ms/step
+#> 3/3 - 0s - 49ms/step
+#> 2/2 - 0s - 60ms/step
+#> 3/3 - 0s - 48ms/step
+#> 2/2 - 0s - 60ms/step
+#> 3/3 - 0s - 38ms/step
+#> 2/2 - 0s - 48ms/step
+#> 3/3 - 0s - 40ms/step
+#> 2/2 - 0s - 51ms/step
+#> 3/3 - 0s - 46ms/step
+#> 2/2 - 0s - 67ms/step
+#> 3/3 - 0s - 47ms/step
+#> 2/2 - 0s - 46ms/step
+#> 3/3 - 0s - 38ms/step
+#> 2/2 - 0s - 46ms/step
+#> 3/3 - 0s - 46ms/step
 #> 2/2 - 0s - 59ms/step
-#> 2/2 - 0s - 68ms/step
+#> 3/3 - 0s - 32ms/step
+#> 2/2 - 0s - 40ms/step
+#> 3/3 - 0s - 39ms/step
+#> 2/2 - 0s - 55ms/step
+#> 3/3 - 0s - 40ms/step
+#> 2/2 - 0s - 62ms/step
+#> 3/3 - 0s - 32ms/step
+#> 2/2 - 0s - 43ms/step
+#> 3/3 - 0s - 37ms/step
+#> 2/2 - 0s - 41ms/step
+#> 3/3 - 0s - 45ms/step
 #> 2/2 - 0s - 64ms/step
-#> 2/2 - 0s - 58ms/step
-#> 2/2 - 0s - 68ms/step
-#> 2/2 - 0s - 68ms/step
+#> 3/3 - 0s - 24ms/step
+#> 2/2 - 0s - 40ms/step
+#> 3/3 - 0s - 39ms/step
+#> 2/2 - 0s - 50ms/step
+#> 3/3 - 0s - 43ms/step
+#> 2/2 - 0s - 53ms/step
+#> 3/3 - 0s - 25ms/step
+#> 2/2 - 0s - 45ms/step
+#> 3/3 - 0s - 38ms/step
+#> 2/2 - 0s - 42ms/step
+#> 3/3 - 0s - 37ms/step
+#> 2/2 - 0s - 55ms/step
+#> 3/3 - 0s - 29ms/step
+#> 2/2 - 0s - 43ms/step
+#> 3/3 - 0s - 30ms/step
+#> 2/2 - 0s - 43ms/step
+#> 3/3 - 0s - 34ms/step
+#> 2/2 - 0s - 54ms/step
+#> 3/3 - 0s - 24ms/step
+#> 2/2 - 0s - 38ms/step
+#> 3/3 - 0s - 36ms/step
+#> 2/2 - 0s - 44ms/step
+#> 3/3 - 0s - 41ms/step
+#> 2/2 - 0s - 63ms/step
+#> 3/3 - 0s - 30ms/step
+#> 2/2 - 0s - 39ms/step
+#> 3/3 - 0s - 36ms/step
+#> 2/2 - 0s - 51ms/step
+#> 3/3 - 0s - 29ms/step
+#> 2/2 - 0s - 52ms/step
+#> 3/3 - 0s - 23ms/step
+#> 2/2 - 0s - 38ms/step
+#> 3/3 - 0s - 33ms/step
+#> 2/2 - 0s - 42ms/step
+#> 3/3 - 0s - 33ms/step
+#> 2/2 - 0s - 44ms/step
+#> 3/3 - 0s - 32ms/step
+#> 2/2 - 0s - 46ms/step
+#> 3/3 - 0s - 28ms/step
+#> 2/2 - 0s - 49ms/step
+#> 3/3 - 0s - 36ms/step
+#> 2/2 - 0s - 48ms/step
+#> 3/3 - 0s - 34ms/step
+#> 2/2 - 0s - 40ms/step
+#> 3/3 - 0s - 37ms/step
+#> 2/2 - 0s - 45ms/step
+#> 3/3 - 0s - 35ms/step
+#> 2/2 - 0s - 56ms/step
+#> 3/3 - 0s - 24ms/step
+#> 2/2 - 0s - 42ms/step
+#> 3/3 - 0s - 26ms/step
+#> 2/2 - 0s - 42ms/step
+#> 3/3 - 0s - 31ms/step
+#> 2/2 - 0s - 47ms/step
+#> 3/3 - 0s - 25ms/step
+#> 2/2 - 0s - 38ms/step
+#> 3/3 - 0s - 30ms/step
+#> 2/2 - 0s - 41ms/step
+#> 3/3 - 0s - 33ms/step
+#> 2/2 - 0s - 49ms/step
+#> 3/3 - 0s - 27ms/step
+#> 2/2 - 0s - 37ms/step
+#> 3/3 - 0s - 27ms/step
+#> 2/2 - 0s - 42ms/step
+#> 3/3 - 0s - 30ms/step
+#> 2/2 - 0s - 43ms/step
+#> 3/3 - 0s - 25ms/step
+#> 2/2 - 0s - 45ms/step
+#> 3/3 - 0s - 28ms/step
+#> 2/2 - 0s - 45ms/step
+#> 3/3 - 0s - 32ms/step
+#> 2/2 - 0s - 47ms/step
+#> 3/3 - 0s - 26ms/step
+#> 2/2 - 0s - 31ms/step
+#> 3/3 - 0s - 33ms/step
+#> 2/2 - 0s - 50ms/step
+#> 3/3 - 0s - 36ms/step
+#> 2/2 - 0s - 52ms/step
+#> 3/3 - 0s - 21ms/step
+#> 2/2 - 0s - 37ms/step
+#> 3/3 - 0s - 27ms/step
+#> 2/2 - 0s - 38ms/step
+#> 3/3 - 0s - 33ms/step
+#> 2/2 - 0s - 52ms/step
+#> 3/3 - 0s - 25ms/step
+#> 2/2 - 0s - 32ms/step
+#> 3/3 - 0s - 25ms/step
+#> 2/2 - 0s - 39ms/step
+#> 3/3 - 0s - 31ms/step
+#> 2/2 - 0s - 54ms/step
 ```
 
 Finally, we can inspect the results to find which architecture performed the best. First, a summary table:
@@ -487,11 +570,11 @@ show_best(tune_res, metric = "accuracy")
 #> # A tibble: 5 × 9
 #>   num_hidden_1 hidden_1_units hidden_1_rate .metric  .estimator  mean     n std_err .config         
 #>          <int>          <int>         <dbl> <chr>    <chr>      <dbl> <int>   <dbl> <chr>           
-#> 1            3            256         0.2   accuracy multiclass 0.800     3  0.0211 pre0_mod25_post0
-#> 2            2            256         0.400 accuracy multiclass 0.780     3  0.0220 pre0_mod18_post0
-#> 3            3            256         0.400 accuracy multiclass 0.779     3  0.0379 pre0_mod27_post0
-#> 4            1            160         0.2   accuracy multiclass 0.770     3  0.0213 pre0_mod04_post0
-#> 5            1            160         0.400 accuracy multiclass 0.770     3  0.0213 pre0_mod06_post0
+#> 1            3            256         0.400 accuracy multiclass 0.790     3  0.0312 pre0_mod27_post0
+#> 2            1            256         0.2   accuracy multiclass 0.780     3  0.0281 pre0_mod07_post0
+#> 3            2            160         0.400 accuracy multiclass 0.780     3  0.0281 pre0_mod15_post0
+#> 4            3            160         0.3   accuracy multiclass 0.780     3  0.0281 pre0_mod23_post0
+#> 5            3            256         0.3   accuracy multiclass 0.780     3  0.0281 pre0_mod26_post0
 ```
 
 Now that we've identified the best-performing hyperparameters, our final step is to create and train the final model. We use `select_best()` to get the top parameters, `finalize_workflow()` to update our workflow with them, and then `fit()` one last time on our full training dataset.
@@ -506,6 +589,7 @@ final_wf <- finalize_workflow(tune_wf, best_hps)
 
 # Fit the final model on the full training data
 final_fit <- fit(final_wf, data = train_df)
+#> 1875/1875 - 3s - 1ms/step
 ```
 
 We can now inspect our final, tuned model.
@@ -518,23 +602,23 @@ final_fit |>
   extract_keras_model() |>
   summary()
 #> Model: "sequential_82"
-#> ┌─────────────────────────────────────────────────────┬────────────────────────────────────────┬───────────────────────
-#> │ Layer (type)                                        │ Output Shape                           │               Param # 
-#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
-#> │ dense_246 (Dense)                                   │ (None, 256)                            │               200,960 
-#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
-#> │ dropout_164 (Dropout)                               │ (None, 256)                            │                     0 
-#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
-#> │ dense_247 (Dense)                                   │ (None, 256)                            │                65,792 
-#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
-#> │ dropout_165 (Dropout)                               │ (None, 256)                            │                     0 
-#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
-#> │ dense_248 (Dense)                                   │ (None, 256)                            │                65,792 
-#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
-#> │ dropout_166 (Dropout)                               │ (None, 256)                            │                     0 
-#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────
-#> │ dense_249 (Dense)                                   │ (None, 10)                             │                 2,570 
-#> └─────────────────────────────────────────────────────┴────────────────────────────────────────┴───────────────────────
+#> ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓
+#> ┃ Layer (type)                                        ┃ Output Shape                           ┃               Param # ┃
+#> ┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩
+#> │ dense_246 (Dense)                                   │ (None, 256)                            │               200,960 │
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────┤
+#> │ dropout_164 (Dropout)                               │ (None, 256)                            │                     0 │
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────┤
+#> │ dense_247 (Dense)                                   │ (None, 256)                            │                65,792 │
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────┤
+#> │ dropout_165 (Dropout)                               │ (None, 256)                            │                     0 │
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────┤
+#> │ dense_248 (Dense)                                   │ (None, 256)                            │                65,792 │
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────┤
+#> │ dropout_166 (Dropout)                               │ (None, 256)                            │                     0 │
+#> ├─────────────────────────────────────────────────────┼────────────────────────────────────────┼───────────────────────┤
+#> │ dense_249 (Dense)                                   │ (None, 10)                             │                 2,570 │
+#> └─────────────────────────────────────────────────────┴────────────────────────────────────────┴───────────────────────┘
 #>  Total params: 670,230 (2.56 MB)
 #>  Trainable params: 335,114 (1.28 MB)
 #>  Non-trainable params: 0 (0.00 B)

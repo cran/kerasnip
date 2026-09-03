@@ -17,13 +17,13 @@
 #'     (`y`) data into the format expected by Keras.
 #'   \item \strong{Fit Model:} It calls `keras3::fit()` with the compiled model
 #'     and processed data, passing along any fitting-specific arguments (e.g.,
-#'     `epochs`, `batch_size`, `callbacks`).
+#'     `fit_epochs`, `fit_batch_size`, `fit_callbacks`).
 #' }
 #'
-#' @param formula A formula specifying the predictor and outcome variables,
-#'   passed down from the `parsnip::fit()` call.
-#' @param data A data frame containing the training data, passed down from the
-#'   `parsnip::fit()` call.
+#' @param x A data frame of predictors, passed down from `parsnip`'s
+#'   `data.frame` fit interface (already separated from the outcome).
+#' @param y A vector or data frame of outcomes, passed down from `parsnip`'s
+#'   `data.frame` fit interface.
 #' @param layer_blocks A named list of layer block functions. This is passed
 #'   internally from the `parsnip` model specification.
 #' @param ... Additional arguments passed down from the model specification.
@@ -69,23 +69,11 @@
 #' @keywords internal
 #' @export
 generic_sequential_fit <- function(
-  formula,
-  data,
+  x,
+  y,
   layer_blocks,
   ...
 ) {
-  # Separate predictors and outcomes from the processed data frame provided by
-  # parsnip
-  y_names <- all.vars(formula[[2]])
-  x_names <- all.vars(formula[[3]])
-
-  # Handle the `.` case for predictors
-  if ("." %in% x_names) {
-    x <- data[, !(names(data) %in% y_names), drop = FALSE]
-  } else {
-    x <- data[, x_names, drop = FALSE]
-  }
-  y <- data[, y_names, drop = FALSE]
   # --- 1. Build and Compile Model ---
   model <- build_compile_seq_model(x, y, layer_blocks, ...)
 
@@ -107,7 +95,14 @@ generic_sequential_fit <- function(
   # Fit the model using the constructed arguments
   history <- rlang::exec(keras3::fit, model, !!!fit_args)
 
-  # --- 3. Return value ---
+  # --- 3. Compute Laplace posterior ---
+  if (is_regression_mode(y_processed$class_levels)) {
+    laplace <- laplace_all_regression(model, x_proc, y_mat)
+  } else {
+    laplace <- laplace_all_classification(model, x_proc, y_mat)
+  }
+
+  # --- 4. Return value ---
   list(
     fit = model, # The raw Keras model object
     keras_bytes = keras_model_to_bytes(model), # Bytes for RDS-safe restore
@@ -115,6 +110,7 @@ generic_sequential_fit <- function(
     # Factor levels for classification, NULL for regression
     lvl = y_processed$class_levels,
     process_x = process_x_sequential,
-    process_y = process_y_sequential
+    process_y = process_y_sequential,
+    laplace = laplace # Laplace posterior (NULL for classification)
   )
 }

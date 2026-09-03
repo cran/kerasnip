@@ -4,14 +4,14 @@
 \alias{generic_functional_fit}
 \title{Internal Fitting Engine for Functional API Models}
 \usage{
-generic_functional_fit(formula, data, layer_blocks, ...)
+generic_functional_fit(x, y, layer_blocks, ...)
 }
 \arguments{
-\item{formula}{A formula specifying the predictor and outcome variables,
-passed down from the \code{parsnip::fit()} call.}
+\item{x}{A data frame of predictors, passed down from \code{parsnip}'s
+\code{data.frame} fit interface (already separated from the outcome).}
 
-\item{data}{A data frame containing the training data, passed down from the
-\code{parsnip::fit()} call.}
+\item{y}{A vector or data frame of outcomes, passed down from \code{parsnip}'s
+\code{data.frame} fit interface.}
 
 \item{layer_blocks}{A named list of layer block functions. This is passed
 internally from the \code{parsnip} model specification.}
@@ -61,7 +61,7 @@ architecture based on the provided \code{layer_blocks} and hyperparameters.
 (\code{y}) data into the format expected by Keras.
 \item \strong{Fit Model:} It calls \code{keras3::fit()} with the compiled model
 and processed data, passing along any fitting-specific arguments (e.g.,
-\code{epochs}, \code{batch_size}, \code{callbacks}).
+\code{fit_epochs}, \code{fit_batch_size}, \code{fit_callbacks}).
 }
 }
 \examples{

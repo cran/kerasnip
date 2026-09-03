@@ -376,26 +376,27 @@ described in the sections below.</p>
 <h2>Setup</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(kerasnip)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; ── Attaching packages ────────────────────────────────────────────────────────────────────────────── tidymodels 1.5.0 ──</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; ✔ broom        1.0.12     ✔ recipes      1.3.2 </span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; ✔ dials        1.4.3      ✔ rsample      1.3.2 </span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; ── Attaching packages ───────────────── tidymodels 1.5.0 ──</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; ✔ broom        1.0.13     ✔ recipes      1.3.3 </span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; ✔ dials        1.4.4      ✔ rsample      1.3.2 </span></span>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt; ✔ dplyr        1.2.1      ✔ tailor       0.1.0 </span></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; ✔ ggplot2      4.0.3      ✔ tidyr        1.3.2 </span></span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; ✔ infer        1.1.0      ✔ tune         2.1.0 </span></span>
 <span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; ✔ modeldata    1.5.1      ✔ workflows    1.3.0 </span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; ✔ parsnip      1.5.0      ✔ workflowsets 1.1.1 </span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; ✔ parsnip      1.6.0      ✔ workflowsets 1.1.1 </span></span>
 <span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; ✔ purrr        1.2.2      ✔ yardstick    1.4.0</span></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; ── Conflicts ───────────────────────────────────────────────────────────────────────────────── tidymodels_conflicts() ──</span></span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; ✖ purrr::discard() masks scales::discard()</span></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; ✖ dplyr::filter()  masks stats::filter()</span></span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; ✖ dplyr::lag()     masks stats::lag()</span></span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; ✖ recipes::step()  masks stats::step()</span></span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="fu">library</span>(probably)</span>
-<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;probably&#39;</span></span>
-<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:base&#39;:</span></span>
-<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt;     as.factor, as.ordered</span></span></code></pre></div>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; ── Conflicts ──────────────────── tidymodels_conflicts() ──</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; ✖ purrr::discard()         masks scales::discard()</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; ✖ dplyr::filter()          masks stats::filter()</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; ✖ parsnip::get_model_env() masks kerasnip::get_model_env()</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; ✖ dplyr::lag()             masks stats::lag()</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; ✖ recipes::step()          masks stats::step()</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="fu">library</span>(probably)</span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;probably&#39;</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:base&#39;:</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="co">#&gt;     as.factor, as.ordered</span></span></code></pre></div>
 </div>
 <div id="defining-a-kerasnip-regression-model" class="section level2">
 <h2>Defining a kerasnip regression model</h2>
@@ -462,31 +463,32 @@ reference distribution for deciding how wide to make the intervals.</p>
 <span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
 <span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co"># Fit on the training set</span></span>
 <span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>fit_obj <span class="ot">&lt;-</span> <span class="fu">fit</span>(wflow, <span class="at">data =</span> train_dat)</span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co"># Build the conformal object from the calibration set</span></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>conformal_split <span class="ot">&lt;-</span> <span class="fu">int_conformal_split</span>(fit_obj, <span class="at">cal_data =</span> cal_dat)</span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; 23/23 - 0s - 8ms/step</span></span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>conformal_split</span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; Split Conformal inference</span></span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; preprocessor: recipe </span></span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; model: conf_mlp (engine = keras) </span></span>
-<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; calibration set size: 733 </span></span>
-<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; Use `predict(object, new_data, level)` to compute prediction intervals</span></span>
-<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a></span>
-<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co"># Predict intervals for new observations</span></span>
-<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>new_obs <span class="ot">&lt;-</span> cal_dat[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, ]</span>
-<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="fu">predict</span>(conformal_split, <span class="at">new_data =</span> new_obs, <span class="at">level =</span> <span class="fl">0.90</span>)</span>
-<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 63ms/step</span></span>
-<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 3</span></span>
-<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt;    .pred .pred_lower .pred_upper</span></span>
-<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;</span></span>
-<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt; 1 59969.    -168695.     288633.</span></span>
-<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt; 2 27399.    -201265.     256063.</span></span>
-<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">#&gt; 3 60180.    -168485.     288844.</span></span>
-<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="co">#&gt; 4 43338.    -185326.     272002.</span></span>
-<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="co">#&gt; 5 42925.    -185739.     271589.</span></span>
-<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt; 6 18101.    -210563.     246765.</span></span></code></pre></div>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; 69/69 - 0s - 4ms/step</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co"># Build the conformal object from the calibration set</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>conformal_split <span class="ot">&lt;-</span> <span class="fu">int_conformal_split</span>(fit_obj, <span class="at">cal_data =</span> cal_dat)</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; 23/23 - 0s - 13ms/step</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>conformal_split</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; Split Conformal inference</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; preprocessor: recipe </span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; model: conf_mlp (engine = keras) </span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; calibration set size: 733 </span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; Use `predict(object, new_data, level)` to compute prediction intervals</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co"># Predict intervals for new observations</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>new_obs <span class="ot">&lt;-</span> cal_dat[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, ]</span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="fu">predict</span>(conformal_split, <span class="at">new_data =</span> new_obs, <span class="at">level =</span> <span class="fl">0.90</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 84ms/step</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 3</span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co">#&gt;    .pred .pred_lower .pred_upper</span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;</span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt; 1 54849.    -178316.     288015.</span></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">#&gt; 2 22371.    -210795.     255536.</span></span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="co">#&gt; 3 55554.    -177611.     288720.</span></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="co">#&gt; 4 39872.    -193293.     273038.</span></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt; 5 38393.    -194773.     271559.</span></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co">#&gt; 6 10536.    -222629.     243702.</span></span></code></pre></div>
 <p><strong>When to use this</strong>: when training cost is non-trivial
 and you can afford to set aside a calibration set. This is the
 recommended method for kerasnip models in most practical situations.</p>
@@ -524,38 +526,43 @@ intervals for new data.</li>
 <span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    <span class="at">extract =</span> <span class="cf">function</span>(x) x</span>
 <span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  )</span>
 <span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>)</span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; 19/19 - 0s - 8ms/step</span></span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; 19/19 - 0s - 12ms/step</span></span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; 19/19 - 0s - 9ms/step</span></span>
-<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; 19/19 - 0s - 10ms/step</span></span>
-<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; 19/19 - 0s - 16ms/step</span></span>
-<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a></span>
-<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co"># Build the conformal object from the resampling results</span></span>
-<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>conformal_cv <span class="ot">&lt;-</span> <span class="fu">int_conformal_cv</span>(fitted_folds)</span>
-<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>conformal_cv</span>
-<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; Conformal inference via CV+</span></span>
-<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt; preprocessor: recipe </span></span>
-<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt; model: conf_mlp (engine = keras) </span></span>
-<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co">#&gt; number of models: 5 </span></span>
-<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt; training set size: 2,930 </span></span>
-<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt; Use `predict(object, new_data, level)` to compute prediction intervals</span></span>
-<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a></span>
-<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="fu">predict</span>(conformal_cv, <span class="at">new_data =</span> data[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, ], <span class="at">level =</span> <span class="fl">0.90</span>)</span>
-<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 122ms/step</span></span>
-<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 150ms/step</span></span>
-<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 76ms/step</span></span>
-<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 84ms/step</span></span>
-<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 86ms/step</span></span>
-<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 3</span></span>
-<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a><span class="co">#&gt;   .pred_lower  .pred .pred_upper</span></span>
-<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a><span class="co">#&gt;         &lt;dbl&gt;  &lt;dbl&gt;       &lt;dbl&gt;</span></span>
-<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a><span class="co">#&gt; 1    -192359. 25742.     243844.</span></span>
-<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a><span class="co">#&gt; 2    -198053. 20049.     238151.</span></span>
-<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a><span class="co">#&gt; 3    -200821. 17281.     235383.</span></span>
-<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a><span class="co">#&gt; 4    -150145. 67957.     286059.</span></span>
-<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a><span class="co">#&gt; 5    -185703. 32399.     250501.</span></span>
-<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a><span class="co">#&gt; 6    -186155. 31947.     250049.</span></span></code></pre></div>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; 74/74 - 0s - 4ms/step</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; 19/19 - 0s - 7ms/step</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; 74/74 - 0s - 3ms/step</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; 19/19 - 0s - 7ms/step</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; 74/74 - 0s - 4ms/step</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; 19/19 - 0s - 7ms/step</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; 74/74 - 0s - 4ms/step</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; 19/19 - 0s - 7ms/step</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt; 74/74 - 0s - 4ms/step</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; 19/19 - 0s - 7ms/step</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co"># Build the conformal object from the resampling results</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>conformal_cv <span class="ot">&lt;-</span> <span class="fu">int_conformal_cv</span>(fitted_folds)</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>conformal_cv</span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt; Conformal inference via CV+</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt; preprocessor: recipe </span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt; model: conf_mlp (engine = keras) </span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt; number of models: 5 </span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; training set size: 2,930 </span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt; Use `predict(object, new_data, level)` to compute prediction intervals</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="fu">predict</span>(conformal_cv, <span class="at">new_data =</span> data[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, ], <span class="at">level =</span> <span class="fl">0.90</span>)</span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 51ms/step</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 46ms/step</span></span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 42ms/step</span></span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 45ms/step</span></span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 40ms/step</span></span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 3</span></span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a><span class="co">#&gt;   .pred_lower  .pred .pred_upper</span></span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a><span class="co">#&gt;         &lt;dbl&gt;  &lt;dbl&gt;       &lt;dbl&gt;</span></span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a><span class="co">#&gt; 1    -185237. 28243.     241724.</span></span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a><span class="co">#&gt; 2    -192622. 20859.     234339.</span></span>
+<span id="cb4-46"><a href="#cb4-46" tabindex="-1"></a><span class="co">#&gt; 3    -195607. 17873.     231354.</span></span>
+<span id="cb4-47"><a href="#cb4-47" tabindex="-1"></a><span class="co">#&gt; 4    -138346. 75134.     288615.</span></span>
+<span id="cb4-48"><a href="#cb4-48" tabindex="-1"></a><span class="co">#&gt; 5    -177739. 35741.     249222.</span></span>
+<span id="cb4-49"><a href="#cb4-49" tabindex="-1"></a><span class="co">#&gt; 6    -178314. 35166.     248647.</span></span></code></pre></div>
 <p><strong>When to use this</strong>: when you do not want to reserve a
 separate calibration set and are already running cross-validation to
 evaluate your model. The cross-validation residuals tend to produce
@@ -597,35 +604,36 @@ rigour is required and training cost is acceptable.</p>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>new_obs_small <span class="ot">&lt;-</span> data[<span class="dv">101</span><span class="sc">:</span><span class="dv">106</span>, ]</span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>fit_small <span class="ot">&lt;-</span> <span class="fu">fit</span>(wflow, <span class="at">data =</span> data_small)</span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>conformal_full <span class="ot">&lt;-</span> <span class="fu">int_conformal_full</span>(</span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  fit_small,</span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="at">train_data =</span> data_small,</span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">control_conformal_full</span>(</span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">&quot;grid&quot;</span>,</span>
-<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    <span class="at">trial_points =</span> <span class="dv">20</span></span>
-<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>  )</span>
-<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>)</span>
-<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; 4/4 - 0s - 34ms/step</span></span>
-<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>conformal_full</span>
-<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; Conformal inference</span></span>
-<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; preprocessor: recipe </span></span>
-<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; model: conf_mlp (engine = keras) </span></span>
-<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="co">#&gt; training set size: 100 </span></span>
-<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co">#&gt; Use `predict(object, new_data, level)` to compute prediction intervals</span></span>
-<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a></span>
-<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a><span class="fu">predict</span>(conformal_full, <span class="at">new_data =</span> new_obs_small, <span class="at">level =</span> <span class="fl">0.90</span>)</span>
-<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 64ms/step</span></span>
-<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 2</span></span>
-<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="co">#&gt;   .pred_lower .pred_upper</span></span>
-<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a><span class="co">#&gt;         &lt;dbl&gt;       &lt;dbl&gt;</span></span>
-<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a><span class="co">#&gt; 1    -452504.     452607.</span></span>
-<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a><span class="co">#&gt; 2    -451266.     451368.</span></span>
-<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a><span class="co">#&gt; 3    -444009.     444106.</span></span>
-<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a><span class="co">#&gt; 4    -471366.     471481.</span></span>
-<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a><span class="co">#&gt; 5    -463133.     463398.</span></span>
-<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a><span class="co">#&gt; 6    -502665.     502800.</span></span></code></pre></div>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; 4/4 - 0s - 34ms/step</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>conformal_full <span class="ot">&lt;-</span> <span class="fu">int_conformal_full</span>(</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  fit_small,</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="at">train_data =</span> data_small,</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">control_conformal_full</span>(</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">&quot;grid&quot;</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    <span class="at">trial_points =</span> <span class="dv">20</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>  )</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>)</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; 4/4 - 0s - 28ms/step</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>conformal_full</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; Conformal inference</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; preprocessor: recipe </span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="co">#&gt; model: conf_mlp (engine = keras) </span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt; training set size: 100 </span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a><span class="co">#&gt; Use `predict(object, new_data, level)` to compute prediction intervals</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="fu">predict</span>(conformal_full, <span class="at">new_data =</span> new_obs_small, <span class="at">level =</span> <span class="fl">0.90</span>)</span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 58ms/step</span></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 2</span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a><span class="co">#&gt;   .pred_lower .pred_upper</span></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a><span class="co">#&gt;         &lt;dbl&gt;       &lt;dbl&gt;</span></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a><span class="co">#&gt; 1    -475524.     475642.</span></span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a><span class="co">#&gt; 2    -474963.     475080.</span></span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a><span class="co">#&gt; 3    -474509.     474625.</span></span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a><span class="co">#&gt; 4    -509641.     509785.</span></span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a><span class="co">#&gt; 5    -423523.     423802.</span></span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a><span class="co">#&gt; 6    -506030.     506172.</span></span></code></pre></div>
 <p><strong>When to use this</strong>: when you need the strongest
 possible coverage guarantees and are willing to pay the training cost.
 For neural networks, prefer <code>int_conformal_split</code> unless you

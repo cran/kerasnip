@@ -359,80 +359,82 @@ manual restoration steps.</p>
 workflow:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(kerasnip)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; ── Attaching packages ────────────────────────────────────────────────────────────────────────────── tidymodels 1.5.0 ──</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; ✔ broom        1.0.12     ✔ recipes      1.3.2 </span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; ✔ dials        1.4.3      ✔ rsample      1.3.2 </span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; ── Attaching packages ───────────────── tidymodels 1.5.0 ──</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; ✔ broom        1.0.13     ✔ recipes      1.3.3 </span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; ✔ dials        1.4.4      ✔ rsample      1.3.2 </span></span>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt; ✔ dplyr        1.2.1      ✔ tailor       0.1.0 </span></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; ✔ ggplot2      4.0.3      ✔ tidyr        1.3.2 </span></span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; ✔ infer        1.1.0      ✔ tune         2.1.0 </span></span>
 <span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; ✔ modeldata    1.5.1      ✔ workflows    1.3.0 </span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; ✔ parsnip      1.5.0      ✔ workflowsets 1.1.1 </span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; ✔ parsnip      1.6.0      ✔ workflowsets 1.1.1 </span></span>
 <span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; ✔ purrr        1.2.2      ✔ yardstick    1.4.0</span></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; ── Conflicts ───────────────────────────────────────────────────────────────────────────────── tidymodels_conflicts() ──</span></span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; ✖ purrr::discard() masks scales::discard()</span></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; ✖ dplyr::filter()  masks stats::filter()</span></span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; ✖ dplyr::lag()     masks stats::lag()</span></span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; ✖ recipes::step()  masks stats::step()</span></span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="fu">library</span>(keras3)</span>
-<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;keras3&#39;</span></span>
-<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; The following object is masked from &#39;package:yardstick&#39;:</span></span>
-<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt;     get_weights</span></span>
-<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="co">#&gt; The following object is masked from &#39;package:infer&#39;:</span></span>
-<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="co">#&gt;     generate</span></span>
-<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a></span>
-<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a><span class="co"># 1. Define Layer Blocks (Required by kerasnip)</span></span>
-<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a><span class="co"># The first block must initialize the sequential model</span></span>
-<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a>input_block <span class="ot">&lt;-</span> <span class="cf">function</span>(model, input_shape) {</span>
-<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a>  <span class="fu">keras_model_sequential</span>(<span class="at">input_shape =</span> input_shape)</span>
-<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a>}</span>
-<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a><span class="co"># Hidden layer block</span></span>
-<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a>dense_block <span class="ot">&lt;-</span> <span class="cf">function</span>(model, <span class="at">units =</span> <span class="dv">32</span>) {</span>
-<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a>  model <span class="sc">|&gt;</span> <span class="fu">layer_dense</span>(<span class="at">units =</span> units, <span class="at">activation =</span> <span class="st">&quot;relu&quot;</span>)</span>
-<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a>}</span>
-<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a></span>
-<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a><span class="co"># Output layer block (units = 1 for regression)</span></span>
-<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a>output_block <span class="ot">&lt;-</span> <span class="cf">function</span>(model, num_classes) {</span>
-<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a>  model <span class="sc">|&gt;</span> <span class="fu">layer_dense</span>(<span class="at">units =</span> <span class="dv">1</span>)</span>
-<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a>}</span>
-<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a></span>
-<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a><span class="co"># 2. Generate the parsnip specification</span></span>
-<span id="cb1-44"><a href="#cb1-44" tabindex="-1"></a><span class="fu">create_keras_sequential_spec</span>(</span>
-<span id="cb1-45"><a href="#cb1-45" tabindex="-1"></a>  <span class="at">model_name =</span> <span class="st">&quot;my_mlp&quot;</span>,</span>
-<span id="cb1-46"><a href="#cb1-46" tabindex="-1"></a>  <span class="at">layer_blocks =</span> <span class="fu">list</span>(</span>
-<span id="cb1-47"><a href="#cb1-47" tabindex="-1"></a>    <span class="at">input =</span> input_block,</span>
-<span id="cb1-48"><a href="#cb1-48" tabindex="-1"></a>    <span class="at">hidden =</span> dense_block,</span>
-<span id="cb1-49"><a href="#cb1-49" tabindex="-1"></a>    <span class="at">output =</span> output_block</span>
-<span id="cb1-50"><a href="#cb1-50" tabindex="-1"></a>  ),</span>
-<span id="cb1-51"><a href="#cb1-51" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">&quot;regression&quot;</span></span>
-<span id="cb1-52"><a href="#cb1-52" tabindex="-1"></a>)</span>
-<span id="cb1-53"><a href="#cb1-53" tabindex="-1"></a></span>
-<span id="cb1-54"><a href="#cb1-54" tabindex="-1"></a><span class="co"># 3. Use the newly created &#39;my_mlp&#39; function</span></span>
-<span id="cb1-55"><a href="#cb1-55" tabindex="-1"></a>mod_spec <span class="ot">&lt;-</span> <span class="fu">my_mlp</span>(<span class="at">fit_epochs =</span> <span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb1-56"><a href="#cb1-56" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">&quot;keras&quot;</span>)</span>
-<span id="cb1-57"><a href="#cb1-57" tabindex="-1"></a></span>
-<span id="cb1-58"><a href="#cb1-58" tabindex="-1"></a><span class="co"># 4. Standard tidymodels workflow</span></span>
-<span id="cb1-59"><a href="#cb1-59" tabindex="-1"></a>rec_spec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(mpg <span class="sc">~</span> ., <span class="at">data =</span> mtcars) <span class="sc">|&gt;</span> </span>
-<span id="cb1-60"><a href="#cb1-60" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_predictors</span>())</span>
-<span id="cb1-61"><a href="#cb1-61" tabindex="-1"></a></span>
-<span id="cb1-62"><a href="#cb1-62" tabindex="-1"></a>fit_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb1-63"><a href="#cb1-63" tabindex="-1"></a>  <span class="fu">add_recipe</span>(rec_spec) <span class="sc">|&gt;</span> </span>
-<span id="cb1-64"><a href="#cb1-64" tabindex="-1"></a>  <span class="fu">add_model</span>(mod_spec) <span class="sc">|&gt;</span> </span>
-<span id="cb1-65"><a href="#cb1-65" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> mtcars)</span>
-<span id="cb1-66"><a href="#cb1-66" tabindex="-1"></a></span>
-<span id="cb1-67"><a href="#cb1-67" tabindex="-1"></a><span class="co"># Predict</span></span>
-<span id="cb1-68"><a href="#cb1-68" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> mtcars[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, ]</span>
-<span id="cb1-69"><a href="#cb1-69" tabindex="-1"></a><span class="fu">predict</span>(fit_wf, new_data)</span>
-<span id="cb1-70"><a href="#cb1-70" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 116ms/step</span></span>
-<span id="cb1-71"><a href="#cb1-71" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 1</span></span>
-<span id="cb1-72"><a href="#cb1-72" tabindex="-1"></a><span class="co">#&gt;   .pred</span></span>
-<span id="cb1-73"><a href="#cb1-73" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt;</span></span>
-<span id="cb1-74"><a href="#cb1-74" tabindex="-1"></a><span class="co">#&gt; 1 1.00 </span></span>
-<span id="cb1-75"><a href="#cb1-75" tabindex="-1"></a><span class="co">#&gt; 2 0.956</span></span>
-<span id="cb1-76"><a href="#cb1-76" tabindex="-1"></a><span class="co">#&gt; 3 3.03</span></span></code></pre></div>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; ── Conflicts ──────────────────── tidymodels_conflicts() ──</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; ✖ purrr::discard()         masks scales::discard()</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; ✖ dplyr::filter()          masks stats::filter()</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; ✖ parsnip::get_model_env() masks kerasnip::get_model_env()</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; ✖ dplyr::lag()             masks stats::lag()</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; ✖ recipes::step()          masks stats::step()</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="fu">library</span>(keras3)</span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;keras3&#39;</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; The following object is masked from &#39;package:yardstick&#39;:</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="co">#&gt;     get_weights</span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="co">#&gt; The following object is masked from &#39;package:infer&#39;:</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a><span class="co">#&gt;     generate</span></span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a><span class="co"># 1. Define Layer Blocks (Required by kerasnip)</span></span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="co"># The first block must initialize the sequential model</span></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a>input_block <span class="ot">&lt;-</span> <span class="cf">function</span>(model, input_shape) {</span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a>  <span class="fu">keras_model_sequential</span>(<span class="at">input_shape =</span> input_shape)</span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a>}</span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a><span class="co"># Hidden layer block</span></span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a>dense_block <span class="ot">&lt;-</span> <span class="cf">function</span>(model, <span class="at">units =</span> <span class="dv">32</span>) {</span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a>  model <span class="sc">|&gt;</span> <span class="fu">layer_dense</span>(<span class="at">units =</span> units, <span class="at">activation =</span> <span class="st">&quot;relu&quot;</span>)</span>
+<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a>}</span>
+<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a><span class="co"># Output layer block (units = 1 for regression)</span></span>
+<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a>output_block <span class="ot">&lt;-</span> <span class="cf">function</span>(model, num_classes) {</span>
+<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a>  model <span class="sc">|&gt;</span> <span class="fu">layer_dense</span>(<span class="at">units =</span> <span class="dv">1</span>)</span>
+<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a>}</span>
+<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a></span>
+<span id="cb1-44"><a href="#cb1-44" tabindex="-1"></a><span class="co"># 2. Generate the parsnip specification</span></span>
+<span id="cb1-45"><a href="#cb1-45" tabindex="-1"></a><span class="fu">create_keras_sequential_spec</span>(</span>
+<span id="cb1-46"><a href="#cb1-46" tabindex="-1"></a>  <span class="at">model_name =</span> <span class="st">&quot;my_mlp&quot;</span>,</span>
+<span id="cb1-47"><a href="#cb1-47" tabindex="-1"></a>  <span class="at">layer_blocks =</span> <span class="fu">list</span>(</span>
+<span id="cb1-48"><a href="#cb1-48" tabindex="-1"></a>    <span class="at">input =</span> input_block,</span>
+<span id="cb1-49"><a href="#cb1-49" tabindex="-1"></a>    <span class="at">hidden =</span> dense_block,</span>
+<span id="cb1-50"><a href="#cb1-50" tabindex="-1"></a>    <span class="at">output =</span> output_block</span>
+<span id="cb1-51"><a href="#cb1-51" tabindex="-1"></a>  ),</span>
+<span id="cb1-52"><a href="#cb1-52" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">&quot;regression&quot;</span></span>
+<span id="cb1-53"><a href="#cb1-53" tabindex="-1"></a>)</span>
+<span id="cb1-54"><a href="#cb1-54" tabindex="-1"></a></span>
+<span id="cb1-55"><a href="#cb1-55" tabindex="-1"></a><span class="co"># 3. Use the newly created &#39;my_mlp&#39; function</span></span>
+<span id="cb1-56"><a href="#cb1-56" tabindex="-1"></a>mod_spec <span class="ot">&lt;-</span> <span class="fu">my_mlp</span>(<span class="at">fit_epochs =</span> <span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb1-57"><a href="#cb1-57" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">&quot;keras&quot;</span>)</span>
+<span id="cb1-58"><a href="#cb1-58" tabindex="-1"></a></span>
+<span id="cb1-59"><a href="#cb1-59" tabindex="-1"></a><span class="co"># 4. Standard tidymodels workflow</span></span>
+<span id="cb1-60"><a href="#cb1-60" tabindex="-1"></a>rec_spec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(mpg <span class="sc">~</span> ., <span class="at">data =</span> mtcars) <span class="sc">|&gt;</span> </span>
+<span id="cb1-61"><a href="#cb1-61" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_predictors</span>())</span>
+<span id="cb1-62"><a href="#cb1-62" tabindex="-1"></a></span>
+<span id="cb1-63"><a href="#cb1-63" tabindex="-1"></a>fit_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb1-64"><a href="#cb1-64" tabindex="-1"></a>  <span class="fu">add_recipe</span>(rec_spec) <span class="sc">|&gt;</span> </span>
+<span id="cb1-65"><a href="#cb1-65" tabindex="-1"></a>  <span class="fu">add_model</span>(mod_spec) <span class="sc">|&gt;</span> </span>
+<span id="cb1-66"><a href="#cb1-66" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> mtcars)</span>
+<span id="cb1-67"><a href="#cb1-67" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 96ms/step</span></span>
+<span id="cb1-68"><a href="#cb1-68" tabindex="-1"></a></span>
+<span id="cb1-69"><a href="#cb1-69" tabindex="-1"></a><span class="co"># Predict</span></span>
+<span id="cb1-70"><a href="#cb1-70" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> mtcars[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, ]</span>
+<span id="cb1-71"><a href="#cb1-71" tabindex="-1"></a><span class="fu">predict</span>(fit_wf, new_data)</span>
+<span id="cb1-72"><a href="#cb1-72" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 80ms/step</span></span>
+<span id="cb1-73"><a href="#cb1-73" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 1</span></span>
+<span id="cb1-74"><a href="#cb1-74" tabindex="-1"></a><span class="co">#&gt;   .pred</span></span>
+<span id="cb1-75"><a href="#cb1-75" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt;</span></span>
+<span id="cb1-76"><a href="#cb1-76" tabindex="-1"></a><span class="co">#&gt; 1  2.92</span></span>
+<span id="cb1-77"><a href="#cb1-77" tabindex="-1"></a><span class="co">#&gt; 2  2.60</span></span>
+<span id="cb1-78"><a href="#cb1-78" tabindex="-1"></a><span class="co">#&gt; 3  6.59</span></span></code></pre></div>
 <p>The first call to predict() detects that the Python pointer is
 invalid and restores the model from the stored bytes automatically.</p>
 </div>
@@ -472,14 +474,14 @@ is the simplest approach.</p>
 <span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a></span>
 <span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co"># predict() restores the Keras model from bytes automatically</span></span>
 <span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_wf, <span class="at">new_data =</span> new_data)</span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 118ms/step</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 99ms/step</span></span>
 <span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>predictions</span>
 <span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 1</span></span>
 <span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt;   .pred</span></span>
 <span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt;</span></span>
-<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt; 1 1.00 </span></span>
-<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt; 2 0.956</span></span>
-<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt; 3 3.03</span></span></code></pre></div>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt; 1  2.92</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt; 2  2.60</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt; 3  6.59</span></span></code></pre></div>
 <p>There is nothing special to do after <code>readRDS()</code>. The
 first call to <code>predict()</code> detects the invalid pointer,
 restores the model from the stored bytes, and then proceeds
@@ -513,14 +515,14 @@ paths.</li>
 <span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>bundled <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;my_model_bundle.rds&quot;</span>)</span>
 <span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>fit_wf <span class="ot">&lt;-</span> <span class="fu">unbundle</span>(bundled)</span>
 <span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_wf, <span class="at">new_data =</span> new_data)</span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 110ms/step</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; 1/1 - 0s - 101ms/step</span></span>
 <span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>predictions</span>
 <span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 1</span></span>
 <span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt;   .pred</span></span>
 <span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt;</span></span>
-<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; 1 1.00 </span></span>
-<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt; 2 0.956</span></span>
-<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt; 3 3.03</span></span></code></pre></div>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; 1  2.92</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt; 2  2.60</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt; 3  6.59</span></span></code></pre></div>
 </div>
 <div id="comparison" class="section level2">
 <h2>Comparison</h2>

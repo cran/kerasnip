@@ -1,7 +1,7 @@
 Package: kerasnip
 Type: Package
 Title: A Bridge Between 'keras' and 'tidymodels'
-Version: 0.1.2
+Version: 0.2.0
 Authors@R: 
     person(
         "David",
@@ -19,18 +19,19 @@ License: MIT + file LICENSE
 URL: https://davidrsch.github.io/kerasnip/,
         https://github.com/davidrsch/kerasnip
 BugReports: https://github.com/davidrsch/kerasnip/issues
-RoxygenNote: 7.3.3
 Imports: abind, generics, parsnip (>= 1.0.0), rlang, keras3, tibble,
         purrr, dplyr, cli, recipes, reticulate, lobstr
 Config/testthat/edition: 3
 Suggests: testthat (>= 3.0.0), bundle, butcher, modeldata, tidymodels,
-        finetune, tune, dials, workflows, rsample, knitr, lme4,
-        rmarkdown, future, ggplot2, mgcv, probably
+        finetune, tune, dials, workflows, rsample, stacks, knitr, lme4,
+        rmarkdown, future, ggplot2, mgcv, probably, tailor, hardhat,
+        tidyr
 VignetteBuilder: knitr
+Config/roxygen2/version: 8.0.0
 NeedsCompilation: no
-Packaged: 2026-05-02 18:54:41 UTC; david
+Packaged: 2026-09-03 16:51:57 UTC; david
 Author: David Díaz [aut, cph, cre] (ORCID:
     <https://orcid.org/0000-0002-0927-9795>)
 Maintainer: David Díaz <daviddrsch@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-05-03 00:30:03 UTC
+Date/Publication: 2026-09-03 17:20:02 UTC
